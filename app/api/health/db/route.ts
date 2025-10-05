@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Client } from 'pg'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 export async function GET(_req: NextRequest) {
   const url = process.env.DATABASE_URL
