@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gold: #E6C149;
+  --black: #000000;
+}
+
+html, body {
+  background: var(--black);
+  color: #ffffff;
+}
+
+.button-gold {
+  @apply bg-[color:var(--gold)] text-black font-bold rounded-lg px-4 py-2 shadow-gold;
+}
+
+.card-dark {
+  @apply bg-neutral-900 border border-neutral-800 rounded-xl;
+}
