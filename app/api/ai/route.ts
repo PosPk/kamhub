@@ -57,14 +57,14 @@ export async function POST(req: NextRequest) {
     const body = await req.formData().catch(async () => await req.json().catch(() => null))
     const prompt = typeof (body as any)?.prompt === 'string' ? (body as any).prompt : (typeof (body as any)?.input === 'string' ? (body as any).input : '')
     const q = String(prompt || '').slice(0, 800)
-    if (!q) return NextResponse.json({ error: 'EMPTY' }, { status: 400 })
+    if (!q) return NextResponse.json({ ok: false, error: 'EMPTY' }, { status: 400 })
 
     let answer = await callGroq(q)
     if (!answer) answer = await callDeepseek(q)
-    if (!answer) answer = 'Сейчас не могу ответить. Попробуйте позже.'
+    if (!answer) return NextResponse.json({ ok: false, error: 'UPSTREAM_UNAVAILABLE' }, { status: 503 })
 
     return NextResponse.json({ ok: true, answer })
   } catch (e) {
-    return NextResponse.json({ ok: false, error: 'AI_FAILED' }, { status: 200 })
+    return NextResponse.json({ ok: false, error: 'AI_FAILED' }, { status: 500 })
   }
 }

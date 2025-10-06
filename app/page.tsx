@@ -1,5 +1,4 @@
-import KamchatkaOutlineButton from "../components/KamchatkaOutlineButton"
-"use client";
+ 
 export default function Page() {
   return (
     <div className="py-10 grid gap-8">
