@@ -9,23 +9,23 @@ export default function Page() {
 
       <section className="card-dark p-5 grid gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-extrabold">Кому это нужно</h2>
-          <div className="text-sm text-neutral-400">Выберите роль, чтобы продолжить</div>
+          <h2 className="text-xl font-extrabold">Активности</h2>
+          <div className="text-sm text-neutral-400">Выберите интерес</div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            ['Турист','/hub/tours'],
-            ['Туроператор','/hub/operators'],
-            ['Гид','/hub/guides'],
-            ['Трансфер','/hub/transfer'],
-            ['Размещение','/hub/stay'],
-            ['Сувениры','/hub/souvenirs'],
-            ['Прокат снаряжения','/hub/gear'],
-            ['Прокат авто','/hub/cars'],
-          ].map(([t,href]) => (
-            <a key={t} href={href} className="rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 p-4 transition">
-              <div className="font-extrabold">{t}</div>
-              <div className="text-sm text-neutral-400">Персональные инструменты и витрины</div>
+            ['Вулканы','volcano'],
+            ['Гейзеры','geysers'],
+            ['Хайкинг','hiking'],
+            ['Медведи','bears'],
+            ['Рыбалка','fishing'],
+            ['Серфинг','surfing'],
+            ['Озёра','lakes'],
+            ['Снегоходы','snowmobiles'],
+          ].map(([title,icon]) => (
+            <a key={String(icon)} href={`/hub/tours?act=${encodeURIComponent(String(icon))}`} className="rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 p-4 transition flex items-center gap-3">
+              <img src={`/graphics/activities/${icon}.svg`} alt={String(icon)} className="w-6 h-6" />
+              <div className="font-extrabold">{title}</div>
             </a>
           ))}
         </div>
