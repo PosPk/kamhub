@@ -58,6 +58,23 @@ async function main() {
       );
     `)
     console.log('assets table ensured')
+
+    // Partner applications table
+    await client.query(`
+      create table if not exists partner_applications (
+        id uuid primary key default gen_random_uuid(),
+        user_email text not null,
+        name text not null,
+        categories text[] not null,
+        phone text,
+        website text,
+        description text,
+        status text not null default 'pending' check (status in ('pending','approved','rejected')),
+        created_at timestamptz default now(),
+        updated_at timestamptz default now()
+      );
+    `)
+    console.log('partner_applications table ensured')
   } finally {
     await client.end()
   }
