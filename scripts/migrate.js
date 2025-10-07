@@ -75,6 +75,32 @@ async function main() {
       );
     `)
     console.log('partner_applications table ensured')
+
+    // Users and sessions for SQL-based auth
+    await client.query(`
+      create table if not exists users (
+        id uuid primary key default gen_random_uuid(),
+        email text unique not null,
+        password_hash text not null,
+        name text,
+        created_at timestamptz default now(),
+        last_login_at timestamptz
+      );
+    `)
+    console.log('users table ensured')
+
+    await client.query(`
+      create table if not exists sessions (
+        id uuid primary key default gen_random_uuid(),
+        user_id uuid not null references users(id) on delete cascade,
+        token text unique not null,
+        expires_at timestamptz not null,
+        created_at timestamptz default now()
+      );
+      create index if not exists idx_sessions_user on sessions(user_id);
+      create index if not exists idx_sessions_expires on sessions(expires_at);
+    `)
+    console.log('sessions table ensured')
   } finally {
     await client.end()
   }
