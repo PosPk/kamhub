@@ -13,7 +13,7 @@ html, body {
 }
 
 .button-gold {
-  @apply bg-[color:var(--gold)] text-black font-bold rounded-lg px-4 py-2 shadow-gold;
+  @apply bg-gold-gradient text-black font-bold rounded-lg px-4 py-2 shadow-gold;
 }
 
 .card-dark {

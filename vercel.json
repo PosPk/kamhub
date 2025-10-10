@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "ext/kamchatour-hub/api/**.ts", "use": "@vercel/node" },
+    { "src": "ext/kamchatour-hub/public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "^/api/(.*)$", "dest": "ext/kamchatour-hub/api/$1" },
+
+    { "src": "^/partners/fishing/calendar/?$", "dest": "ext/kamchatour-hub/public/partners/fishing/calendar.html" },
+    { "src": "^/partners/consent/?$", "dest": "ext/kamchatour-hub/public/partners/consent.html" },
+    { "src": "^/hub/safety/?$", "dest": "ext/kamchatour-hub/public/hub/safety.html" },
+    { "src": "^/hub/stay/?$", "dest": "ext/kamchatour-hub/public/hub/stay.html" },
+
+    { "src": "^/t/([^/?#]+)/?$", "dest": "ext/kamchatour-hub/public/tours/index.html?id=$1" },
+    { "src": "^/tours/([^/?#]+)/?$", "dest": "ext/kamchatour-hub/public/tours/index.html?id=$1" },
+    { "src": "^/tours/?$", "dest": "ext/kamchatour-hub/public/tours/index.html" },
+
+    { "src": "^/sitemap.xml$", "dest": "ext/kamchatour-hub/public/sitemap.xml" },
+    { "src": "^/$", "dest": "ext/kamchatour-hub/public/index.html" },
+    { "src": "/(.*)", "dest": "ext/kamchatour-hub/public/$1" }
+  ]
+}
