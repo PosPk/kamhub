@@ -19,3 +19,43 @@ html, body {
 .card-dark {
   @apply bg-neutral-900 border border-neutral-800 rounded-xl;
 }
+
+/* Custom classes for the full site */
+.gradient-gold-aurora {
+  background: radial-gradient(1200px 600px at 20% 80%, rgba(230,193,73,0.18), transparent 60%), 
+              radial-gradient(1000px 500px at 80% 20%, rgba(162,210,255,0.12), transparent 60%);
+}
+
+.animate-aurora {
+  animation: aurora 20s ease-in-out infinite;
+}
+
+@keyframes aurora {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.text-gold {
+  color: var(--gold);
+}
+
+.gold-glow {
+  text-shadow: 0 0 20px rgba(230,193,73,0.5);
+}
+
+.map-button-glow {
+  box-shadow: 0 0 40px rgba(230,193,73,0.25);
+  transition: box-shadow 0.3s ease;
+}
+
+.map-button-glow:hover {
+  box-shadow: 0 0 60px rgba(230,193,73,0.35);
+}
+
+.kamchatka-button {
+  transition: transform 0.3s ease;
+}
+
+.kamchatka-button:hover {
+  transform: scale(1.05);
+}

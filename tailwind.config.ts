@@ -14,6 +14,7 @@ export default {
           gold: '#E6C149',
           ice: '#A2D2FF',
         },
+        gold: '#E6C149',
       },
       boxShadow: {
         gold: '0 8px 24px rgba(230,193,73,0.25)',
