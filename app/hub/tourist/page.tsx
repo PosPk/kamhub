@@ -271,6 +271,16 @@ export default function TouristDashboard() {
           </div>
         )}
 
+        {/* Transfers Tab */}
+        {selectedTab === 'transfers' && (
+          <div className="space-y-6">
+            <TransferSearchWidget 
+              onSearchResults={setTransferResults}
+              className="w-full"
+            />
+          </div>
+        )}
+
         {/* Weather Tab */}
         {selectedTab === 'weather' && weather && (
           <div className="space-y-6">
@@ -342,6 +352,16 @@ export default function TouristDashboard() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Transfers Tab */}
+        {selectedTab === 'transfers' && (
+          <div className="space-y-6">
+            <TransferSearchWidget 
+              onSearchResults={setTransferResults}
+              className="w-full"
+            />
           </div>
         )}
 

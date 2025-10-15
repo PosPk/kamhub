@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Weather } from '@/types';
+import { TransferSearchWidget } from '@/components/TransferSearchWidget';
 
 export default function TransferDashboard() {
   const [weather, setWeather] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedTab, setSelectedTab] = useState('routes');
+  const [selectedTab, setSelectedTab] = useState('search');
+  const [transferResults, setTransferResults] = useState<any[]>([]);
 
   useEffect(() => {
     fetchWeather();
@@ -27,6 +29,7 @@ export default function TransferDashboard() {
   };
 
   const tabs = [
+    { id: 'search', name: 'Поиск', icon: '🔍' },
     { id: 'routes', name: 'Маршруты', icon: '🗺️' },
     { id: 'vehicles', name: 'Транспорт', icon: '🚌' },
     { id: 'drivers', name: 'Водители', icon: '👨‍✈️' },
@@ -231,6 +234,16 @@ export default function TransferDashboard() {
             </button>
           ))}
         </div>
+
+        {/* Search Tab */}
+        {selectedTab === 'search' && (
+          <div className="space-y-6">
+            <TransferSearchWidget 
+              onSearchResults={setTransferResults}
+              className="w-full"
+            />
+          </div>
+        )}
 
         {/* Routes Tab */}
         {selectedTab === 'routes' && (

@@ -410,34 +410,5 @@ export interface TransferEmergency {
 // ЭКСПОРТ ВСЕХ ТИПОВ
 // =============================================
 
-export type {
-  TransferRoute,
-  TransferVehicle,
-  TransferDriver,
-  TransferSchedule,
-  TransferBooking,
-  TransferStop,
-  TransferReview,
-  TransferNotification,
-  TransferSearchRequest,
-  TransferSearchResponse,
-  TransferOption,
-  SearchMetadata,
-  TransferBookingRequest,
-  TransferBookingResponse,
-  TransferConfirmationRequest,
-  TransferConfirmationResponse,
-  TransferOperatorStats,
-  TransferOperatorDashboard,
-  TransferFilters,
-  TransferSortOptions,
-  TransferNotificationTemplate,
-  TransferNotificationRequest,
-  TransferAnalytics,
-  TimeSeriesData,
-  TransferIntegration,
-  TransferWebhookPayload,
-  TransferLocation,
-  TransferTracking,
-  TransferEmergency
-};
+// Все типы уже экспортированы выше через export interface
+// Дополнительные экспорты не нужны
