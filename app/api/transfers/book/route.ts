@@ -5,6 +5,8 @@ import { config } from '@/lib/config';
 import { smsService } from '@/lib/notifications/sms';
 import { emailService } from '@/lib/notifications/email';
 import { telegramService } from '@/lib/notifications/telegram';
+import { transferPayments } from '@/lib/payments/transfer-payments';
+import { matchingEngine } from '@/lib/transfers/matching';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,8 +37,43 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Проверяем наличие данных для сопоставления
+    if (!body.fromCoordinates || !body.toCoordinates || !body.departureDate) {
+      return NextResponse.json({
+        success: false,
+        error: 'Необходимо указать координаты и дату отправления для поиска водителей'
+      }, { status: 400 });
+    }
+
     try {
-      // Получаем информацию о расписании
+      // 1. ИНТЕЛЛЕКТУАЛЬНОЕ СОПОСТАВЛЕНИЕ ВОДИТЕЛЕЙ
+      const matchingCriteria = {
+        vehicleType: body.vehicleType,
+        capacity: body.passengersCount,
+        features: body.features || [],
+        languages: body.languages || ['ru'],
+        maxDistance: 10000, // 10 км
+        maxPrice: body.budgetMax || 10000,
+        minRating: 4.0,
+        workingHours: {
+          start: '06:00',
+          end: '23:00'
+        }
+      };
+
+      const matchingResult = await matchingEngine.findBestDrivers(body, matchingCriteria);
+      
+      if (!matchingResult.success || matchingResult.drivers.length === 0) {
+        return NextResponse.json({
+          success: false,
+          error: 'Не найдено подходящих водителей для данного маршрута'
+        }, { status: 404 });
+      }
+
+      // Берем лучшего водителя
+      const bestDriver = matchingResult.drivers[0];
+      
+      // Получаем информацию о расписании для выбранного водителя
       const scheduleQuery = `
         SELECT s.*, r.*, v.*, d.*, o.name as operator_name, o.phone as operator_phone, o.email as operator_email
         FROM transfer_schedules s
@@ -44,15 +81,15 @@ export async function POST(request: NextRequest) {
         JOIN transfer_vehicles v ON s.vehicle_id = v.id
         JOIN transfer_drivers d ON s.driver_id = d.id
         JOIN operators o ON v.operator_id = o.id
-        WHERE s.id = $1 AND s.is_active = true
+        WHERE s.id = $1 AND s.is_active = true AND d.id = $2
       `;
 
-      const scheduleResult = await query(scheduleQuery, [body.scheduleId]);
+      const scheduleResult = await query(scheduleQuery, [body.scheduleId, bestDriver.driverId]);
 
       if (scheduleResult.rows.length === 0) {
         return NextResponse.json({
           success: false,
-          error: 'Расписание не найдено или недоступно'
+          error: 'Расписание не найдено или водитель недоступен'
         }, { status: 404 });
       }
 
@@ -87,7 +124,7 @@ export async function POST(request: NextRequest) {
         schedule.operator_id,
         schedule.route_id,
         schedule.vehicle_id,
-        schedule.driver_id,
+        bestDriver.driverId, // Используем ID найденного водителя
         schedule.id,
         bookingDate,
         schedule.departure_time,
@@ -101,6 +138,31 @@ export async function POST(request: NextRequest) {
       ]);
 
       const booking = bookingResult.rows[0];
+
+      // 2. СОЗДАНИЕ ПЛАТЕЖА
+      const paymentRequest = {
+        bookingId: booking.id,
+        amount: totalPrice,
+        currency: 'RUB',
+        paymentMethod: 'card' as const,
+        customerInfo: {
+          email: body.contactInfo.email,
+          phone: body.contactInfo.phone,
+          name: body.contactInfo.name || 'Не указано'
+        },
+        description: `Оплата трансфера ${schedule.from_location} → ${schedule.to_location}`
+      };
+
+      const paymentResult = await transferPayments.createPayment(paymentRequest);
+      
+      if (!paymentResult.success) {
+        // Откатываем бронирование при ошибке платежа
+        await query('DELETE FROM transfer_bookings WHERE id = $1', [booking.id]);
+        return NextResponse.json({
+          success: false,
+          error: `Ошибка создания платежа: ${paymentResult.error}`
+        }, { status: 500 });
+      }
 
       // Обновляем количество доступных мест
       const updateSeatsQuery = `
