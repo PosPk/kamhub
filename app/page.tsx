@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Tour, Partner, Weather } from '@/types';
-import { TourCardEnhanced } from '@/components/TourCardEnhanced';
+import { TourCard } from '@/components/TourCard';
 import { PartnerCard } from '@/components/PartnerCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { EcoPointsWidget } from '@/components/EcoPointsWidget';
 import { AIChatWidget } from '@/components/AIChatWidget';
-import { InteractiveMap } from '@/components/InteractiveMap';
-import { SmartFilters } from '@/components/SmartFilters';
 
 export default function Home() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -17,12 +15,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [filters, setFilters] = useState({
-    difficulty: [] as string[],
-    season: [] as string[],
-    priceRange: [0, 100000] as [number, number],
-    duration: [1, 24] as [number, number]
-  });
   const [nearbyEcoPoints, setNearbyEcoPoints] = useState([]);
 
   useEffect(() => {
@@ -166,16 +158,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Smart Filters Section */}
-      <section className="px-6 py-6">
-        <h2 className="text-xl font-extrabold mb-4">Умные фильтры</h2>
-        <SmartFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-        />
-      </section>
 
-      {/* Tours Section with Enhanced Cards */}
+      {/* Tours Section */}
       <section className="px-6 py-6">
         <h2 className="text-xl font-extrabold mb-4">Популярные туры</h2>
         {loading ? (
@@ -187,7 +171,7 @@ export default function Home() {
         ) : tours.length > 0 ? (
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {tours.map((tour) => (
-              <TourCardEnhanced
+              <TourCard
                 key={tour.id}
                 tour={tour}
                 onClick={() => {
@@ -204,18 +188,6 @@ export default function Home() {
         )}
       </section>
 
-      {/* Interactive Map Section */}
-      {nearbyEcoPoints.length > 0 && (
-        <section className="px-6 py-6">
-          <h2 className="text-xl font-extrabold mb-4">Интерактивная карта</h2>
-          <InteractiveMap
-            ecoPoints={nearbyEcoPoints}
-            onPointClick={(point) => {
-              console.log('Eco point clicked:', point);
-            }}
-          />
-        </section>
-      )}
 
       {/* Weather and Eco-points Widgets */}
       {userLocation && (
