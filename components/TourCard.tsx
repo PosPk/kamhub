@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Tour } from '@/types';
-import { formatCurrency, formatDuration, formatRating } from '@/lib/utils';
+// import { formatCurrency, formatDuration, formatRating } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
 interface TourCardProps {
@@ -12,6 +12,21 @@ interface TourCardProps {
 }
 
 export function TourCard({ tour, className, onClick }: TourCardProps) {
+  const formatCurrency = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('ru-RU', {
+      style: 'currency',
+      currency: currency,
+    }).format(amount);
+  };
+
+  const formatDuration = (duration: string) => {
+    return duration;
+  };
+
+  const formatRating = (rating: number) => {
+    return rating.toFixed(1);
+  };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
@@ -50,15 +65,15 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
       <div className="relative h-48 bg-gradient-to-br from-slate-800 to-slate-900">
         {tour.images && tour.images.length > 0 ? (
           <img
-            src={tour.images[0].url}
-            alt={tour.name}
+            src={tour.images[0]}
+            alt={tour.title}
             className="w-full h-full object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-green-100">
             <div className="text-center">
               <div className="text-4xl mb-2">🏔️</div>
-              <div className="text-gray-600 text-sm">Камчатка</div>
+              <div className="text-gray-600 text-sm">{tour.title}</div>
             </div>
           </div>
         )}
@@ -78,8 +93,8 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         {tour.rating > 0 && (
           <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full flex items-center space-x-1">
             <span className="text-premium-gold">⭐</span>
-            <span className="text-sm font-bold text-white">{formatRating(tour.rating)}</span>
-            <span className="text-xs text-white/70">({tour.reviewCount})</span>
+            <span className="text-sm font-bold text-white">{tour.rating}</span>
+            <span className="text-xs text-white/70">({tour.reviewsCount})</span>
           </div>
         )}
       </div>
@@ -89,11 +104,11 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         {/* Название и цена */}
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-lg font-bold text-white line-clamp-2">
-            {tour.name}
+            {tour.title}
           </h3>
           <div className="text-right ml-2">
             <div className="text-xl font-black text-premium-gold">
-              {formatCurrency(tour.price, tour.currency)}
+              {formatCurrency(tour.priceFrom, 'RUB')}
             </div>
             <div className="text-sm text-white/70">за человека</div>
           </div>
@@ -101,7 +116,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
 
         {/* Описание */}
         <p className="text-white/70 text-sm mb-4 line-clamp-2">
-          {tour.shortDescription || tour.description}
+          {tour.description}
         </p>
 
         {/* Детали тура */}
@@ -109,36 +124,24 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
           {/* Продолжительность */}
           <div className="flex items-center text-sm text-white/70">
             <span className="mr-2">⏱️</span>
-            <span>{formatDuration(tour.duration)}</span>
+            <span>{tour.duration}</span>
           </div>
 
           {/* Размер группы */}
           <div className="flex items-center text-sm text-white/70">
             <span className="mr-2">👥</span>
             <span>
-              {tour.minGroupSize === tour.maxGroupSize
-                ? `${tour.minGroupSize} чел.`
-                : `${tour.minGroupSize}-${tour.maxGroupSize} чел.`}
+              {tour.minParticipants === tour.maxParticipants
+                ? `${tour.minParticipants} чел.`
+                : `${tour.minParticipants}-${tour.maxParticipants} чел.`}
             </span>
           </div>
 
           {/* Сезон */}
-          {tour.season && tour.season.length > 0 && (
+          {tour.activity && (
             <div className="flex items-center text-sm text-white/70">
               <span className="mr-2">🌿</span>
-              <span>
-                {tour.season
-                  .map(s => {
-                    switch (s) {
-                      case 'spring': return 'Весна';
-                      case 'summer': return 'Лето';
-                      case 'autumn': return 'Осень';
-                      case 'winter': return 'Зима';
-                      default: return s;
-                    }
-                  })
-                  .join(', ')}
-              </span>
+              <span>Круглый год</span>
             </div>
           )}
         </div>

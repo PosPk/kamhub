@@ -135,6 +135,8 @@ export interface Weather {
   uvIndex: number;
   forecast: WeatherForecast[];
   lastUpdated: Date;
+  safetyLevel: 'excellent' | 'good' | 'difficult' | 'dangerous';
+  recommendations: string[];
 }
 
 export interface WeatherForecast {

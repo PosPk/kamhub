@@ -1,24 +1,65 @@
-import { NextRequest } from 'next/server';
-export async function POST(req: NextRequest){
-  try{
-    const { model, prompt } = await req.json();
-    if(!prompt) return new Response(JSON.stringify({error:'prompt required'}),{status:400});
-    const key = process.env.OPENROUTER_API_KEY || process.env.GROQ_API_KEY;
-    if(!key) return new Response(JSON.stringify({error:'AI key missing'}),{status:500});
-    const url = process.env.OPENROUTER_API_KEY ? 'https://openrouter.ai/api/v1/chat/completions' : 'https://api.groq.com/openai/v1/chat/completions';
-    const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({
-      model: model || 'llama-3.1-70b',
-      messages:[
-        {role:'system',content:'Ты ai.Kam — помоги составить маршрут по Камчатке кратко и по делу.'},
-        {role:'user',content: prompt}
-      ],
-      temperature:0.4,max_tokens:600
-    })});
-    const j = await r.json();
-    const itinerary = j?.choices?.[0]?.message?.content || '';
-    return new Response(JSON.stringify({itinerary}),{status:200,headers:{'Content-Type':'application/json'}});
-  }catch(e:any){
-    return new Response(JSON.stringify({error:e?.message||'failed'}),{status:500});
+import { NextRequest, NextResponse } from 'next/server';
+import { config } from '@/lib/config';
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { prompt } = body;
+
+    if (!prompt) {
+      return NextResponse.json({
+        success: false,
+        error: 'Prompt is required',
+      }, { status: 400 });
+    }
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${config.ai.groq.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192',
+        messages: [
+          {
+            role: 'system',
+            content: 'Ты AI-гид по Камчатке. Отвечай на русском языке, будь дружелюбным и полезным. Помогай с планированием туров, рассказывай о достопримечательностях, давай советы по безопасности и погоде.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Groq API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const answer = data.choices[0]?.message?.content || 'Извините, не могу ответить на этот вопрос.';
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        answer,
+        model: 'llama3-8b-8192',
+        usage: data.usage,
+      },
+    });
+
+  } catch (error) {
+    console.error('Error calling Groq API:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Failed to get AI response',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    }, { status: 500 });
   }
 }
-
