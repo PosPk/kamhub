@@ -1,11 +1,1 @@
-{
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/ai/groq/route": "app/api/ai/groq/route.js",
-  "/hub/stay/page": "app/hub/stay/page.js",
-  "/hub/tours/page": "app/hub/tours/page.js",
-  "/hub/transfer/page": "app/hub/transfer/page.js",
-  "/page": "app/page.js",
-  "/api/health/db/route": "app/api/health/db/route.js",
-  "/api/import/asset/route": "app/api/import/asset/route.js",
-  "/api/ai/route": "app/api/ai/route.js"
-}
+{}

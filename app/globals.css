@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Floating UI Styles */
+@import '../styles/floating-ui.css';
+
 :root {
   --gold: #E6C149;
   --black: #000000;
