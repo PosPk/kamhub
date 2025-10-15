@@ -112,3 +112,4 @@ Thumbs.db
 # Large files
 *.node
 node_modules/@next/swc-*
+.vercel
