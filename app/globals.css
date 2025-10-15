@@ -74,7 +74,6 @@
 }
 
 /* Floating UI Styles */
-@import '../styles/floating-ui.css';
 
 :root {
   --gold: #E6C149;

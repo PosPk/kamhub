@@ -3,26 +3,26 @@
 import React, { useState } from 'react';
 import { Protected } from '@/components/Protected';
 
-export default function StayHub() {
-  const [activeTab, setActiveTab] = useState('properties');
+export default function GuideHub() {
+  const [activeTab, setActiveTab] = useState('schedule');
 
   return (
-    <Protected roles={['traveler', 'admin']}>
+    <Protected roles={['guide', 'admin']}>
       <main className="min-h-screen bg-premium-black text-white">
         {/* Header */}
         <div className="bg-white/5 border-b border-white/10 p-6">
-          <h1 className="text-3xl font-black text-premium-gold">Размещение</h1>
-          <p className="text-white/70">Найдите идеальное место для отдыха</p>
+          <h1 className="text-3xl font-black text-premium-gold">Панель гида</h1>
+          <p className="text-white/70">Управление экскурсиями и расписанием</p>
         </div>
 
         {/* Tabs */}
         <div className="px-6 py-4 border-b border-white/10">
           <div className="flex space-x-4">
             {[
-              { id: 'properties', label: 'Объекты' },
-              { id: 'bookings', label: 'Мои бронирования' },
-              { id: 'favorites', label: 'Избранное' },
-              { id: 'reviews', label: 'Отзывы' }
+              { id: 'schedule', label: 'Расписание' },
+              { id: 'tours', label: 'Мои туры' },
+              { id: 'clients', label: 'Клиенты' },
+              { id: 'earnings', label: 'Заработок' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -41,49 +41,49 @@ export default function StayHub() {
 
         {/* Content */}
         <div className="p-6">
-          {activeTab === 'properties' && (
+          {activeTab === 'schedule' && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Доступные объекты</h2>
+              <h2 className="text-xl font-bold">Расписание на неделю</h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
                 <div className="text-center text-white/70 py-8">
-                  <div className="text-4xl mb-2">🏨</div>
-                  <p>Объекты размещения загружаются...</p>
+                  <div className="text-4xl mb-2">📅</div>
+                  <p>Расписание загружается...</p>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'bookings' && (
+          {activeTab === 'tours' && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Мои бронирования</h2>
+              <h2 className="text-xl font-bold">Мои туры</h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
                 <div className="text-center text-white/70 py-8">
-                  <div className="text-4xl mb-2">📋</div>
-                  <p>Бронирования загружаются...</p>
+                  <div className="text-4xl mb-2">🏔️</div>
+                  <p>Туры загружаются...</p>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'favorites' && (
+          {activeTab === 'clients' && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Избранное</h2>
+              <h2 className="text-xl font-bold">Клиенты</h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
                 <div className="text-center text-white/70 py-8">
-                  <div className="text-4xl mb-2">❤️</div>
-                  <p>Избранные объекты загружаются...</p>
+                  <div className="text-4xl mb-2">👥</div>
+                  <p>Список клиентов загружается...</p>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'reviews' && (
+          {activeTab === 'earnings' && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold">Отзывы</h2>
+              <h2 className="text-xl font-bold">Заработок</h2>
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
                 <div className="text-center text-white/70 py-8">
-                  <div className="text-4xl mb-2">⭐</div>
-                  <p>Отзывы загружаются...</p>
+                  <div className="text-4xl mb-2">💰</div>
+                  <p>Статистика заработка загружается...</p>
                 </div>
               </div>
             </div>
