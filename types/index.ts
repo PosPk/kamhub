@@ -219,3 +219,6 @@ export interface ChatSession {
   createdAt: Date;
   updatedAt: Date;
 }
+
+// Импорт типов для трансферов
+export * from './transfer';

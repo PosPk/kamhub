@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tour, Weather } from '@/types';
 import { AIChatWidget } from '@/components/AIChatWidget';
+import { TransferSearchWidget } from '@/components/TransferSearchWidget';
 
 export default function TouristDashboard() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -14,6 +15,7 @@ export default function TouristDashboard() {
     priceRange: [0, 50000],
     difficulty: '',
   });
+  const [transferResults, setTransferResults] = useState<any[]>([]);
 
   useEffect(() => {
     fetchTours();
@@ -94,6 +96,7 @@ export default function TouristDashboard() {
 
   const tabs = [
     { id: 'tours', name: 'Туры', icon: '🏔️' },
+    { id: 'transfers', name: 'Трансферы', icon: '🚌' },
     { id: 'weather', name: 'Погода', icon: '🌤️' },
     { id: 'ai', name: 'AI-помощник', icon: '🤖' },
     { id: 'favorites', name: 'Избранное', icon: '❤️' },
