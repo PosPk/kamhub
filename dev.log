@@ -1,0 +1,14 @@
+
+> kamhub@0.1.0 dev
+> next dev -p 3001
+
+  ▲ Next.js 14.2.15
+  - Local:        http://localhost:3001
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 949ms
+ ○ Compiling /api/ai ...
+ ✓ Compiled /api/ai in 555ms (141 modules)
+ POST /api/ai 200 in 1091ms
+ ✓ Compiled in 885ms (202 modules)

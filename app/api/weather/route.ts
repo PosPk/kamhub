@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Weather, ApiResponse } from '@/types';
 import { config } from '@/lib/config';
 
-// GET /api/weather - Получение данных о погоде
 export const dynamic = 'force-dynamic';
 
+// GET /api/weather - Получение данных о погоде
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -85,6 +85,8 @@ async function getWeatherData(lat: number, lng: number, location?: string): Prom
       uvIndex: Math.round(hourly.uv_index[0] || 0),
       forecast: generateForecast(daily),
       lastUpdated: new Date(),
+      safetyLevel: getSafetyLevel(current.weathercode, current.windspeed, hourly.visibility[0]),
+      recommendations: getWeatherRecommendations(current.weathercode, current.windspeed, hourly.visibility[0]),
     };
 
     return weather;
@@ -148,6 +150,8 @@ async function getYandexWeather(lat: number, lng: number, location?: string): Pr
       humidity: part.humidity,
     })),
     lastUpdated: new Date(),
+    safetyLevel: getSafetyLevel(fact.condition, fact.wind_speed, fact.visibility),
+    recommendations: getWeatherRecommendations(fact.condition, fact.wind_speed, fact.visibility),
   };
 }
 
@@ -174,6 +178,8 @@ function getDefaultWeather(lat: number, lng: number, location?: string): Weather
       },
     ],
     lastUpdated: new Date(),
+    safetyLevel: 'good',
+    recommendations: ['Подходящие условия для туризма'],
   };
 }
 
@@ -207,6 +213,77 @@ function getWeatherCondition(code: number): string {
   };
 
   return conditions[code] || 'unknown';
+}
+
+// Функция для определения уровня безопасности
+function getSafetyLevel(condition: string | number, windSpeed: number, visibility: number): 'excellent' | 'good' | 'difficult' | 'dangerous' {
+  // Если передано число (код погоды), конвертируем в строку
+  const weatherCondition = typeof condition === 'number' ? getWeatherCondition(condition) : condition;
+  
+  // Опасные условия
+  if (weatherCondition === 'thunderstorm' || windSpeed > 20 || visibility < 1) {
+    return 'dangerous';
+  }
+  
+  // Сложные условия
+  if (weatherCondition === 'rain' || weatherCondition === 'snow' || windSpeed > 15 || visibility < 3) {
+    return 'difficult';
+  }
+  
+  // Хорошие условия
+  if (weatherCondition === 'partly_cloudy' || weatherCondition === 'overcast' || windSpeed > 10 || visibility < 5) {
+    return 'good';
+  }
+  
+  // Отличные условия
+  return 'excellent';
+}
+
+// Функция для получения рекомендаций по погоде
+function getWeatherRecommendations(condition: string | number, windSpeed: number, visibility: number): string[] {
+  const recommendations: string[] = [];
+  const weatherCondition = typeof condition === 'number' ? getWeatherCondition(condition) : condition;
+  
+  // Рекомендации по видимости
+  if (visibility < 1) {
+    recommendations.push('❌ Очень плохая видимость - туры отменены');
+  } else if (visibility < 3) {
+    recommendations.push('⚠️ Ограниченная видимость - будьте осторожны');
+  }
+  
+  // Рекомендации по ветру
+  if (windSpeed > 20) {
+    recommendations.push('❌ Очень сильный ветер - туры отменены');
+  } else if (windSpeed > 15) {
+    recommendations.push('⚠️ Сильный ветер - ограничения для горных туров');
+  } else if (windSpeed > 10) {
+    recommendations.push('💨 Умеренный ветер - подходящие условия');
+  }
+  
+  // Рекомендации по осадкам
+  if (weatherCondition === 'thunderstorm') {
+    recommendations.push('❌ Гроза - все туры отменены');
+  } else if (weatherCondition === 'rain' || weatherCondition === 'snow') {
+    recommendations.push('🌧️ Осадки - возьмите дождевик');
+  } else if (weatherCondition === 'drizzle') {
+    recommendations.push('🌦️ Мелкий дождь - легкая одежда от дождя');
+  }
+  
+  // Рекомендации по облачности
+  if (weatherCondition === 'clear' || weatherCondition === 'mostly_clear') {
+    recommendations.push('☀️ Отличная погода - идеально для всех туров');
+  } else if (weatherCondition === 'partly_cloudy') {
+    recommendations.push('⛅ Хорошая погода - подходит для большинства туров');
+  } else if (weatherCondition === 'overcast') {
+    recommendations.push('☁️ Пасмурно - подходящие условия для туризма');
+  }
+  
+  // Общие рекомендации
+  if (recommendations.length === 0) {
+    recommendations.push('✅ Подходящие условия для туризма');
+  }
+  
+  return recommendations;
 }
 
 // Функция для генерации прогноза
