@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
 import { TransferBookingRequest, TransferBookingResponse } from '@/types/transfer';
 import { config } from '@/lib/config';
+import { smsService } from '@/lib/notifications/sms';
+import { emailService } from '@/lib/notifications/email';
+import { telegramService } from '@/lib/notifications/telegram';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,8 +126,8 @@ export async function POST(request: NextRequest) {
         `Новое бронирование на ${schedule.departure_time} по маршруту ${schedule.from_location} → ${schedule.to_location}. Пассажиров: ${body.passengersCount}`
       ]);
 
-      // Отправляем уведомления (заглушка)
-      await sendBookingNotifications(booking, schedule, body.contactInfo);
+      // Отправляем реальные уведомления
+      await sendRealBookingNotifications(booking, schedule, driver, body.contactInfo);
 
       const response: TransferBookingResponse = {
         success: true,
@@ -197,29 +200,67 @@ function generateConfirmationCode(): string {
   return result;
 }
 
-// Функция для отправки уведомлений (заглушка)
-async function sendBookingNotifications(
+// Функция для отправки реальных уведомлений
+async function sendRealBookingNotifications(
   booking: any, 
   schedule: any, 
+  driver: any,
   contactInfo: any
 ): Promise<void> {
   try {
-    // Здесь будет реальная отправка уведомлений
-    console.log('Отправка уведомлений:', {
+    // Отправка SMS уведомления пассажиру
+    if (contactInfo.phone) {
+      await smsService.sendBookingConfirmation(contactInfo.phone, {
+        confirmationCode: booking.confirmation_code,
+        route: `${schedule.from_location} → ${schedule.to_location}`,
+        date: schedule.departure_date,
+        time: schedule.departure_time,
+        driverName: driver.name,
+        driverPhone: driver.phone
+      });
+    }
+
+    // Отправка Email уведомления пассажиру
+    if (contactInfo.email) {
+      await emailService.sendBookingConfirmation(contactInfo.email, {
+        id: booking.id,
+        confirmationCode: booking.confirmation_code,
+        route: `${schedule.from_location} → ${schedule.to_location}`,
+        date: schedule.departure_date,
+        time: schedule.departure_time,
+        passengers: booking.passengers_count,
+        price: parseFloat(booking.total_price),
+        driverName: driver.name,
+        driverPhone: driver.phone,
+        meetingPoint: schedule.meeting_point || 'Уточните у водителя'
+      });
+    }
+
+    // Отправка Telegram уведомления водителю
+    if (driver.telegram_chat_id) {
+      await telegramService.sendDriverNotification(driver.telegram_chat_id, {
+        id: booking.id,
+        route: `${schedule.from_location} → ${schedule.to_location}`,
+        date: schedule.departure_date,
+        time: schedule.departure_time,
+        passengers: booking.passengers_count,
+        price: parseFloat(booking.total_price),
+        passengerName: contactInfo.name || 'Не указано',
+        passengerPhone: contactInfo.phone,
+        meetingPoint: schedule.meeting_point || 'Уточните у пассажира'
+      });
+    }
+
+    console.log('Уведомления отправлены успешно:', {
       bookingId: booking.id,
-      contactPhone: contactInfo.phone,
-      contactEmail: contactInfo.email,
-      message: `Ваше бронирование подтверждено. Код: ${booking.confirmation_code}`
+      smsSent: !!contactInfo.phone,
+      emailSent: !!contactInfo.email,
+      telegramSent: !!driver.telegram_chat_id
     });
 
-    // В реальном приложении здесь будет:
-    // - Отправка SMS через SMS.ru или другого провайдера
-    // - Отправка email через SMTP
-    // - Отправка push-уведомления
-    // - Отправка в Telegram бот
-
   } catch (error) {
-    console.error('Error sending notifications:', error);
+    console.error('Error sending real notifications:', error);
+    // Не прерываем выполнение при ошибке уведомлений
   }
 }
 
