@@ -23,28 +23,34 @@ export interface UserPreferences {
 
 export interface Tour {
   id: string;
-  name: string;
+  title: string;
   description: string;
-  shortDescription: string;
+  activity: string;
+  duration: string;
   difficulty: 'easy' | 'medium' | 'hard';
-  duration: number; // в часах
-  price: number;
-  currency: 'RUB' | 'USD' | 'EUR';
-  season: Season[];
-  coordinates: GeoPoint[];
-  requirements: string[];
-  included: string[];
-  notIncluded: string[];
-  operator: Partner;
-  guide?: Partner;
-  images: Asset[];
+  priceFrom: number;
+  priceTo: number;
+  maxParticipants: number;
+  minParticipants: number;
+  weatherRequirements?: string;
+  safetyRequirements?: string;
+  equipmentIncluded: string[];
+  equipmentRequired: string[];
+  meetingPoint?: string;
+  meetingTime?: string;
+  images: string[];
   rating: number;
-  reviewCount: number;
-  maxGroupSize: number;
-  minGroupSize: number;
+  reviewsCount: number;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  operator: {
+    id: string;
+    name: string;
+    rating: number;
+    phone: string;
+    email: string;
+  };
 }
 
 export interface Partner {
