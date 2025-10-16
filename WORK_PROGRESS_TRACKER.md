@@ -16,6 +16,7 @@
 - API: /api/operator/routes (GET/POST), /api/operator/hazards (GET/POST), /api/tracking/ingest (POST), /api/operator/alerts/send (POST), /api/migrate (POST)
 - AI: lib/ai/provider.ts; /api/ai/operator/route-analysis, /api/ai/operator/alert-draft
 - Обновлён анализ роли оператора (OPERATOR_ROLE_DEEP_ANALYSIS.md)
+- Импорт маршрутов: /api/import/routes/visitkamchatka (предпросмотр/импорт)
 
 ### 🛠 В процессе
 - UI оператора: вкладки Маршруты/Опасности/Коммуникации/Трекинг
