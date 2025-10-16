@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
       ]);
 
       // Отправляем реальные уведомления
-      await sendRealBookingNotifications(booking, schedule, driver, body.contactInfo);
+      await sendRealBookingNotifications(booking, schedule, schedule, body.contactInfo);
 
       const response: TransferBookingResponse = {
         success: true,

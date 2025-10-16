@@ -200,6 +200,20 @@ export interface TransferBookingRequest {
     phone?: string;
     email?: string;
   }[];
+  // Поля для интеллектуального сопоставления
+  fromCoordinates?: {
+    lat: number;
+    lng: number;
+  };
+  toCoordinates?: {
+    lat: number;
+    lng: number;
+  };
+  departureDate?: string;
+  vehicleType?: 'economy' | 'comfort' | 'business' | 'minibus' | 'bus';
+  budgetMax?: number;
+  features?: string[];
+  languages?: string[];
 }
 
 export interface TransferBookingResponse {

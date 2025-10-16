@@ -160,8 +160,8 @@ export class TransferMatchingEngine {
       criteria.minRating,
       criteria.vehicleType || null,
       booking.departureDate,
-      booking.fromCoordinates.lng,
-      booking.fromCoordinates.lat,
+      booking.fromCoordinates?.lng || 0,
+      booking.fromCoordinates?.lat || 0,
       criteria.maxDistance
     ]);
 
@@ -207,7 +207,7 @@ export class TransferMatchingEngine {
 
     // 3. Расстояние до пассажира (0-1, чем ближе, тем лучше)
     const distance = this.calculateDistance(
-      booking.fromCoordinates,
+      booking.fromCoordinates || { lat: 0, lng: 0 },
       { lat: driver.current_location.y, lng: driver.current_location.x }
     );
     const distanceScore = Math.max(0, 1 - (distance / criteria.maxDistance));

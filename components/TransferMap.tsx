@@ -53,7 +53,7 @@ export function TransferMap({
   // Загрузка Yandex Maps API
   useEffect(() => {
     const loadYandexMaps = () => {
-      if (window.ymaps) {
+      if ((window as any).ymaps) {
         setMapLoaded(true);
         return;
       }
@@ -61,7 +61,7 @@ export function TransferMap({
       const script = document.createElement('script');
       script.src = `https://api-maps.yandex.ru/2.1/?apikey=${process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY}&lang=ru_RU`;
       script.onload = () => {
-        window.ymaps.ready(() => {
+        (window as any).ymaps.ready(() => {
           setMapLoaded(true);
         });
       };
@@ -79,8 +79,8 @@ export function TransferMap({
     if (!mapLoaded || !mapRef.current) return;
 
     try {
-      window.ymaps.ready(() => {
-        const map = new window.ymaps.Map(mapRef.current, {
+      (window as any).ymaps.ready(() => {
+        const map = new (window as any).ymaps.Map(mapRef.current, {
           center: center || [53.9, 27.6], // Минск по умолчанию
           zoom: zoom,
           controls: ['zoomControl', 'fullscreenControl', 'typeSelector']
@@ -117,7 +117,7 @@ export function TransferMap({
 
   // Добавление маршрута на карту
   const addRoute = (map: any, route: any) => {
-    const multiRoute = new window.ymaps.multiRouter.MultiRoute({
+    const multiRoute = new (window as any).ymaps.multiRouter.MultiRoute({
       referencePoints: [
         [route.fromCoordinates.lng, route.fromCoordinates.lat],
         [route.toCoordinates.lng, route.toCoordinates.lat]
@@ -135,7 +135,7 @@ export function TransferMap({
   // Добавление маркеров транспорта
   const addVehicleMarkers = (map: any, vehicles: any[]) => {
     vehicles.forEach(vehicle => {
-      const marker = new window.ymaps.Placemark(
+      const marker = new (window as any).ymaps.Placemark(
         [vehicle.coordinates.lng, vehicle.coordinates.lat],
         {
           balloonContent: `
@@ -168,7 +168,7 @@ export function TransferMap({
   // Добавление маркеров бронирований
   const addBookingMarkers = (map: any, bookings: any[]) => {
     bookings.forEach(booking => {
-      const marker = new window.ymaps.Placemark(
+      const marker = new (window as any).ymaps.Placemark(
         [booking.coordinates.lng, booking.coordinates.lat],
         {
           balloonContent: `

@@ -383,7 +383,7 @@ export class TransferPaymentSystem {
   }
 
   // Получение платежа по ID
-  private async getPaymentById(paymentId: string): Promise<any> {
+  async getPaymentById(paymentId: string): Promise<any> {
     const result = await query(
       'SELECT * FROM transfer_payments WHERE id = $1',
       [paymentId]
