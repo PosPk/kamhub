@@ -24,7 +24,17 @@ async function fetchRoute(url: string) {
   const description = (html.match(/<div class=\"route-description\">([\s\S]*?)<\/div>/) || [,''])[1]
     .replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()
   const slug = url.split('/').filter(Boolean).pop() || name.toLowerCase().replace(/\s+/g,'-')
-  return { name, description, slug, sourceUrl: url }
+
+  const lengthKmMatch = html.match(/([\d\,\.]+)\s*км/i)
+  const lengthKm = lengthKmMatch ? Number(lengthKmMatch[1].replace(',', '.')) : null
+  const durationMatch = html.match(/([\d\,\.]+)\s*час/i)
+  const durationMin = durationMatch ? Math.round(Number(durationMatch[1].replace(',', '.')) * 60) : null
+  let difficulty: 'easy'|'medium'|'hard'|null = null
+  if (/легк|прост/i.test(html)) difficulty = 'easy'
+  else if (/средн/i.test(html)) difficulty = 'medium'
+  else if (/слож|тяжел|экстрим/i.test(html)) difficulty = 'hard'
+
+  return { name, description, slug, sourceUrl: url, lengthKm, durationMin, difficulty }
 }
 
 export async function POST(req: NextRequest) {
@@ -52,14 +62,22 @@ export async function POST(req: NextRequest) {
 
     // идемпотентная запись в routes с source_url
     for (const r of items) {
-      const upsert = `INSERT INTO routes (operator_id, name, description, status)
-                      VALUES ($1,$2,$3,'paused')
-                      ON CONFLICT DO NOTHING
+      const upsert = `INSERT INTO routes (operator_id, name, description, difficulty, source, source_url, external_id, import_hash, length_km, duration_min, status, moderation_status, is_published)
+                      VALUES ($1,$2,$3,$4,'visitkamchatka',$5,$6,$7,$8,$9,'paused','pending',false)
+                      ON CONFLICT (source_url) DO UPDATE SET
+                        name = EXCLUDED.name,
+                        description = EXCLUDED.description,
+                        difficulty = COALESCE(EXCLUDED.difficulty, routes.difficulty),
+                        length_km = EXCLUDED.length_km,
+                        duration_min = EXCLUDED.duration_min,
+                        import_hash = EXCLUDED.import_hash,
+                        updated_at = NOW()
                       RETURNING id`
       // operator_id можно передать в заголовке x-operator-id
       const operatorId = req.headers.get('x-operator-id')
-      const res = await query(upsert, [operatorId, r.name, r.description])
-      // можно сохранить source_url в operator_settings.settings как временно, либо добавить колонку в routes при следующей миграции
+      const externalId = r.slug
+      const importHash = Buffer.from(`${r.name}|${r.sourceUrl}`).toString('base64')
+      await query(upsert, [operatorId, r.name, r.description, r.difficulty, r.sourceUrl, externalId, importHash, r.lengthKm, r.durationMin])
     }
 
     return NextResponse.json({ success: true, data: { imported: items.length } })
