@@ -9,7 +9,8 @@ export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const roles = getRequestRolesFromHeaders(request.headers);
-    requirePermission(roles, 'payments');
+    // Для создания PaymentIntent достаточно права на бронирование туров
+    requirePermission(roles, 'book_tours');
 
     const body = await request.json();
     const { bookingId, amount, currency, idempotencyKey, provider, metadata } = body || {};
