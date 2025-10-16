@@ -23,6 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <b className="text-premium-gold">Kamchatour Hub</b>
                   </div>
                   <div className="flex items-center gap-4">
+                    <a href="/auth/login" className="text-gold hover:text-gold/80 transition-colors">Войти</a>
                     <a href="/operator" className="text-gold hover:text-gold/80 transition-colors">CRM</a>
                     <a href="/tg" className="button-gold">Витрина</a>
                   </div>
