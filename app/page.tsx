@@ -106,16 +106,22 @@ export default function Home() {
           <p className="max-w-2xl text-white/85">
             Туры, партнёры, CRM, бронирование, безопасность, рефералы и экология — в едином центре.
           </p>
-          <form className="flex gap-2 items-center" action="/search">
+          <div className="flex gap-2 items-center">
             <input 
               placeholder="Куда поедем? вулканы, океан, медведи…" 
               className="flex-1 h-12 rounded-xl px-4 text-slate-900" 
               name="q" 
             />
-            <button className="h-12 rounded-xl px-5 font-bold bg-premium-gold text-premium-black">
-              Искать
-            </button>
-          </form>
+            <a 
+              href="/demo"
+              className="h-12 rounded-xl px-5 font-bold bg-premium-gold text-premium-black flex items-center gap-2"
+            >
+              🚀 Демо
+            </a>
+          </div>
+          <div className="text-sm text-white/70 mt-2">
+            💡 <strong>Демо-режим</strong> - попробуйте все функции без регистрации
+          </div>
         </div>
       </section>
 
