@@ -1,14 +1,28 @@
 # 🚀 ОТСЛЕЖИВАНИЕ ПРОГРЕССА РАБОТ - KAMCHATOUR HUB
 
 ## 📊 ОБЩАЯ СТАТИСТИКА
-- **Дата начала:** $(date)
+- **Дата начала:** 2025-10-16
 - **Статус:** В активной разработке
-- **Этап:** Реализация системы трансферов
+- **Этап:** Туроператор (MAX): маршруты, опасности, трекинг, уведомления, AI
 - **Приоритет:** КРИТИЧЕСКИЙ
 
 ---
 
-## 🎯 ТЕКУЩАЯ ЗАДАЧА: СИСТЕМА ТРАНСФЕРОВ
+## 🎯 ТЕКУЩАЯ ЗАДАЧА: ТУРОПЕРАТОР (MAX)
+
+### ✅ Сделано в этой итерации
+- Расширена схема БД: operators, operator_settings, routes, waypoints, hazard_zones
+- Добавлены домены: gear_*, lodgings/allotments/rate_plans, insurance_*, tracking_points, geofences, deviation_events, alert_* таблицы
+- API: /api/operator/routes (GET/POST), /api/operator/hazards (GET/POST), /api/tracking/ingest (POST), /api/operator/alerts/send (POST), /api/migrate (POST)
+- AI: lib/ai/provider.ts; /api/ai/operator/route-analysis, /api/ai/operator/alert-draft
+- Обновлён анализ роли оператора (OPERATOR_ROLE_DEEP_ANALYSIS.md)
+- Импорт маршрутов: /api/import/routes/visitkamchatka (предпросмотр/импорт)
+
+### 🛠 В процессе
+- UI оператора: вкладки Маршруты/Опасности/Коммуникации/Трекинг
+- API reassign, gear CRUD, lodging CRUD, insurance CRUD
+- Очередь доставок уведомлений и ретраи
+- Импорт маршрутов: дедупликация (name trigram + гео расстояние), модерация, nightly sync
 
 ### 📋 ТРЕБОВАНИЯ К СИСТЕМЕ ТРАНСФЕРОВ:
 
@@ -410,6 +424,6 @@ CREATE TABLE transfer_stops (
 
 ---
 
-*Последнее обновление: $(date)*
+*Последнее обновление: 2025-10-16*
 *Статус: В активной разработке*
 *Следующий шаг: Создание таблиц базы данных*

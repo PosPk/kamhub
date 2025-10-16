@@ -219,8 +219,8 @@
 
 #### 4. **БРОНИРОВАНИЯ (BOOKINGS)**
 - **Связи:** Пользователи, туры, трансферы, платежи
-- **Статус:** 🟡 Частично реализовано
-- **Функции:** Создание, подтверждение, отмена
+- **Статус:** 🟢 Обновлено: добавлены API /api/bookings (GET/POST), слоты и удержания
+- **Функции:** Создание, удержание InventoryHold, подтверждение, отмена
 
 #### 5. **ПАРТНЕРЫ (PARTNERS)**
 - **Связи:** Операторы, гиды, трансферы, отзывы
@@ -229,8 +229,8 @@
 
 #### 6. **ПЛАТЕЖИ (PAYMENTS)**
 - **Связи:** Бронирования, пользователи, операторы
-- **Статус:** ❌ Не реализовано
-- **Функции:** Обработка, возвраты, комиссии
+- **Статус:** 🟡 Частично реализовано (добавлен /api/payments/intent, PaymentIntent)
+- **Функции:** Создание PaymentIntent (идемпотентность), редирект-заглушка; далее — confirm/refund
 
 #### 7. **УВЕДОМЛЕНИЯ (NOTIFICATIONS)**
 - **Связи:** Все роли, события, каналы
@@ -287,7 +287,144 @@
 - Интеграции
 
 ---
+ 
+## 🧩 МАТРИЦА РОЛЕЙ И ПРАВ (RBAC v1 — предложение)
 
-*Последнее обновление: $(date)*
+| Действие | Турист | Оператор | Гид | Трансфер | Агент | Админ |
+| --- | --- | --- | --- | --- | --- | --- |
+| Поиск/просмотр туров | ✅ | ✅ | ✅ | 🟡 | ✅ | ✅ |
+| Просмотр деталей туров | ✅ | ✅ | ✅ | 🟡 | ✅ | ✅ |
+| Бронирование туров (создать) | ✅ | ✅ | 🟡 | ❌ | ✅ | ✅ |
+| Оплата бронирований | ✅ | 🟡 | ❌ | ❌ | 🟡 | ✅ |
+| Управление своими бронированиями | ✅ | ✅ | 🟡 | 🟡 | ✅ | ✅ |
+| Управление турами (CRUD) | ❌ | ✅ | ❌ | ❌ | 🟡 | ✅ |
+| Управление слотами (Slot) | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ |
+| Управление гидами (назначения) | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ |
+| Обработка бронирований (confirm/cancel) | ❌ | ✅ | ❌ | 🟡 | ❌ | ✅ |
+| Управление трансферами/расписанием | ❌ | 🟡 | ❌ | ✅ | ❌ | ✅ |
+| Управление транспортом/водителями | ❌ | ❌ | ❌ | ✅ | ❌ | ✅ |
+| Просмотр аналитики | 🟡 | ✅ | 🟡 | ✅ | 🟡 | ✅ |
+| Финансы/выплаты | ❌ | 🟡 | ❌ | 🟡 | 🟡 | ✅ |
+| Управление пользователями | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Управление ролями/правами | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Уведомления/шаблоны | 🟡 | 🟡 | 🟡 | 🟡 | 🟡 | ✅ |
+| Интеграции/API-ключи | ❌ | 🟡 | ❌ | 🟡 | 🟡 | ✅ |
+| Доступ к админ-панели | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+Легенда: ✅ — разрешено; ❌ — запрещено; 🟡 — ограничено по контексту (только свои данные/организация).
+
+---
+
+## 🧱 ДОПОЛНИТЕЛЬНЫЕ СУЩНОСТИ И СВЯЗИ (ERD v1 — расширение)
+
+- Role (id, name, description)
+  - Связи: many-to-many с Users через RoleAssignment; many-to-many с Permission
+- Permission (id, action, resource)
+  - Связи: many-to-many с Role
+- RoleAssignment (id, userId, roleId, organizationId?)
+  - Связи: User ↔ Role в контексте Organization
+- Organization (id, type: Operator|Transfer|Agent, name)
+  - Связи: Users, Tours, Transfers, Contracts, ApiKeys, Payouts
+- Contract (id, organizationId, partnerOrganizationId, terms)
+  - Связи: Organization ↔ Organization
+- Slot (id, tourId, startAt, endAt, capacity, price, currency, status)
+  - Связи: Tour ↔ Slot ↔ Booking
+- InventoryHold (id, slotId, userId, quantity, expiresAt, status)
+  - Связи: Slot; освобождается по таймауту/успешной оплате
+- Vehicle (id, transferOrgId, type, seats, regNumber)
+  - Связи: Organization(Transfer), Driver, Schedule
+- Driver (id, transferOrgId, name, licenseNumber, status)
+  - Связи: Organization(Transfer), Vehicle, Schedule
+- PaymentIntent (id, bookingId, provider, amount, currency, status, idempotencyKey)
+  - Связи: Booking, WebhookEvents
+- Invoice (id, bookingId, totalAmount, currency, taxes, commission)
+  - Связи: Booking, Payments, Payouts
+- Payout (id, organizationId, amount, period, status)
+  - Связи: Organization, Invoices
+- Commission (id, organizationId, percent|tiers)
+  - Связи: Organization, Invoices
+- Tax (id, region, rate, rules)
+  - Связи: Invoice
+- CurrencyRate (id, code, rate, updatedAt)
+  - Связи: Payments, Invoice
+- NotificationTemplate (id, eventKey, channel, locale, subject, body)
+  - Связи: NotificationEvent
+- NotificationEvent (id, eventKey, payload, createdAt)
+  - Связи: DeliveryAttempt
+- DeliveryAttempt (id, eventId, channel, status, retries, error)
+  - Связи: NotificationEvent
+- Preference (id, userId, channel, enabled)
+  - Связи: User
+- AuditLog (id, actorId, action, resource, metadata, createdAt)
+  - Связи: User
+- ApiKey (id, organizationId, keyHash, scopes, createdAt)
+  - Связи: Organization
+- RateLimit (id, key, window, limit, used, resetAt)
+  - Связи: ApiKey/User
+- Consent (id, userId, type, givenAt, expiresAt)
+  - Связи: User
+- Document (id, entityType, entityId, title, url, mime)
+  - Связи: Любая сущность через (entityType, entityId)
+- Attachment (id, documentId, filename, url, mime)
+  - Связи: Document
+- ChatMessage (id, chatId, senderId, text, createdAt)
+  - Связи: User, Booking/Group
+- Location (id, name, timezone, lat, lon, seasonality)
+  - Связи: Tour, TransferRoute
+
+---
+
+## 🔁 КЛЮЧЕВЫЕ БИЗНЕС‑ПОТОКИ (MVP)
+
+1) Бронирование тура
+- Поиск → выбор Tour/Slot → InventoryHold (N минут) → Booking(draft)
+- Создать PaymentIntent (amount, currency, provider, idempotencyKey)
+- Редирект/SDK → провайдер → вебхук (success/fail)
+- On success: capture → Booking(confirmed) → списать capacity → уведомления
+- On timeout/failed: cancel PaymentIntent → release InventoryHold → Booking(canceled)
+
+2) Связка тура и трансфера
+- При бронировании тура предлагать релевантные Transfer-слоты как line items
+- Валидация тайминга и вместимости; единый заказ с зависимостями
+- Согласованная отмена/изменение обоих компонентов
+
+3) Платежный поток
+- Поддержать авторизацию/капчур, частичные возвраты, комиссии, мультивалюту
+- Единый интерфейс провайдеров (CloudPayments, Stripe) + вебхуки + журнал
+- Идемпотентность по ключу на create/confirm/refund
+
+4) Уведомления
+- Каталог событий (booking.created, payment.succeeded, slot.reminder, ...)
+- Шаблоны по каналам (Email/SMS/Telegram/Push), предпочтения пользователя
+- Ретраи с дедупликацией, журнал доставок (DeliveryAttempt)
+
+---
+
+## ⚠️ ЗАМЕЧАНИЯ И РИСКИ
+
+- Нет явной матрицы прав (закрыто RBAC-разделом)
+- Процессы бронирования/оплаты нуждаются в статусной машине и удержаниях
+- Уведомления требуют событийной модели и каталога шаблонов
+- Конкурентность: гонки без InventoryHold и идемпотентности
+- Комплаенс/платежи: PII, 152‑ФЗ/GDPR, безопасное хранение токенов
+- Наблюдаемость: аудит, метрики ключевых событий, трассировка
+
+---
+
+## 🚀 ШАГИ РЕАЛИЗАЦИИ (дорожная карта)
+
+1. Внедрить RBAC: таблицы Role/Permission/RoleAssignment, middleware, проверки в API
+2. Обновить ERD: Slot, InventoryHold, PaymentIntent, NotificationTemplate и др.
+3. Реализовать бронирование: InventoryHold + машинa состояний Booking/Payment + идемпотентность
+4. Интегрировать платежи: унифицированный интерфейс (CloudPayments/Stripe), вебхуки, журнал
+5. Сервис уведомлений: события, шаблоны, каналы (начать с Email/Telegram), ретраи
+6. Доработать дашборды: Tourist(Мои брони), Operator(Брони/Слоты), Transfer(Финансы/Уведомления)
+7. Безопасность/аудит: AuditLog, ApiKey, RateLimit, Consent
+8. Метрики/аналитика: трекинг событий, дешборд операционных метрик
+9. Подготовить мобильное MVP: авторизация, список туров, мои брони, пуш‑уведомления
+
+---
+
+*Последнее обновление: 2025-10-16*
 *Статус: Активная разработка*
 *Следующий этап: Завершение системы туров и платежей*
