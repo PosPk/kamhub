@@ -288,6 +288,7 @@ const migrations: Migration[] = [
   migration003,
   migration004,
   migration005,
+  // Migration 006: add route source and metadata columns
 ];
 
 // Выполнение миграций
