@@ -4,6 +4,7 @@
 -- Включаем необходимые расширения
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- RBAC базовые таблицы
 CREATE TABLE IF NOT EXISTS roles (
@@ -488,6 +489,27 @@ CREATE TABLE IF NOT EXISTS routes (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Расширение полей маршрутов для большой базы (источник, метаданные)
+ALTER TABLE routes
+  ADD COLUMN IF NOT EXISTS source TEXT,
+  ADD COLUMN IF NOT EXISTS source_url TEXT,
+  ADD COLUMN IF NOT EXISTS external_id TEXT,
+  ADD COLUMN IF NOT EXISTS import_hash TEXT,
+  ADD COLUMN IF NOT EXISTS length_km DECIMAL(6,2),
+  ADD COLUMN IF NOT EXISTS duration_min INTEGER,
+  ADD COLUMN IF NOT EXISTS elevation_gain_m INTEGER,
+  ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}',
+  ADD COLUMN IF NOT EXISTS risk_level VARCHAR(10),
+  ADD COLUMN IF NOT EXISTS photos_count INTEGER DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS is_published BOOLEAN DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS moderation_status VARCHAR(20) DEFAULT 'pending',
+  ADD COLUMN IF NOT EXISTS review_notes TEXT,
+  ADD COLUMN IF NOT EXISTS trail geometry(LineString, 4326);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_routes_source_url ON routes(source_url);
+CREATE INDEX IF NOT EXISTS idx_routes_name_trgm ON routes USING GIN (name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_routes_trail_gist ON routes USING GIST (trail);
 CREATE INDEX IF NOT EXISTS idx_routes_operator ON routes(operator_id);
 CREATE INDEX IF NOT EXISTS idx_routes_status ON routes(status);
 
@@ -500,6 +522,41 @@ CREATE TABLE IF NOT EXISTS waypoints (
     name TEXT,
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE waypoints
+  ADD COLUMN IF NOT EXISTS geom geometry(Point, 4326);
+CREATE INDEX IF NOT EXISTS idx_waypoints_geom ON waypoints USING GIST (geom);
+
+-- Фотографии маршрутов
+CREATE TABLE IF NOT EXISTS route_photos (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    route_id UUID REFERENCES routes(id) ON DELETE CASCADE,
+    url TEXT NOT NULL,
+    sha256 VARCHAR(64),
+    source TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(route_id, url)
+);
+CREATE INDEX IF NOT EXISTS idx_route_photos_route ON route_photos(route_id);
+
+-- Версионирование маршрутов
+CREATE TABLE IF NOT EXISTS route_versions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    route_id UUID REFERENCES routes(id) ON DELETE CASCADE,
+    version INTEGER NOT NULL,
+    diff JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(route_id, version)
+);
+
+-- Источники данных маршрутов
+CREATE TABLE IF NOT EXISTS route_sources (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    base_url TEXT,
+    robots_checked BOOLEAN DEFAULT FALSE,
+    rate_limit_rps DECIMAL(5,2) DEFAULT 1.00,
+    last_checked TIMESTAMPTZ
 );
 CREATE INDEX IF NOT EXISTS idx_waypoints_route ON waypoints(route_id);
 CREATE INDEX IF NOT EXISTS idx_waypoints_seq ON waypoints(route_id, seq);
