@@ -38,7 +38,7 @@ async function fetchPlace(url: string) {
   const name = (html.match(/<h1[^>]*>([^<]+)<\/h1>/) || [,''])[1].trim()
   const description = (html.match(/<article[\s\S]*?>([\s\S]*?)<\/article>/) || [,''])[1]
     .replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()
-  const photos = Array.from(html.matchAll(/<img[^>]+src=\"([^"]+)\"[^>]*>/g)).map(m => absUrl(m[1]))
+  // Фото внешних ресурсов НЕ импортируем по политике проекта
 
   // попытка извлечь координаты
   const lat = extractNumber(/latitude["']?\s*[:=]\s*["']?([\d\.\,\-]+)/i, html)
@@ -65,6 +65,12 @@ async function fetchPlace(url: string) {
   if (/троп/i.test(html)) tags.push('trail')
 
   const externalId = url.split('/').filter(Boolean).pop() || ''
+
+  // Пробуем извлечь сложность маршрута из текста
+  let difficulty: 'easy' | 'medium' | 'hard' | null = null
+  if (/легк|прост/i.test(html)) difficulty = 'easy'
+  else if (/средн/i.test(html)) difficulty = 'medium'
+  else if (/слож|тяжел|экстрим/i.test(html)) difficulty = 'hard'
   const importHash = crypto.createHash('sha256').update(name + description + url).digest('hex')
 
   return {
@@ -78,7 +84,7 @@ async function fetchPlace(url: string) {
     durationMin,
     seasons,
     tags,
-    photos,
+    difficulty,
     waypoint: lat && lng ? { lat, lng } : null,
   }
 }
@@ -116,11 +122,12 @@ export async function POST(req: NextRequest) {
     for (const it of items) {
       await transaction(async (client) => {
         const upsertRoute = await client.query(
-          `INSERT INTO routes (operator_id, name, description, source, source_url, external_id, import_hash, length_km, duration_min, season, tags, status, moderation_status, is_published)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,'paused','pending',false)
+          `INSERT INTO routes (operator_id, name, description, difficulty, source, source_url, external_id, import_hash, length_km, duration_min, season, tags, status, moderation_status, is_published)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'paused','pending',false)
            ON CONFLICT (source_url) DO UPDATE SET 
              name = EXCLUDED.name,
              description = EXCLUDED.description,
+             difficulty = COALESCE(EXCLUDED.difficulty, routes.difficulty),
              length_km = EXCLUDED.length_km,
              duration_min = EXCLUDED.duration_min,
              season = EXCLUDED.season,
@@ -128,7 +135,7 @@ export async function POST(req: NextRequest) {
              import_hash = EXCLUDED.import_hash,
              updated_at = NOW()
            RETURNING id`,
-          [operatorId, it.name, it.description, it.source, it.sourceUrl, it.externalId, it.importHash, it.lengthKm, it.durationMin, JSON.stringify(it.seasons || []), it.tags]
+          [operatorId, it.name, it.description, it.difficulty, it.source, it.sourceUrl, it.externalId, it.importHash, it.lengthKm, it.durationMin, JSON.stringify(it.seasons || []), it.tags]
         )
         const routeId = upsertRoute.rows[0].id
 
@@ -139,17 +146,6 @@ export async function POST(req: NextRequest) {
             `INSERT INTO waypoints (route_id, seq, location, geom, name) VALUES ($1,1,$2,ST_SetSRID(ST_MakePoint($3,$4),4326), $5)`,
             [routeId, JSON.stringify(it.waypoint), it.waypoint.lng, it.waypoint.lat, it.name]
           )
-        }
-
-        // photos
-        if (Array.isArray(it.photos)) {
-          for (const url of it.photos.slice(0, 10)) {
-            await client.query(
-              `INSERT INTO route_photos (route_id, url, source) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING`,
-              [routeId, url, it.source]
-            )
-          }
-          await client.query(`UPDATE routes SET photos_count = (SELECT COUNT(*) FROM route_photos WHERE route_id = $1) WHERE id = $1`, [routeId])
         }
       })
     }
