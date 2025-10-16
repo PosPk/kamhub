@@ -10,13 +10,12 @@ export async function GET(request: NextRequest) {
     requirePermission(roles, 'manage_tours');
 
     const operatorId = request.headers.get('x-operator-id');
-    if (!operatorId) return NextResponse.json({ success: false, error: 'x-operator-id required' }, { status: 400 });
 
     const result = await query(
       `SELECT r.*, COALESCE(json_agg(w.*) FILTER (WHERE w.id IS NOT NULL), '[]') AS waypoints
        FROM routes r
        LEFT JOIN waypoints w ON w.route_id = r.id
-       WHERE r.operator_id = $1
+       WHERE ($1::uuid IS NULL OR r.operator_id = $1)
        GROUP BY r.id
        ORDER BY r.created_at DESC`,
       [operatorId]
