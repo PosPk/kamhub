@@ -18,8 +18,8 @@ export const supabasePool = new Pool({
 export async function supabaseQuery<T = any>(text: string, params?: any[]) {
   const client = await supabasePool.connect()
   try {
-    const res = await client.query<T>(text, params)
-    return res
+    const res = await client.query(text, params)
+    return res as any as { rows: T[]; rowCount: number | null; command: string }
   } finally {
     client.release()
   }

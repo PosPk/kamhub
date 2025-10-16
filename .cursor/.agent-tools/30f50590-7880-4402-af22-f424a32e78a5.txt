@@ -1,0 +1,476 @@
+
+> kamhub@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.15
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+
+Failed to compile.
+
+./app/api/ai/groq/route.ts
+58:5  Warning: Unexpected console statement.  no-console
+
+./app/api/ai/operator/alert-draft/route.ts
+25:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/ai/operator/route-analysis/route.ts
+25:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/ai/route.ts
+58:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+58:73  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+58:104  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+58:140  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/auth/demo/route.ts
+29:5  Warning: Unexpected console statement.  no-console
+
+./app/api/auth/signin/route.ts
+33:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+61:5  Warning: Unexpected console statement.  no-console
+
+./app/api/auth/signup/route.ts
+11:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+44:23  Error: '_' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+48:5  Warning: Unexpected console statement.  no-console
+
+./app/api/bookings/route.ts
+24:82  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+25:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+90:69  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+91:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/chat/route.ts
+23:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+113:5  Warning: Unexpected console statement.  no-console
+205:5  Warning: Unexpected console statement.  no-console
+215:47  Error: 'context' is defined but never used.  @typescript-eslint/no-unused-vars
+215:57  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+215:101  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+263:9  Warning: Unexpected console statement.  no-console
+299:9  Warning: Unexpected console statement.  no-console
+313:5  Warning: Unexpected console statement.  no-console
+
+./app/api/eco-points/route.ts
+3:20  Error: 'UserEcoPoints' is defined but never used.  @typescript-eslint/no-unused-vars
+3:35  Error: 'EcoAchievement' is defined but never used.  @typescript-eslint/no-unused-vars
+18:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+82:5  Warning: Unexpected console statement.  no-console
+151:5  Warning: Unexpected console statement.  no-console
+
+./app/api/eco-points/user/route.ts
+95:5  Warning: Unexpected console statement.  no-console
+118:11  Error: 'result' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+204:5  Warning: Unexpected console statement.  no-console
+
+./app/api/health/db/route.ts
+6:27  Error: '_req' is defined but never used.  @typescript-eslint/no-unused-vars
+21:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/import/asset/route.ts
+17:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+52:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/import/routes/idilesom/route.ts
+107:19  Warning: Unexpected empty arrow function.  @typescript-eslint/no-empty-function
+110:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/import/routes/run/route.ts
+6:73  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+12:82  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+30:54  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+35:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+45:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/import/routes/visitkamchatka/route.ts
+49:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+84:15  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/loyalty/levels/route.ts
+7:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+17:5  Warning: Unexpected console statement.  no-console
+
+./app/api/loyalty/promo/apply/route.ts
+30:5  Warning: Unexpected console statement.  no-console
+
+./app/api/loyalty/stats/route.ts
+27:5  Warning: Unexpected console statement.  no-console
+
+./app/api/migrate/route.ts
+6:28  Error: '_request' is defined but never used.  @typescript-eslint/no-unused-vars
+10:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/operator/alerts/send/route.ts
+25:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+35:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/operator/hazards/route.ts
+19:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+39:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/operator/routes/route.ts
+25:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+47:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+48:39  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+60:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/operator/stats/route.ts
+2:10  Error: 'config' is defined but never used.  @typescript-eslint/no-unused-vars
+6:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+22:5  Warning: Unexpected console statement.  no-console
+
+./app/api/partners/route.ts
+21:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+128:5  Warning: Unexpected console statement.  no-console
+207:5  Warning: Unexpected console statement.  no-console
+
+./app/api/payments/intent/route.ts
+38:94  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+39:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/roles/route.ts
+7:27  Error: 'request' is defined but never used.  @typescript-eslint/no-unused-vars
+168:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+171:5  Warning: Unexpected console statement.  no-console
+226:5  Warning: Unexpected console statement.  no-console
+
+./app/api/tours/route.ts
+4:10  Error: 'config' is defined but never used.  @typescript-eslint/no-unused-vars
+20:9  Error: 'whereConditions' is never reassigned. Use 'const' instead.  prefer-const
+21:9  Error: 'queryParams' is never reassigned. Use 'const' instead.  prefer-const
+21:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+143:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+146:5  Warning: Unexpected console statement.  no-console
+265:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+342:5  Warning: Unexpected console statement.  no-console
+
+./app/api/tracking/ingest/route.ts
+3:38  Error: 'requirePermission' is defined but never used.  @typescript-eslint/no-unused-vars
+12:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+30:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/transfers/book/route.ts
+4:10  Error: 'config' is defined but never used.  @typescript-eslint/no-unused-vars
+227:7  Warning: Unexpected console statement.  no-console
+247:5  Warning: Unexpected console statement.  no-console
+267:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+268:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+269:11  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+270:16  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+316:5  Warning: Unexpected console statement.  no-console
+324:5  Warning: Unexpected console statement.  no-console
+330:62  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/api/transfers/confirm/route.ts
+4:10  Error: 'config' is defined but never used.  @typescript-eslint/no-unused-vars
+122:7  Warning: Unexpected console statement.  no-console
+138:5  Warning: Unexpected console statement.  no-console
+148:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+154:5  Warning: Unexpected console statement.  no-console
+170:7  Warning: Unexpected console statement.  no-console
+179:5  Warning: Unexpected console statement.  no-console
+
+./app/api/transfers/operator/dashboard/route.ts
+4:10  Error: 'config' is defined but never used.  @typescript-eslint/no-unused-vars
+285:7  Warning: Unexpected console statement.  no-console
+297:5  Warning: Unexpected console statement.  no-console
+
+./app/api/transfers/payment/confirm/route.ts
+39:5  Warning: Unexpected console statement.  no-console
+83:5  Warning: Unexpected console statement.  no-console
+
+./app/api/transfers/search/route.ts
+3:10  Error: 'TransferSearchRequest' is defined but never used.  @typescript-eslint/no-unused-vars
+3:33  Error: 'TransferSearchResponse' is defined but never used.  @typescript-eslint/no-unused-vars
+4:10  Error: 'config' is defined but never used.  @typescript-eslint/no-unused-vars
+254:7  Warning: Unexpected console statement.  no-console
+280:5  Warning: Unexpected console statement.  no-console
+
+./app/api/weather/route.ts
+42:5  Warning: Unexpected console statement.  no-console
+95:5  Warning: Unexpected console statement.  no-console
+102:9  Warning: Unexpected console statement.  no-console
+141:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+290:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+290:40  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+292:9  Error: 'today' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./app/auth/login/page.tsx
+30:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/demo/page.tsx
+9:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./app/hub/guide/page.tsx
+23:7  Warning: Unexpected console statement.  no-console
+342:87  Error: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/hub/operator/page.tsx
+45:7  Warning: Unexpected console statement.  no-console
+433:87  Error: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+455:49  Error: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/hub/tourist/page.tsx
+18:10  Error: 'transferResults' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+18:58  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+33:7  Warning: Unexpected console statement.  no-console
+48:7  Warning: Unexpected console statement.  no-console
+215:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/hub/tours/page.tsx
+5:29  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+16:5  Error: Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+./app/hub/transfer/page.tsx
+11:10  Error: 'transferResults' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+11:58  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+25:7  Warning: Unexpected console statement.  no-console
+540:43  Error: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+562:43  Error: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./app/hub/transfer-operator/page.tsx
+4:70  Error: 'TransferOperatorStats' is defined but never used.  @typescript-eslint/no-unused-vars
+23:7  Warning: Unexpected console statement.  no-console
+
+./app/not-found.tsx
+8:9  Error: Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+./app/page.tsx
+6:10  Error: 'PartnerCard' is defined but never used.  @typescript-eslint/no-unused-vars
+13:10  Error: 'partners' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+14:10  Error: 'weather' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+14:19  Error: 'setWeather' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+16:10  Error: 'showChat' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+16:20  Error: 'setShowChat' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+18:10  Error: 'nearbyEcoPoints' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+51:7  Warning: Unexpected console statement.  no-console
+67:11  Warning: Unexpected console statement.  no-console
+198:19  Warning: Unexpected console statement.  no-console
+252:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/AIChatWidget.tsx
+4:23  Error: 'ChatSession' is defined but never used.  @typescript-eslint/no-unused-vars
+23:6  Warning: React Hook useEffect has a missing dependency: 'fetchChatHistory'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+43:7  Warning: Unexpected console statement.  no-console
+98:7  Warning: Unexpected console statement.  no-console
+
+./components/EcoPointsWidget.tsx
+22:6  Warning: React Hook useEffect has missing dependencies: 'fetchNearbyEcoPoints' and 'fetchUserEcoPoints'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+33:7  Warning: Unexpected console statement.  no-console
+57:7  Warning: Unexpected console statement.  no-console
+
+./components/KamchatkaOutlineButton.tsx
+24:9  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/LoyaltyWidget.tsx
+23:6  Warning: React Hook useEffect has a missing dependency: 'loadLoyaltyStats'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+235:7  Warning: Unexpected console statement.  no-console
+
+./components/PartnerCard.tsx
+6:1  Error: '@/lib/utils' import is duplicated.  no-duplicate-imports
+95:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/Protected.tsx
+19:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./components/TourCard.tsx
+22:9  Error: 'formatDuration' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+30:9  Error: 'getDifficultyColor' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+67:11  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/TransferMap.tsx
+4:10  Error: 'yandexMaps' is defined but never used.  @typescript-eslint/no-unused-vars
+4:35  Error: 'RoutePoint' is defined but never used.  @typescript-eslint/no-unused-vars
+50:10  Error: 'mapInstance' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+50:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+56:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+64:20  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+82:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+83:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+113:7  Warning: Unexpected console statement.  no-console
+116:6  Warning: React Hook useEffect has missing dependencies: 'addBookingMarkers' and 'addVehicleMarkers'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+119:26  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+119:38  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+120:39  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+136:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+136:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+138:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+169:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+169:50  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+171:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+202:35  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+224:30  Error: 'status' is defined but never used.  @typescript-eslint/no-unused-vars
+248:30  Error: 'status' is defined but never used.  @typescript-eslint/no-unused-vars
+340:31  Error: 'onCenterChange' is defined but never used.  @typescript-eslint/no-unused-vars
+340:47  Error: 'onZoomChange' is defined but never used.  @typescript-eslint/no-unused-vars
+341:10  Error: 'userLocation' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+357:11  Warning: Unexpected console statement.  no-console
+
+./components/TransferSearchWidget.tsx
+3:27  Error: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+73:7  Warning: Unexpected console statement.  no-console
+80:71  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+338:5  Warning: Unexpected console statement.  no-console
+
+./components/WeatherWidget.tsx
+20:6  Warning: React Hook useEffect has a missing dependency: 'fetchWeather'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+37:7  Warning: Unexpected console statement.  no-console
+
+./lib/cache.ts
+20:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+200:7  Warning: Unexpected console statement.  no-console
+244:23  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+248:26  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+248:36  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+249:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+249:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/database/migrations.ts
+58:5  Warning: Unexpected console statement.  no-console
+89:5  Warning: Unexpected console statement.  no-console
+115:5  Warning: Unexpected console statement.  no-console
+135:5  Warning: Unexpected console statement.  no-console
+205:5  Warning: Unexpected console statement.  no-console
+214:5  Warning: Unexpected console statement.  no-console
+243:5  Warning: Unexpected console statement.  no-console
+247:5  Warning: Unexpected console statement.  no-console
+276:5  Warning: Unexpected console statement.  no-console
+280:5  Warning: Unexpected console statement.  no-console
+300:5  Warning: Unexpected console statement.  no-console
+301:5  Warning: Unexpected console statement.  no-console
+305:9  Warning: Unexpected console statement.  no-console
+308:9  Warning: Unexpected console statement.  no-console
+310:9  Warning: Unexpected console statement.  no-console
+314:5  Warning: Unexpected console statement.  no-console
+317:5  Warning: Unexpected console statement.  no-console
+328:5  Warning: Unexpected console statement.  no-console
+329:5  Warning: Unexpected console statement.  no-console
+337:7  Warning: Unexpected console statement.  no-console
+340:7  Warning: Unexpected console statement.  no-console
+343:5  Warning: Unexpected console statement.  no-console
+346:5  Warning: Unexpected console statement.  no-console
+377:3  Warning: Unexpected console statement.  no-console
+384:3  Warning: Unexpected console statement.  no-console
+
+./lib/database.ts
+14:34  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+21:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+23:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+58:5  Warning: Unexpected console statement.  no-console
+118:7  Warning: Unexpected console statement.  no-console
+120:7  Warning: Unexpected console statement.  no-console
+138:7  Warning: Unexpected console statement.  no-console
+140:7  Warning: Unexpected console statement.  no-console
+249:74  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+256:9  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/db/supabase.ts
+18:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+18:69  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+22:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/loyalty/loyalty-system.ts
+145:7  Warning: Unexpected console statement.  no-console
+183:7  Warning: Unexpected console statement.  no-console
+234:7  Warning: Unexpected console statement.  no-console
+298:7  Warning: Unexpected console statement.  no-console
+357:7  Warning: Unexpected console statement.  no-console
+404:7  Warning: Unexpected console statement.  no-console
+
+./lib/maps/yandex.ts
+47:7  Warning: Unexpected console statement.  no-console
+80:7  Warning: Unexpected console statement.  no-console
+105:58  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+114:7  Warning: Unexpected console statement.  no-console
+143:68  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+144:68  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:7  Warning: Unexpected console statement.  no-console
+183:44  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+199:7  Warning: Unexpected console statement.  no-console
+
+./lib/monitoring.ts
+17:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+28:28  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+33:27  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+46:72  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+58:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+68:84  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+86:54  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+112:7  Warning: Unexpected console statement.  no-console
+114:7  Warning: Unexpected console statement.  no-console
+122:7  Warning: Unexpected console statement.  no-console
+124:7  Warning: Unexpected console statement.  no-console
+132:7  Warning: Unexpected console statement.  no-console
+134:7  Warning: Unexpected console statement.  no-console
+198:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+200:52  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+202:52  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+204:53  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+209:80  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+214:51  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+219:41  Error: Don't use `Function` as a type. The `Function` type accepts any function-like value.
+It provides no type safety when calling the function, which can be a common source of bugs.
+It also accepts things like class declarations, which will throw at runtime as they will not be called with `new`.
+If you are expecting the function to accept certain arguments, you should explicitly define the function shape.  @typescript-eslint/ban-types
+220:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+220:32  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/notifications/email.ts
+58:7  Warning: Unexpected console statement.  no-console
+
+./lib/notifications/sms.ts
+6:10  Error: 'config' is defined but never used.  @typescript-eslint/no-unused-vars
+27:7  Warning: Unexpected console statement.  no-console
+71:7  Warning: Unexpected console statement.  no-console
+
+./lib/notifications/telegram.ts
+33:7  Warning: Unexpected console statement.  no-console
+74:7  Warning: Unexpected console statement.  no-console
+422:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/payments/transfer-payments.ts
+93:7  Warning: Unexpected console statement.  no-console
+153:7  Warning: Unexpected console statement.  no-console
+211:7  Warning: Unexpected console statement.  no-console
+328:7  Warning: Unexpected console statement.  no-console
+336:7  Warning: Unexpected console statement.  no-console
+350:7  Warning: Unexpected console statement.  no-console
+356:7  Warning: Unexpected console statement.  no-console
+372:7  Warning: Unexpected console statement.  no-console
+377:7  Warning: Unexpected console statement.  no-console
+386:52  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+395:60  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+422:5  Warning: Unexpected console statement.  no-console
+428:5  Warning: Unexpected console statement.  no-console
+442:5  Warning: Unexpected console statement.  no-console
+478:7  Warning: Unexpected console statement.  no-console
+
+./lib/rbac.ts
+57:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./lib/transfers/matching.ts
+7:34  Error: 'TransferOption' is defined but never used.  @typescript-eslint/no-unused-vars
+98:7  Warning: Unexpected console statement.  no-console
+113:14  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+173:14  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+189:13  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+257:39  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+281:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+281:46  Error: 'criteria' is defined but never used.  @typescript-eslint/no-unused-vars
+360:7  Warning: Unexpected console statement.  no-console
+378:7  Warning: Unexpected console statement.  no-console
+432:7  Warning: Unexpected console statement.  no-console
+
+./lib/utils.ts
+142:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+142:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:56  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+176:5  Warning: Unexpected console statement.  no-console
+211:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/basic-features/eslint#disabling-rules
