@@ -170,6 +170,57 @@ stateDiagram-v2
 
 ---
 
+## Статусная машина — Notification Delivery
+
+```mermaid
+stateDiagram-v2
+  [*] --> queued
+  queued --> suppressed: preference_off/dedupe
+  queued --> scheduled: delay_until
+  queued --> attempting: immediate
+  scheduled --> attempting: due
+  attempting --> delivered: provider_success
+  attempting --> failed_temporary: provider_4xx_5xx/timeout
+  failed_temporary --> queued: retry_backoff
+  failed_temporary --> failed_permanent: max_retries
+  attempting --> failed_permanent: invalid_destination/blocked
+  delivered --> [*]
+  suppressed --> [*]
+  failed_permanent --> [*]
+
+  note right of queued: Дедупликация по eventId и idempotencyKey
+  note right of failed_temporary: Экспоненциальный backoff и трейс ошибок
+```
+
+---
+
+## Статусная машина — Payout
+
+```mermaid
+stateDiagram-v2
+  [*] --> created
+  created --> needs_review: compliance_flags
+  created --> pending_funding: collect_invoices
+  needs_review --> pending_funding: approved
+  pending_funding --> scheduled: cutoff_reached
+  scheduled --> processing: start_transfer
+  processing --> paid: provider_success
+  processing --> failed: provider_error
+  failed --> scheduled: retry
+  failed --> needs_review: manual_intervention
+  scheduled --> canceled: cancel_request
+  pending_funding --> canceled: cancel_request
+  paid --> reversed: chargeback/reversal
+  canceled --> [*]
+  paid --> [*]
+  reversed --> [*]
+
+  note right of pending_funding: Агрегация инвойсов, комиссии, налоги
+  note right of processing: Журнал транзакций и соответствие выписке
+```
+
+---
+
 ## Примечания по реализации
 
 - Держите статусные переходы на стороне сервера с сохранением истории (AuditLog).
