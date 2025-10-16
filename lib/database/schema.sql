@@ -4,6 +4,7 @@
 -- Включаем необходимые расширения
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
+CREATE EXTENSION IF NOT EXISTS "vector";
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
 -- RBAC базовые таблицы
@@ -558,6 +559,24 @@ CREATE TABLE IF NOT EXISTS route_sources (
     rate_limit_rps DECIMAL(5,2) DEFAULT 1.00,
     last_checked TIMESTAMPTZ
 );
+
+-- Векторные представления маршрутов для ИИ-поиска (pgvector)
+CREATE TABLE IF NOT EXISTS route_embeddings (
+    route_id UUID REFERENCES routes(id) ON DELETE CASCADE,
+    chunk_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    embedding VECTOR(1536) NOT NULL,
+    PRIMARY KEY (route_id, chunk_id)
+);
+
+-- Индекс для быстрого поиска по косинусному сходству
+DO $$ BEGIN
+    CREATE INDEX IF NOT EXISTS idx_route_embeddings_embedding 
+    ON route_embeddings USING ivfflat (embedding vector_cosine_ops);
+EXCEPTION WHEN OTHERS THEN
+    -- Если ivfflat недоступен, индекс можно создать вручную позже
+    NULL;
+END $$;
 CREATE INDEX IF NOT EXISTS idx_waypoints_route ON waypoints(route_id);
 CREATE INDEX IF NOT EXISTS idx_waypoints_seq ON waypoints(route_id, seq);
 
