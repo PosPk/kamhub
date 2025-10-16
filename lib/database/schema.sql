@@ -5,6 +5,35 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
+-- RBAC базовые таблицы
+CREATE TABLE IF NOT EXISTS roles (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS permissions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    action VARCHAR(100) NOT NULL,
+    resource VARCHAR(100) NOT NULL,
+    UNIQUE(action, resource)
+);
+
+CREATE TABLE IF NOT EXISTS role_permissions (
+    role_id UUID REFERENCES roles(id) ON DELETE CASCADE,
+    permission_id UUID REFERENCES permissions(id) ON DELETE CASCADE,
+    PRIMARY KEY (role_id, permission_id)
+);
+
+CREATE TABLE IF NOT EXISTS role_assignments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    role_id UUID REFERENCES roles(id) ON DELETE CASCADE,
+    organization_id UUID,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Таблица пользователей
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -110,6 +139,57 @@ CREATE TABLE IF NOT EXISTS bookings (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Слоты туров
+CREATE TABLE IF NOT EXISTS tour_slots (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    tour_id UUID REFERENCES tours(id) ON DELETE CASCADE,
+    start_at TIMESTAMPTZ NOT NULL,
+    end_at TIMESTAMPTZ NOT NULL,
+    capacity INTEGER NOT NULL CHECK (capacity >= 0),
+    price DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'RUB',
+    status VARCHAR(20) DEFAULT 'open' CHECK (status IN ('open','closed','sold_out')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_tour_slots_tour ON tour_slots(tour_id);
+CREATE INDEX IF NOT EXISTS idx_tour_slots_time ON tour_slots(start_at, end_at);
+CREATE INDEX IF NOT EXISTS idx_tour_slots_status ON tour_slots(status);
+
+-- Удержания инвентаря
+CREATE TABLE IF NOT EXISTS inventory_holds (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    slot_id UUID REFERENCES tour_slots(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id),
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    expires_at TIMESTAMPTZ NOT NULL,
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active','released','expired')),
+    idempotency_key VARCHAR(100),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(slot_id, user_id, idempotency_key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_inventory_holds_slot ON inventory_holds(slot_id);
+CREATE INDEX IF NOT EXISTS idx_inventory_holds_expires ON inventory_holds(expires_at);
+
+-- Платежные намерения (для туров)
+CREATE TABLE IF NOT EXISTS payment_intents (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    booking_id UUID REFERENCES bookings(id) ON DELETE CASCADE,
+    provider VARCHAR(50) NOT NULL DEFAULT 'cloudpayments',
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'RUB',
+    status VARCHAR(30) NOT NULL DEFAULT 'created' CHECK (status IN ('created','authorized','captured','canceled','failed','refunded','partially_refunded')),
+    idempotency_key VARCHAR(100) NOT NULL,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_payment_intents_booking ON payment_intents(booking_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_intents_idem ON payment_intents(idempotency_key);
 
 -- Таблица отзывов
 CREATE TABLE IF NOT EXISTS reviews (
@@ -272,6 +352,12 @@ CREATE TRIGGER update_reviews_updated_at BEFORE UPDATE ON reviews
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_chat_sessions_updated_at BEFORE UPDATE ON chat_sessions
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_tour_slots_updated_at BEFORE UPDATE ON tour_slots
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_payment_intents_updated_at BEFORE UPDATE ON payment_intents
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Создаем функцию для обновления рейтинга тура

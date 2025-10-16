@@ -111,6 +111,44 @@ export interface Booking {
   updatedAt: Date;
 }
 
+// Новые сущности для туров (слоты/удержания/платежи)
+export interface Slot {
+  id: string;
+  tourId: string;
+  startAt: string; // ISO
+  endAt: string; // ISO
+  capacity: number;
+  price: number;
+  currency: 'RUB' | 'USD' | 'EUR';
+  status: 'open' | 'closed' | 'sold_out';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface InventoryHold {
+  id: string;
+  slotId: string;
+  userId: string;
+  quantity: number;
+  expiresAt: string; // ISO
+  status: 'active' | 'released' | 'expired';
+  idempotencyKey?: string;
+  createdAt: Date;
+}
+
+export interface PaymentIntent {
+  id: string;
+  bookingId: string;
+  provider: 'cloudpayments' | 'stripe' | 'yookassa';
+  amount: number;
+  currency: 'RUB' | 'USD' | 'EUR';
+  status: 'created' | 'authorized' | 'captured' | 'canceled' | 'failed' | 'refunded' | 'partially_refunded';
+  idempotencyKey: string;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Review {
   id: string;
   userId: string;
