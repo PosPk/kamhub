@@ -17,7 +17,11 @@
     "db:integrity": "tsx -e \"import { checkDataIntegrity } from './lib/database'; checkDataIntegrity().then(console.log)\"",
     "lint": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
@@ -34,18 +38,24 @@
     "tailwind-merge": "^2.0.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^20.14.12",
     "@types/pg": "^8.10.0",
     "@types/react": "18.3.5",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.5.5",
+    "eslint-config-prettier": "^10.1.8",
+    "jsdom": "^27.0.0",
     "postcss": "^8.4.49",
-    "prettier": "^3.0.0",
+    "prettier": "^3.6.2",
     "tailwindcss": "^3.4.10",
     "tsx": "^4.0.0",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "vitest": "^3.2.4"
   }
 }
