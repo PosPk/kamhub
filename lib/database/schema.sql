@@ -451,3 +451,281 @@ LEFT JOIN assets l ON p.logo_asset_id = l.id
 LEFT JOIN partner_assets pa ON p.id = pa.partner_id
 LEFT JOIN assets a ON pa.asset_id = a.id
 GROUP BY p.id, l.url;
+
+-- =============================================
+-- ОПЕРАТОРЫ И НАСТРОЙКИ (MAX)
+-- =============================================
+
+-- Таблица операторов (мэппинг на partners с категорией operator)
+CREATE TABLE IF NOT EXISTS operators (
+    id UUID PRIMARY KEY REFERENCES partners(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Настройки оператора
+CREATE TABLE IF NOT EXISTS operator_settings (
+    operator_id UUID PRIMARY KEY REFERENCES operators(id) ON DELETE CASCADE,
+    settings JSONB DEFAULT '{}',
+    alerts JSONB DEFAULT '[]',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =============================================
+-- МАРШРУТЫ, ТОЧКИ И ОПАСНЫЕ ЗОНЫ (MAX)
+-- =============================================
+
+-- Маршруты туров
+CREATE TABLE IF NOT EXISTS routes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    difficulty VARCHAR(20) CHECK (difficulty IN ('easy','medium','hard')),
+    description TEXT,
+    path JSONB DEFAULT '[]', -- массив координат/GeoJSON
+    status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active','paused','closed')),
+    season JSONB DEFAULT '[]',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_routes_operator ON routes(operator_id);
+CREATE INDEX IF NOT EXISTS idx_routes_status ON routes(status);
+
+-- Точки маршрута (waypoints)
+CREATE TABLE IF NOT EXISTS waypoints (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    route_id UUID REFERENCES routes(id) ON DELETE CASCADE,
+    seq INTEGER NOT NULL,
+    location JSONB NOT NULL, -- {lat,lng}
+    name TEXT,
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_waypoints_route ON waypoints(route_id);
+CREATE INDEX IF NOT EXISTS idx_waypoints_seq ON waypoints(route_id, seq);
+
+-- Опасные зоны (медведи, лавины, вулканы, реки, погода)
+CREATE TABLE IF NOT EXISTS hazard_zones (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE SET NULL,
+    type VARCHAR(30) NOT NULL,
+    severity VARCHAR(10) DEFAULT 'medium' CHECK (severity IN ('low','medium','high','critical')),
+    area JSONB NOT NULL, -- GeoJSON Polygon/MultiPolygon
+    valid_from TIMESTAMPTZ,
+    valid_to TIMESTAMPTZ,
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_hazards_type ON hazard_zones(type);
+CREATE INDEX IF NOT EXISTS idx_hazards_severity ON hazard_zones(severity);
+
+-- Добавляем привязку слота к брони
+ALTER TABLE IF EXISTS bookings
+    ADD COLUMN IF NOT EXISTS slot_id UUID REFERENCES tour_slots(id);
+CREATE INDEX IF NOT EXISTS idx_bookings_slot ON bookings(slot_id);
+
+-- =============================================
+-- СНАРЯЖЕНИЕ (MAX)
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS gear_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    category VARCHAR(50),
+    weight_grams INTEGER,
+    specs JSONB DEFAULT '{}',
+    is_required_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS gear_requirements (
+    route_id UUID REFERENCES routes(id) ON DELETE CASCADE,
+    gear_item_id UUID REFERENCES gear_items(id) ON DELETE CASCADE,
+    mandatory BOOLEAN DEFAULT TRUE,
+    quantity INTEGER DEFAULT 1,
+    PRIMARY KEY (route_id, gear_item_id)
+);
+
+CREATE TABLE IF NOT EXISTS gear_inventory (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE CASCADE,
+    gear_item_id UUID REFERENCES gear_items(id) ON DELETE CASCADE,
+    total INTEGER NOT NULL DEFAULT 0,
+    available INTEGER NOT NULL DEFAULT 0,
+    location TEXT,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS gear_rentals (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE CASCADE,
+    gear_item_id UUID REFERENCES gear_items(id) ON DELETE CASCADE,
+    booking_id UUID REFERENCES bookings(id) ON DELETE SET NULL,
+    quantity INTEGER NOT NULL DEFAULT 1,
+    status VARCHAR(20) DEFAULT 'reserved' CHECK (status IN ('reserved','issued','returned','canceled')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    returned_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_gear_rentals_operator ON gear_rentals(operator_id);
+CREATE INDEX IF NOT EXISTS idx_gear_rentals_status ON gear_rentals(status);
+
+-- =============================================
+-- РАЗМЕЩЕНИЕ (MAX)
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS lodgings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE SET NULL,
+    name VARCHAR(255) NOT NULL,
+    type VARCHAR(20) CHECK (type IN ('hotel','hostel','guesthouse','camp','hut','other')),
+    location JSONB,
+    contact JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS allotments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lodging_id UUID REFERENCES lodgings(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    rooms_total INTEGER NOT NULL DEFAULT 0,
+    rooms_available INTEGER NOT NULL DEFAULT 0,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_allotments_lodging_date ON allotments(lodging_id, date);
+
+CREATE TABLE IF NOT EXISTS rate_plans (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    lodging_id UUID REFERENCES lodgings(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'RUB',
+    price DECIMAL(10,2) NOT NULL,
+    policy JSONB DEFAULT '{}'
+);
+
+-- =============================================
+-- СТРАХОВАНИЕ (MAX)
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS insurance_providers (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    contact JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS coverage_plans (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    provider_id UUID REFERENCES insurance_providers(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    coverage JSONB DEFAULT '{}',
+    price DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'RUB'
+);
+
+CREATE TABLE IF NOT EXISTS insurance_policies (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    provider_id UUID REFERENCES insurance_providers(id) ON DELETE SET NULL,
+    plan_id UUID REFERENCES coverage_plans(id) ON DELETE SET NULL,
+    policy_number VARCHAR(100) UNIQUE NOT NULL,
+    holder_name VARCHAR(255),
+    issued_at TIMESTAMPTZ,
+    expires_at TIMESTAMPTZ,
+    document_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS policy_assignments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    booking_id UUID REFERENCES bookings(id) ON DELETE CASCADE,
+    policy_id UUID REFERENCES insurance_policies(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =============================================
+-- ТРЕКИНГ И ГЕОЗОНЫ (MAX)
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS tracking_points (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    entity_type VARCHAR(20) NOT NULL CHECK (entity_type IN ('guide','tourist','group')),
+    entity_id UUID NOT NULL,
+    location JSONB NOT NULL, -- {lat,lng}
+    altitude_m INTEGER,
+    speed_kmh DECIMAL(6,2),
+    battery_percent INTEGER,
+    captured_at TIMESTAMPTZ NOT NULL,
+    received_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_tracking_entity_time ON tracking_points(entity_type, entity_id, captured_at DESC);
+
+CREATE TABLE IF NOT EXISTS geofences (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    area JSONB NOT NULL, -- GeoJSON Polygon
+    rules JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS deviation_events (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    route_id UUID REFERENCES routes(id) ON DELETE SET NULL,
+    entity_type VARCHAR(20) CHECK (entity_type IN ('guide','tourist','group')),
+    entity_id UUID,
+    point_id UUID REFERENCES tracking_points(id) ON DELETE SET NULL,
+    deviation_type VARCHAR(50),
+    severity VARCHAR(10) CHECK (severity IN ('low','medium','high','critical')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =============================================
+-- АЛЕРТЫ/СОБЫТИЯ (MAX)
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS alert_templates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    event_key VARCHAR(100) UNIQUE NOT NULL,
+    channel VARCHAR(20) NOT NULL,
+    locale VARCHAR(10) DEFAULT 'ru',
+    subject VARCHAR(255),
+    body TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS alerts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE CASCADE,
+    route_id UUID REFERENCES routes(id) ON DELETE SET NULL,
+    type VARCHAR(50) NOT NULL,
+    payload JSONB DEFAULT '{}',
+    priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('low','normal','high','critical')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS alert_subscriptions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    operator_id UUID REFERENCES operators(id) ON DELETE CASCADE,
+    target_type VARCHAR(20) NOT NULL CHECK (target_type IN ('guide','tourist','all')),
+    target_id UUID,
+    event_key VARCHAR(100) NOT NULL,
+    channel VARCHAR(20) NOT NULL,
+    enabled BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS alert_deliveries (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    alert_id UUID REFERENCES alerts(id) ON DELETE CASCADE,
+    channel VARCHAR(20) NOT NULL,
+    status VARCHAR(20) DEFAULT 'queued' CHECK (status IN ('queued','delivered','failed')),
+    attempts INTEGER DEFAULT 0,
+    last_error TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Триггеры updated_at для некоторых таблиц
+CREATE TRIGGER update_operator_settings_updated_at BEFORE UPDATE ON operator_settings
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_routes_updated_at BEFORE UPDATE ON routes
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_alert_deliveries_updated_at BEFORE UPDATE ON alert_deliveries
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
