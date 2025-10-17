@@ -4,6 +4,7 @@
 // =============================================
 
 import { query } from '@/lib/database';
+import { config } from '@/lib/config';
 import { TransferBookingRequest, TransferOption } from '@/types/transfer';
 
 interface MatchingCriteria {
@@ -44,13 +45,7 @@ interface MatchingResult {
 }
 
 export class TransferMatchingEngine {
-  private weights = {
-    rating: 0.3,        // 30% - рейтинг водителя
-    price: 0.25,        // 25% - цена поездки
-    distance: 0.2,      // 20% - расстояние до пассажира
-    availability: 0.15, // 15% - доступность
-    experience: 0.1     // 10% - опыт водителя
-  };
+  private weights = config.transfers.matching.weights;
 
   // Основной метод сопоставления
   async findBestDrivers(
@@ -84,7 +79,7 @@ export class TransferMatchingEngine {
       const sortedDrivers = scoredDrivers.sort((a, b) => b.score - a.score);
 
       // 4. Берем топ-5 водителей
-      const topDrivers = sortedDrivers.slice(0, 5);
+      const topDrivers = sortedDrivers.slice(0, config.transfers.matching.topK);
 
       return {
         success: true,
@@ -162,7 +157,7 @@ export class TransferMatchingEngine {
       booking.departureDate,
       booking.fromCoordinates?.lng || 0,
       booking.fromCoordinates?.lat || 0,
-      criteria.maxDistance
+      criteria.maxDistance || config.transfers.matching.maxDistanceMetersDefault
     ]);
 
     return result.rows;
@@ -210,7 +205,7 @@ export class TransferMatchingEngine {
       booking.fromCoordinates || { lat: 0, lng: 0 },
       { lat: driver.current_location.y, lng: driver.current_location.x }
     );
-    const distanceScore = Math.max(0, 1 - (distance / criteria.maxDistance));
+    const distanceScore = Math.max(0, 1 - (distance / (criteria.maxDistance || config.transfers.matching.maxDistanceMetersDefault)));
     totalScore += distanceScore * this.weights.distance;
     if (distanceScore > 0.8) reasons.push('Близко к пассажиру');
 
