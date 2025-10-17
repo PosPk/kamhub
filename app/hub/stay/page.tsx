@@ -7,7 +7,7 @@ export default function StayHub() {
   const [activeTab, setActiveTab] = useState('properties');
 
   return (
-    <Protected roles={['traveler', 'admin']}>
+    <Protected roles={['tourist', 'admin']}>
       <main className="min-h-screen bg-premium-black text-white">
         {/* Header */}
         <div className="bg-white/5 border-b border-white/10 p-6">
