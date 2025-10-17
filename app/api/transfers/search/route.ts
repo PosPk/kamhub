@@ -285,6 +285,57 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// POST /api/transfers/search - Поиск доступных трансферов (для тестов и совместимости)
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const from: string | undefined = body.fromLocation || body.from || body.from_location;
+    const to: string | undefined = body.toLocation || body.to || body.to_location;
+    const date: string | undefined = body.departureDate || body.date;
+    const passengers: number = body.passengersCount ?? body.passengers ?? 1;
+    const vehicleType: string | undefined = body.vehicleType ?? null;
+    const budgetMin: number | undefined = body.budgetMin ?? undefined;
+    const budgetMax: number | undefined = body.budgetMax ?? undefined;
+    const features: string[] = body.features ?? [];
+    const languages: string[] = body.languages ?? [];
+
+    if (!from || !to || !date || !passengers) {
+      return NextResponse.json({
+        success: false,
+        error: 'Отсутствуют обязательные поля: fromLocation, toLocation, departureDate, passengersCount'
+      }, { status: 400 });
+    }
+
+    // В POST-версии возвращаем сразу массив доступных трансферов (как ожидает тест)
+    const mockTransfers = generateMockTransfers(
+      from,
+      to,
+      date,
+      typeof passengers === 'string' ? parseInt(passengers as any) : passengers,
+      vehicleType,
+      budgetMin,
+      budgetMax
+    );
+
+    // Фильтры по features/languages для совместимости
+    const filtered = mockTransfers.filter(t =>
+      (features.length === 0 || features.every(f => (t.features || []).includes(f))) &&
+      (languages.length === 0 || languages.every(l => (t.languages || []).includes(l)))
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: filtered
+    });
+  } catch (error) {
+    console.error('Error in transfer search POST:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Внутренняя ошибка сервера при поиске трансферов'
+    }, { status: 500 });
+  }
+}
+
 // Функция для генерации тестовых данных трансферов
 function generateMockTransfers(
   from: string, 

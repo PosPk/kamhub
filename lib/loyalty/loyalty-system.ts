@@ -32,6 +32,7 @@ interface LoyaltyStats {
   pointsToNextLevel: number;
   totalEarned: number;
   totalRedeemed: number;
+  totalSpent: number;
   transactions: BonusTransaction[];
 }
 
@@ -138,6 +139,7 @@ export class LoyaltySystem {
         pointsToNextLevel: nextLevel ? nextLevel.minSpent - totalSpent : 0,
         totalEarned,
         totalRedeemed,
+        totalSpent,
         transactions
       };
 
