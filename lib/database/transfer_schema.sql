@@ -201,6 +201,30 @@ CREATE INDEX idx_transfer_notifications_type ON transfer_notifications (type);
 CREATE INDEX idx_transfer_notifications_read ON transfer_notifications (is_read);
 
 -- =============================================
+-- ТАБЛИЦА: transfer_offers - Предложения водителям (matching)
+-- =============================================
+CREATE TABLE transfer_offers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  booking_id UUID REFERENCES transfer_bookings(id) ON DELETE CASCADE,
+  driver_id UUID REFERENCES transfer_drivers(id) ON DELETE CASCADE,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','accepted','declined','expired')),
+  score DECIMAL(5,4) NOT NULL DEFAULT 0,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (booking_id, driver_id)
+);
+
+CREATE INDEX idx_transfer_offers_booking ON transfer_offers (booking_id);
+CREATE INDEX idx_transfer_offers_driver ON transfer_offers (driver_id);
+CREATE INDEX idx_transfer_offers_status ON transfer_offers (status);
+CREATE INDEX idx_transfer_offers_expires ON transfer_offers (expires_at);
+
+CREATE TRIGGER update_transfer_offers_updated_at 
+  BEFORE UPDATE ON transfer_offers 
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =============================================
 -- ТРИГГЕРЫ ДЛЯ ОБНОВЛЕНИЯ updated_at
 -- =============================================
 

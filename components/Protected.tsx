@@ -15,8 +15,9 @@ export const Protected: React.FC<ProtectedProps> = ({
   fallback = <div className="text-center p-8 text-gray-500">Нет доступа</div> 
 }) => {
   const { hasRole } = useRoles();
-  
-  const hasAccess = roles.some(role => hasRole(role as any));
+  // Нормализация traveler -> tourist для обратной совместимости
+  const normalized = roles.map(r => (r === 'traveler' ? 'tourist' : r));
+  const hasAccess = normalized.some(role => hasRole(role as any));
   
   if (!hasAccess) {
     return <>{fallback}</>;
