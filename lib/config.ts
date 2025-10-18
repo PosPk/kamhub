@@ -151,6 +151,22 @@ export const config = {
     maxTTL: 86400, // 24 часа
   },
 
+  // Настройки трансферов и сопоставления водителей
+  transfers: {
+    matching: {
+      weights: {
+        rating: parseFloat(process.env.MATCHING_WEIGHT_RATING || '0.30'),
+        price: parseFloat(process.env.MATCHING_WEIGHT_PRICE || '0.25'),
+        distance: parseFloat(process.env.MATCHING_WEIGHT_DISTANCE || '0.20'),
+        availability: parseFloat(process.env.MATCHING_WEIGHT_AVAILABILITY || '0.15'),
+        experience: parseFloat(process.env.MATCHING_WEIGHT_EXPERIENCE || '0.10'),
+      },
+      topK: parseInt(process.env.MATCHING_TOP_K || '5'),
+      offerTTLMinutes: parseInt(process.env.MATCHING_OFFER_TTL_MINUTES || '20'),
+      maxDistanceMetersDefault: parseInt(process.env.MATCHING_MAX_DISTANCE_METERS || '10000'),
+    },
+  },
+
   // Настройки мониторинга
   monitoring: {
     sentry: {
