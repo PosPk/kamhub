@@ -6,7 +6,12 @@ export const dynamic = 'force-dynamic';
 // GET /api/loyalty/levels - Получение всех уровней лояльности
 export async function GET(request: NextRequest) {
   try {
-    const levels = loyaltySystem.getAllLevels();
+    const levels = loyaltySystem.getAllLevels().map(level => ({
+      name: level.name,
+      minSpent: level.minSpent,
+      discountPercentage: level.discount,
+      benefits: level.benefits,
+    }));
 
     return NextResponse.json({
       success: true,
