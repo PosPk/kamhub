@@ -4,7 +4,7 @@ import { GET as searchTransfers } from '../../app/api/transfers/search/route';
 import { POST as bookTransfer } from '../../app/api/transfers/book/route';
 
 describe('Transfer API Routes', () => {
-  describe('POST /api/transfers/search', () => {
+  describe('GET /api/transfers/search', () => {
     it('should return available transfers for valid search', async () => {
       const url = new URL('http://localhost:3000/api/transfers/search');
       url.searchParams.set('from', 'Петропавловск-Камчатский');

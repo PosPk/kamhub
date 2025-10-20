@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
-import { TransferSearchRequest, TransferSearchResponse, TransferOption, SearchMetadata } from '@/types/transfer';
-import { config } from '@/lib/config';
+import { TransferOption, SearchMetadata } from '@/types/transfer';
 
 export const dynamic = 'force-dynamic';
 
@@ -97,8 +96,8 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          data: {
-            availableTransfers: mockTransfers,
+          data: mockTransfers,
+          meta: {
             totalCount: mockTransfers.length,
             searchMetadata
           }
@@ -243,8 +242,8 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        data: {
-          availableTransfers,
+        data: availableTransfers,
+        meta: {
           totalCount: availableTransfers.length,
           searchMetadata
         }
@@ -268,8 +267,8 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        data: {
-          availableTransfers: mockTransfers,
+        data: mockTransfers,
+        meta: {
           totalCount: mockTransfers.length,
           searchMetadata
         }
