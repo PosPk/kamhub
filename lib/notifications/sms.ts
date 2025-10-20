@@ -3,7 +3,7 @@
 // Kamchatour Hub - SMS Notification Service
 // =============================================
 
-import { config } from '@/lib/config';
+// import { config } from '@/lib/config';
 
 interface SMSMessage {
   to: string;
