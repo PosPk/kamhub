@@ -1,11 +1,10 @@
 import { beforeAll, afterAll, afterEach } from 'vitest';
-import { query } from '../lib/database';
+import { query } from '@/lib/database';
 
 // Мок для базы данных в тестах
 beforeAll(async () => {
   // Настройка тестовой базы данных
-  process.env.NODE_ENV = 'test';
-  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/kamchatour_hub_test';
+  (process.env as Record<string, string>).DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/kamchatour_hub_test';
 });
 
 afterEach(async () => {

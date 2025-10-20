@@ -1,24 +1,19 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { NextRequest } from 'next/server';
-import { POST as searchTransfers } from '../../app/api/transfers/search/route';
+import { GET as searchTransfers } from '../../app/api/transfers/search/route';
 import { POST as bookTransfer } from '../../app/api/transfers/book/route';
 
 describe('Transfer API Routes', () => {
   describe('POST /api/transfers/search', () => {
     it('should return available transfers for valid search', async () => {
-      const request = new NextRequest('http://localhost:3000/api/transfers/search', {
-        method: 'POST',
-        body: JSON.stringify({
-          fromLocation: 'Петропавловск-Камчатский',
-          toLocation: 'Елизово',
-          departureDate: '2024-12-25',
-          passengersCount: 2,
-          vehicleType: 'sedan'
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const url = new URL('http://localhost:3000/api/transfers/search');
+      url.searchParams.set('from', 'Петропавловск-Камчатский');
+      url.searchParams.set('to', 'Елизово');
+      url.searchParams.set('date', '2024-12-25');
+      url.searchParams.set('passengers', '2');
+      url.searchParams.set('vehicle_type', 'sedan');
+
+      const request = new NextRequest(url.toString());
 
       const response = await searchTransfers(request);
       const data = await response.json();
@@ -30,18 +25,12 @@ describe('Transfer API Routes', () => {
     });
 
     it('should return error for invalid search parameters', async () => {
-      const request = new NextRequest('http://localhost:3000/api/transfers/search', {
-        method: 'POST',
-        body: JSON.stringify({
-          fromLocation: '',
-          toLocation: 'Елизово',
-          departureDate: '2024-12-25',
-          passengersCount: 2
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      const url = new URL('http://localhost:3000/api/transfers/search');
+      url.searchParams.set('from', '');
+      url.searchParams.set('to', 'Елизово');
+      url.searchParams.set('date', '2024-12-25');
+      url.searchParams.set('passengers', '2');
+      const request = new NextRequest(url.toString());
 
       const response = await searchTransfers(request);
       const data = await response.json();
