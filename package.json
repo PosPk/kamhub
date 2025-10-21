@@ -26,7 +26,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "env:s3:check": "node scripts/s3_health_check.mjs"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
