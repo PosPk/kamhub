@@ -1,0 +1,161 @@
+name: Lockbox Migrate
+
+on:
+  workflow_dispatch:
+    inputs:
+      secret_name:
+        description: "Lockbox secret name"
+        default: "kamhub-app-secrets"
+        required: true
+        type: string
+
+jobs:
+  migrate:
+    name: Migrate GitHub Secrets to Yandex Lockbox
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install yc CLI
+        run: |
+          set -e
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
+          echo "$HOME/yc/bin" >> $GITHUB_PATH
+          yc version
+
+      - name: Configure yc
+        env:
+          YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          set -e
+          if [ -z "$YC_SERVICE_ACCOUNT_KEY" ] || [ -z "$YC_CLOUD_ID" ] || [ -z "$YC_FOLDER_ID" ]; then
+            echo "YC_SERVICE_ACCOUNT_KEY / YC_CLOUD_ID / YC_FOLDER_ID are required" >&2
+            exit 1
+          fi
+          echo "$YC_SERVICE_ACCOUNT_KEY" > key.json
+          yc config set service-account-key key.json
+          yc config set cloud-id "$YC_CLOUD_ID"
+          yc config set folder-id "$YC_FOLDER_ID"
+
+      - name: Prepare payload from GitHub Secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          REFRESH_TOKEN_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          AI_MAX_TOKENS: ${{ secrets.AI_MAX_TOKENS }}
+          AI_DAILY_BUDGET_USD: ${{ secrets.AI_DAILY_BUDGET_USD }}
+          YANDEX_MAPS_API_KEY: ${{ secrets.YANDEX_MAPS_API_KEY }}
+          YANDEX_WEATHER_API_KEY: ${{ secrets.YANDEX_WEATHER_API_KEY }}
+          YANDEX_PAYMENT_SHOP_ID: ${{ secrets.YANDEX_PAYMENT_SHOP_ID }}
+          YANDEX_PAYMENT_SECRET_KEY: ${{ secrets.YANDEX_PAYMENT_SECRET_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          SMS_RU_API_ID: ${{ secrets.SMS_RU_API_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          REDIS_DB: ${{ secrets.REDIS_DB }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+          MOCK_DATA: ${{ secrets.MOCK_DATA }}
+          VERBOSE_LOGGING: ${{ secrets.VERBOSE_LOGGING }}
+          GOOGLE_ANALYTICS_ID: ${{ secrets.GOOGLE_ANALYTICS_ID }}
+          YANDEX_METRIKA_ID: ${{ secrets.YANDEX_METRIKA_ID }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          set -e
+          KEYS=$(cat <<'EOF'
+          DATABASE_URL
+          JWT_SECRET
+          JWT_EXPIRES_IN
+          REFRESH_TOKEN_EXPIRES_IN
+          GROQ_API_KEY
+          DEEPSEEK_API_KEY
+          OPENROUTER_API_KEY
+          AI_MAX_TOKENS
+          AI_DAILY_BUDGET_USD
+          YANDEX_MAPS_API_KEY
+          YANDEX_WEATHER_API_KEY
+          YANDEX_PAYMENT_SHOP_ID
+          YANDEX_PAYMENT_SECRET_KEY
+          STRIPE_SECRET_KEY
+          STRIPE_PUBLISHABLE_KEY
+          STRIPE_WEBHOOK_SECRET
+          SMTP_HOST
+          SMTP_PORT
+          SMTP_SECURE
+          SMTP_USER
+          SMTP_PASS
+          EMAIL_FROM
+          SMS_RU_API_ID
+          TELEGRAM_BOT_TOKEN
+          TELEGRAM_CHAT_ID
+          REDIS_URL
+          REDIS_PASSWORD
+          REDIS_DB
+          SENTRY_DSN
+          NEXT_PUBLIC_APP_URL
+          CORS_ORIGIN
+          MOCK_DATA
+          VERBOSE_LOGGING
+          GOOGLE_ANALYTICS_ID
+          YANDEX_METRIKA_ID
+          S3_ENDPOINT
+          S3_REGION
+          S3_BUCKET
+          AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY
+          EOF
+          )
+          args=()
+          for k in $KEYS; do
+            v="${!k}"
+            if [ -n "$v" ]; then
+              args+=(--payload "$k=$v")
+            fi
+          done
+          if [ ${#args[@]} -eq 0 ]; then
+            echo "No non-empty secrets found to migrate" >&2
+            exit 0
+          fi
+          printf '%s\n' "PAYLOAD_ARGS=${args[*]}" >> $GITHUB_ENV
+
+      - name: Create or get Lockbox secret and add version
+        env:
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+          SECRET_NAME: ${{ inputs.secret_name }}
+        run: |
+          set -e
+          NAME="$SECRET_NAME"
+          FOLDER="$YC_FOLDER_ID"
+          # Try get secret ID by name
+          set +e
+          ID=$(yc lockbox secret get --name "$NAME" --folder-id "$FOLDER" --format json 2>/dev/null | python3 -c 'import sys,json; print(json.load(sys.stdin).get("id",""))' )
+          set -e
+          if [ -z "$ID" ]; then
+            yc lockbox secret create --name "$NAME" --folder-id "$FOLDER" >/dev/null
+            ID=$(yc lockbox secret get --name "$NAME" --folder-id "$FOLDER" --format json | python3 -c 'import sys,json; print(json.load(sys.stdin)["id"])')
+          fi
+          echo "Secret ID: $ID"
+          yc lockbox secret add-version --id "$ID" $PAYLOAD_ARGS
+          echo "Lockbox secret '$NAME' updated with GitHub Secrets payload"
