@@ -17,6 +17,9 @@
 - 2025-10-20 08:05 UTC — Проверил доступ к Object Storage: ключи работают, виден бакет `posservis` (ListBuckets OK).
 - 2025-10-20 08:10 UTC — Добавил S3-клиент для приложения (`lib/storage/s3.ts`) для загрузки ассетов в Object Storage.
 - 2025-10-20 08:15 UTC — Зафиксировал требования: полный функционал трансферов (приоритет — рейтинг), инфраструктура — Яндекс Облако.
+- 2025-10-20 08:30 UTC — [APP] Добавил админ-API создания данных: `/api/transfers/admin/{routes,vehicles,drivers,schedules}`.
+- 2025-10-20 08:35 UTC — [APP] Добавил UI формы: `hub/transfer-operator/{routes,vehicles,drivers,schedules}` + навигация.
+- 2025-10-20 08:40 UTC — [DEPLOY] Добавлен workflow для миграции секретов в Yandex Lockbox (`.github/workflows/lockbox-migrate.yml`).
 
 ---
 
