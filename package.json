@@ -27,7 +27,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "test:run": "vitest run",
-    "env:s3:check": "node scripts/s3_health_check.mjs"
+    "env:s3:check": "node scripts/s3_health_check.mjs",
+    "vercel:export-envs": "node scripts/export_vercel_envs.mjs"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
