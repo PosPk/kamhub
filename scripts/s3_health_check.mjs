@@ -16,23 +16,27 @@ if (missing.length) {
   process.exit(2);
 }
 
-const s3 = new S3Client({
-  region: REGION,
-  endpoint: ENDPOINT,
-  credentials: {
-    accessKeyId: AKID,
-    secretAccessKey: SAK,
-  },
-  forcePathStyle: true,
-});
+function makeClient(forcePathStyle) {
+  return new S3Client({
+    region: REGION,
+    endpoint: ENDPOINT,
+    credentials: { accessKeyId: AKID, secretAccessKey: SAK },
+    forcePathStyle,
+  });
+}
 
 (async () => {
-  try {
-    await s3.send(new HeadBucketCommand({ Bucket: BUCKET }));
-    console.log('[OK] S3 HeadBucket succeeded');
-    process.exit(0);
-  } catch (e) {
-    console.error('[ERROR] S3 HeadBucket failed:', e?.message || e);
-    process.exit(1);
+  const attempts = [true, false];
+  for (const fps of attempts) {
+    const client = makeClient(fps);
+    try {
+      await client.send(new HeadBucketCommand({ Bucket: BUCKET }));
+      console.log(`[OK] HeadBucket ok (forcePathStyle=${fps})`);
+      process.exit(0);
+    } catch (e) {
+      const meta = e?.$metadata ? ` code=${e.$metadata.httpStatusCode}` : '';
+      console.error(`[ERROR] HeadBucket failed (forcePathStyle=${fps})${meta}:`, e?.name || '', e?.message || e);
+    }
   }
+  process.exit(1);
 })();
