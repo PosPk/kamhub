@@ -1,0 +1,70 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+
+      - name: Login to Yandex Cloud Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: cr.yandex
+          username: json_key
+          password: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+
+      - name: Build and push image
+        run: |
+          IMAGE=cr.yandex/${{ secrets.YC_REGISTRY_ID }}/kamhub:${{ github.sha }}
+          echo "Building $IMAGE"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+
+  deploy-serverless:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install yc CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
+          echo "$HOME/yc/bin" >> $GITHUB_PATH
+          yc version
+      - name: Configure yc
+        env:
+          YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          echo "$YC_SERVICE_ACCOUNT_KEY" > key.json
+          yc config set service-account-key key.json
+          yc config set cloud-id "$YC_CLOUD_ID"
+          yc config set folder-id "$YC_FOLDER_ID"
+      - name: Deploy Serverless Container
+        env:
+          SERVICE_NAME: kamhub-api
+          IMAGE: ${{ needs.build-and-push.outputs.IMAGE || env.IMAGE }}
+        run: |
+          set -e
+          NAME="$SERVICE_NAME"
+          if ! yc serverless container get --name "$NAME" >/dev/null 2>&1; then
+            yc serverless container create --name "$NAME"
+          fi
+          yc serverless container revisions deploy \
+            --container-name "$NAME" \
+            --image "$IMAGE" \
+            --cores 1 --memory 512MB --concurrency 8 \
+            --execution-timeout 30s \
+            --service-account-id ${{ secrets.YC_SA_ID }} \
+            --environment "S3_ENDPOINT=${{ secrets.S3_ENDPOINT }},S3_REGION=${{ secrets.S3_REGION }},S3_BUCKET=${{ secrets.S3_BUCKET }},AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }},AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }},DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_SECRET=${{ secrets.JWT_SECRET }}"
+
