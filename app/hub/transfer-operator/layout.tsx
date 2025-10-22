@@ -15,6 +15,7 @@ export default function TransferOperatorLayout({ children }: { children: React.R
         <Link className="underline" href="/hub/transfer-operator/vehicles">Транспорт</Link>
         <Link className="underline" href="/hub/transfer-operator/drivers">Водители</Link>
         <Link className="underline" href="/hub/transfer-operator/schedules">Расписания</Link>
+        <Link className="underline" href="/hub/transfer-operator/import">Импорт</Link>
       </nav>
       <div>{children}</div>
     </div>
