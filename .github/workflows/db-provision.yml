@@ -1,0 +1,163 @@
+name: DB - Provision Managed PostgreSQL and Inventory
+
+on:
+  push:
+    branches:
+      - cursor/scan-repo-for-errors-and-secrets-1030
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  provision-and-inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install prerequisites (yc, psql, jq)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq postgresql-client
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
+          echo "$HOME/yc/bin" >> $GITHUB_PATH
+          $HOME/yc/bin/yc version
+
+      - name: Configure yc
+        env:
+          YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          set -e
+          echo "$YC_SERVICE_ACCOUNT_KEY" > key.json
+          $HOME/yc/bin/yc config set service-account-key key.json
+          $HOME/yc/bin/yc config set cloud-id "$YC_CLOUD_ID"
+          $HOME/yc/bin/yc config set folder-id "$YC_FOLDER_ID"
+
+      - name: Discover VPC network/subnet
+        id: vpc
+        env:
+          YC_ZONE: ${{ secrets.YC_ZONE || 'ru-central1-a' }}
+        run: |
+          set -e
+          yc() { $HOME/yc/bin/yc "$@"; }
+          NET_ID=$(yc vpc network list --format json | jq -r '.[0].id // empty')
+          SUBNET_ID=$(yc vpc subnet list --format json | jq -r --arg Z "$YC_ZONE" '[.[] | select(.zone_id==$Z)][0].id // empty')
+          echo "network_id=$NET_ID" >> $GITHUB_OUTPUT
+          echo "subnet_id=$SUBNET_ID" >> $GITHUB_OUTPUT
+
+      - name: Create or use Managed PostgreSQL cluster
+        id: pg
+        env:
+          CLUSTER_NAME: kamhub-pg
+          YC_ZONE: ${{ secrets.YC_ZONE || 'ru-central1-a' }}
+          NETWORK_ID: ${{ steps.vpc.outputs.network_id }}
+          SUBNET_ID: ${{ steps.vpc.outputs.subnet_id }}
+          PG_ADMIN_USER: postgres
+          PG_APP_USER: kamhub_user
+          PG_APP_DB: kamhub
+          PG_APP_PASSWORD: ${{ secrets.PG_APP_PASSWORD }}
+        run: |
+          set -e
+          yc() { $HOME/yc/bin/yc "$@"; }
+          if [ -z "$SUBNET_ID" ] || [ -z "$NETWORK_ID" ]; then
+            echo "No VPC subnet/network discovered; aborting create and proceeding to inventory only" >&2
+          else
+            if ! yc managed-postgresql cluster get --name "$CLUSTER_NAME" >/dev/null 2>&1; then
+              PASS=${PG_APP_PASSWORD}
+              if [ -z "$PASS" ]; then PASS=$(openssl rand -hex 16); fi
+              echo "::group::Creating cluster $CLUSTER_NAME"
+              yc managed-postgresql cluster create \
+                --name "$CLUSTER_NAME" \
+                --environment production \
+                --network-id "$NETWORK_ID" \
+                --host zone="$YC_ZONE",subnet-id="$SUBNET_ID",assign-public-ip \
+                --version 15 \
+                --resource-preset s2.micro \
+                --disk-type network-ssd \
+                --disk-size 20 \
+                --user name="$PG_APP_USER",password="$PASS"
+              echo "::endgroup::"
+              echo "created=yes" >> $GITHUB_OUTPUT
+              echo "app_password=$PASS" >> $GITHUB_OUTPUT
+            else
+              echo "created=no" >> $GITHUB_OUTPUT
+            fi
+          fi
+          # capture host and connection details if cluster now exists
+          if $HOME/yc/bin/yc managed-postgresql cluster get --name "$CLUSTER_NAME" >/dev/null 2>&1; then
+            HOST=$($HOME/yc/bin/yc managed-postgresql host list --cluster-name "$CLUSTER_NAME" --format json | jq -r '[.[] | select(.assign_public_ip==true)][0].public_ip_address // empty')
+            if [ -z "$HOST" ]; then
+              # fallback to name -> replica address
+              NAME=$($HOME/yc/bin/yc managed-postgresql host list --cluster-name "$CLUSTER_NAME" --format json | jq -r '.[0].name')
+              HOST=$($HOME/yc/bin/yc managed-postgresql host get --cluster-name "$CLUSTER_NAME" --name "$NAME" --format json | jq -r '.replica_addresses[0].address // empty')
+            fi
+            echo "host=$HOST" >> $GITHUB_OUTPUT
+            echo "app_user=$PG_APP_USER" >> $GITHUB_OUTPUT
+            echo "app_db=$PG_APP_DB" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Ensure app database exists
+        if: always()
+        env:
+          CLUSTER_NAME: kamhub-pg
+          PG_APP_DB: kamhub
+          PG_APP_USER: kamhub_user
+        run: |
+          set -e
+          if $HOME/yc/bin/yc managed-postgresql cluster get --name "$CLUSTER_NAME" >/dev/null 2>&1; then
+            if ! $HOME/yc/bin/yc managed-postgresql database get --cluster-name "$CLUSTER_NAME" --name "$PG_APP_DB" >/dev/null 2>&1; then
+              $HOME/yc/bin/yc managed-postgresql database create --cluster-name "$CLUSTER_NAME" --name "$PG_APP_DB" --owner "$PG_APP_USER"
+            fi
+          fi
+
+      - name: Inventory cluster (databases, users, tables)
+        id: inventory
+        env:
+          CLUSTER_NAME: kamhub-pg
+          HOST: ${{ steps.pg.outputs.host }}
+          PG_APP_DB: ${{ steps.pg.outputs.app_db }}
+          PG_APP_USER: ${{ steps.pg.outputs.app_user }}
+          PG_APP_PASSWORD: ${{ steps.pg.outputs.app_password || secrets.PG_APP_PASSWORD }}
+        run: |
+          set -e
+          echo "::group::YC Lists"
+          $HOME/yc/bin/yc managed-postgresql cluster list
+          $HOME/yc/bin/yc managed-postgresql database list --cluster-name "$CLUSTER_NAME" || true
+          $HOME/yc/bin/yc managed-postgresql user list --cluster-name "$CLUSTER_NAME" || true
+          echo "::endgroup::"
+          SUMMARY="YC Managed PG Inventory\n\n"
+          SUMMARY+=$($HOME/yc/bin/yc managed-postgresql cluster get --name "$CLUSTER_NAME" --format json | jq -r '. | {name:.name,id:.id,environment:.environment,createdAt:.created_at,state:.status,version:.config.version}|tojson')
+          SUMMARY+="\n\nDatabases:\n"
+          SUMMARY+=$($HOME/yc/bin/yc managed-postgresql database list --cluster-name "$CLUSTER_NAME" --format json | jq -r '.[].name' | sed 's/^/- /')
+          SUMMARY+="\n\nUsers:\n"
+          SUMMARY+=$($HOME/yc/bin/yc managed-postgresql user list --cluster-name "$CLUSTER_NAME" --format json | jq -r '.[].name' | sed 's/^/- /')
+          echo -e "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          # Try psql tables listing if public IP and password available
+          if [ -n "$HOST" ] && [ -n "$PG_APP_PASSWORD" ]; then
+            echo "\npsql: listing tables in $PG_APP_DB (public schema)" >> "$GITHUB_STEP_SUMMARY"
+            PGPASSWORD="$PG_APP_PASSWORD" psql -h "$HOST" -p 6432 -U "$PG_APP_USER" -d "$PG_APP_DB" -tAc "\\dt public.*" >> "$GITHUB_STEP_SUMMARY" || true
+          fi
+          # Write to repo file
+          {
+            echo "# YC Managed PostgreSQL Inventory"
+            echo
+            echo "Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo
+            echo '```'
+            echo "$SUMMARY"
+            echo
+            if [ -n "$HOST" ]; then
+              echo "HOST: $HOST"
+            fi
+            echo '```'
+          } > DB_INVENTORY.md
+
+      - name: Commit inventory to repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add DB_INVENTORY.md
+          git commit -m "chore(db): update DB_INVENTORY.md (Managed PG inventory)" || echo "No changes to commit"
+          git push origin HEAD
