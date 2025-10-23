@@ -1,13 +1,15 @@
 "use client";
 import React, { useState } from 'react';
 
-export default function ImportAdminPage() {
-  const [jsonText, setJsonText] = useState('{
+const defaultJson = `{
   "routes": [],
   "vehicles": [],
   "drivers": [],
   "schedules": []
-}');
+}`;
+
+export default function ImportAdminPage() {
+  const [jsonText, setJsonText] = useState(defaultJson);
   const [status, setStatus] = useState<string | null>(null);
 
   async function submit(e: React.FormEvent) {

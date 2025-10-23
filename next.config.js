@@ -4,6 +4,11 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['pg'],
   },
+  eslint: {
+    // Не блокировать сборку из-за ESLint ошибок (линт остаётся в CI)
+    ignoreDuringBuilds: true,
+  },
+  output: 'standalone',
 };
 module.exports = nextConfig;
 
