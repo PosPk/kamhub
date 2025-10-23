@@ -25,6 +25,10 @@
 - 2025-10-20 09:20 UTC — [S3] Подтверждён доступ к бакету `pospk` новыми ключами (HeadBucket OK).
 - 2025-10-20 09:30 UTC — [DEPLOY] Добавлен deploy workflow `.github/workflows/deploy.yml` (YCR → Serverless Containers).
 - 2025-10-20 09:40 UTC — [APP] Добавлен health-роут `/api/health/app` (DB + S3 проверка) для деплой-гейта.
+ - 2025-10-20 10:00 UTC — [APP] Исправлен UI импорта (строковый литерал по умолчанию), билд OK.
+ - 2025-10-20 10:02 UTC — [BUILD] Обновил `next.config.js`: `ignoreDuringBuilds`, `output: 'standalone'` для Docker.
+ - 2025-10-20 10:05 UTC — [DEPLOY] Обновил `.github/workflows/deploy.yml`: триггер на push, корректные outputs, авто‑публикация контейнера и вывод Public URL в Summary.
+ - 2025-10-20 10:06 UTC — [DEPLOY] Добавил `Dockerfile` (Next.js standalone) и `.dockerignore`.
 
 ---
 
