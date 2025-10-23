@@ -21,6 +21,9 @@
 - 2025-10-20 08:35 UTC — [APP] Добавил UI формы: `hub/transfer-operator/{routes,vehicles,drivers,schedules}` + навигация.
 - 2025-10-20 08:40 UTC — [DEPLOY] Добавлен workflow для миграции секретов в Yandex Lockbox (`.github/workflows/lockbox-migrate.yml`).
 - 2025-10-20 08:50 UTC — [STATUS] Прогресс по “Трансферы (max)” добавлен.
+- 2025-10-20 09:10 UTC — [APP] Добавлен UI импорта данных `hub/transfer-operator/import` и API `/api/transfers/admin/import`.
+- 2025-10-20 09:20 UTC — [S3] Подтверждён доступ к бакету `pospk` новыми ключами (HeadBucket OK).
+- 2025-10-20 09:30 UTC — [DEPLOY] Добавлен deploy workflow `.github/workflows/deploy.yml` (YCR → Serverless Containers).
 
 ---
 
@@ -43,10 +46,9 @@
 
 ## Yandex Cloud — текущее состояние
 - Object Storage:
-  - Доступ проверен (ListBuckets OK), виден бакет: `posservis`
+  - Доступ проверен (ListBuckets OK), виден бакет: `pospk` (HeadBucket OK), ранее `posservis`
   - Endpoint: `https://storage.yandexcloud.net`, Регион: `ru-central1`
-  - Сервисный аккаунт: `kamhab-deployer` (статические S3‑ключи)
-  - HeadBucket ранее давал 403 (недостаточно прав на бакет) — требуется убедиться, что у SA есть `storage.viewer`/`storage.admin` на бакет/папку
+  - Сервисный аккаунт: `kamhub-deployer`/`kamhab-deployer` (статические S3‑ключи)
 - План миграции ассетов:
   - Выгрузка бинарных полей → загрузка в S3 → сохранение URL в БД → удаление бинарных столбцов
 - Health‑скрипты в репо:
@@ -67,10 +69,10 @@
   - Hold/lock мест c TTL и атомарностью (транзакции); отмены/возвраты; SLA‑окна
   - Уведомления (SMS/Email/Telegram) с ретраями; платежи — полный lifecycle
   - Дашборд оператора: загрузка, SLA, отмены, выручка
-- Секреты: единый источник — GitHub Secrets; доступы на прод — через GitHub Environments
+- Секреты: единый источник — GitHub Secrets; доступы на прод — через GitHub Environments/Lockbox
 
 ## Прогресс по “Трансферы (max)” (обновлять по мере выполнения)
-- Инфраструктура (Y.CLOUD, секреты, S3): 45% — в процессе деплой‑джоба; Lockbox — готов workflow
+- Инфраструктура (Y.CLOUD, секреты, S3): 55% — в процессе деплой‑джоба; Lockbox — готов workflow
 - Данные/миграции (Postgres/PostGIS): 25% — в процессе seat holds/аудит/ST_DWithin
 - Матчер v2 (приоритет — рейтинг): 30% — в процессе веса/штрафы/кэш ETA/профилировка
 - Бронирование (hold/lock+SLA): 20% — в процессе hold/TTL/идемпотентность
@@ -83,8 +85,21 @@
 - Тестирование: 30% — в процессе интеграция/E2E/нагрузка
 - Деплой в Яндекс (прод): 15% — в процессе настройка джоба, health‑чеки
 
-## Шаблон записи (для последующих апдейтов)
-- YYYY-MM-DD HH:MM UTC — [YC] действие в консоли/CLI: что сделано, где (Cloud/Folder/Service)
-- YYYY-MM-DD HH:MM UTC — [SECRETS] обновление ключей: какие ключи/где хранятся
-- YYYY-MM-DD HH:MM UTC — [DEPLOY] изменение CI/CD/докер/контейнер
-- YYYY-MM-DD HH:MM UTC — [APP] изменение логики/схем/эндпоинтов
+---
+
+## Расширенный отчёт (2025-10-20 09:35 UTC)
+- Чем заменяем Vercel
+  - Хостинг/рантайм: Yandex Cloud Serverless Containers (+ ALB, Certificate Manager)
+  - Контейнеры: Yandex Container Registry
+  - CI/CD: GitHub Actions (build/test/deploy), позже SourceCraft при необходимости
+  - Секреты и конфиги: GitHub Secrets + Yandex Lockbox (workflow для миграции готов)
+  - Объектное хранилище: Yandex Object Storage (бакет `pospk`), CDN — при необходимости
+  - DNS/TLS: Cloud DNS + Certificate Manager
+  - Наблюдаемость: Yandex Monitoring/Logging
+- Слепые зоны/проверки
+  - S3: помимо HeadBucket — Put/Get/Delete и List по префиксам (будет добавлено и проверено)
+  - БД: конкурентные сценарии брони (идемпотентность/транзакции/уникальные ключи)
+  - Матчер: нормализация признаков, валидация весов на реальных данных
+  - Платежи: вебхуки/идемпотентность/rollback; уведомления — ретраи и логи
+- Итоги
+  - Блокеры по S3 сняты; готовим деплой; админ‑ввод данных запущен; план “max” согласован и в работе.
