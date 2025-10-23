@@ -281,6 +281,104 @@ const migration005: Migration = {
   }
 };
 
+// Миграция 006: Добавление таблицы operators и схем трансферов и платежей
+const migration006: Migration = {
+  version: '006',
+  name: 'add_operators_and_transfer_schemas',
+  up: async () => {
+    // Расширение для UUID (на случай отсутствия)
+    await query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
+
+    // Базовая таблица операторов, требуемая схемами трансферов/вьюхами
+    await query(`
+      CREATE TABLE IF NOT EXISTS operators (
+        id UUID PRIMARY KEY,
+        name TEXT NOT NULL,
+        phone TEXT,
+        email TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `);
+
+    // Сид с тестовым оператором, используемым в демо-данных схемы трансферов
+    await query(`
+      INSERT INTO operators (id, name, phone, email)
+      VALUES ('550e8400-e29b-41d4-a716-446655440000', 'Камчатка Трансфер', '+7-4152-123-456', 'info@kamchatka-transfer.ru')
+      ON CONFLICT (id) DO NOTHING
+    `);
+
+    // Схема трансферов
+    const transferSchema = readFileSync(join(process.cwd(), 'lib', 'database', 'transfer_schema.sql'), 'utf8');
+    await query(transferSchema);
+
+    // Схема платежей трансферов
+    const paymentsSchema = readFileSync(join(process.cwd(), 'lib', 'database', 'transfer_payments_schema.sql'), 'utf8');
+    await query(paymentsSchema);
+
+    console.log('✅ Migration 006: Operators + transfer schemas added');
+  },
+  down: async () => {
+    // Дропаем представления, затем таблицы в корректном порядке
+    await query('DROP VIEW IF EXISTS transfer_payments_stats');
+    await query('DROP VIEW IF EXISTS transfer_payments_full');
+    await query('DROP VIEW IF EXISTS operator_transfer_stats');
+    await query('DROP VIEW IF EXISTS transfer_full_info');
+
+    const tables = [
+      'transfer_financial_operations',
+      'transfer_refunds',
+      'transfer_commissions',
+      'transfer_payments',
+      'transfer_notifications',
+      'transfer_reviews',
+      'transfer_stops',
+      'transfer_bookings',
+      'transfer_schedules',
+      'transfer_drivers',
+      'transfer_vehicles',
+      'transfer_routes',
+    ];
+
+    for (const t of tables) {
+      await query(`DROP TABLE IF EXISTS ${t} CASCADE`);
+    }
+
+    await query('DROP TABLE IF EXISTS operators CASCADE');
+
+    console.log('✅ Migration 006: Operators + transfer schemas dropped');
+  }
+};
+
+// Миграция 007: Схема системы лояльности
+const migration007: Migration = {
+  version: '007',
+  name: 'add_loyalty_schema',
+  up: async () => {
+    const loyaltySchema = readFileSync(join(process.cwd(), 'lib', 'database', 'loyalty_schema.sql'), 'utf8');
+    await query(loyaltySchema);
+    console.log('✅ Migration 007: Loyalty schema added');
+  },
+  down: async () => {
+    // Дропаем представления, затем таблицы
+    await query('DROP VIEW IF EXISTS promo_code_stats');
+    await query('DROP VIEW IF EXISTS user_loyalty_stats');
+
+    const tables = [
+      'loyalty_transactions',
+      'promo_code_usage',
+      'promo_codes',
+      'referrals',
+      'loyalty_levels',
+    ];
+
+    for (const t of tables) {
+      await query(`DROP TABLE IF EXISTS ${t} CASCADE`);
+    }
+
+    console.log('✅ Migration 007: Loyalty schema dropped');
+  }
+};
+
 // Список всех миграций
 const migrations: Migration[] = [
   migration001,
@@ -288,6 +386,8 @@ const migrations: Migration[] = [
   migration003,
   migration004,
   migration005,
+  migration006,
+  migration007,
 ];
 
 // Выполнение миграций
