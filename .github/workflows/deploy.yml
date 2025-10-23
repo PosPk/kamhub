@@ -1,11 +1,20 @@
 name: Deploy
 
 on:
+  push:
+    branches:
+      - cursor/scan-repo-for-errors-and-secrets-1030
   workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -23,12 +32,16 @@ jobs:
           password: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
 
       - name: Build and push image
+        id: meta
+        env:
+          YC_REGISTRY_ID: ${{ secrets.YC_REGISTRY_ID }}
         run: |
-          IMAGE=cr.yandex/${{ secrets.YC_REGISTRY_ID }}/kamhub:${{ github.sha }}
+          set -e
+          IMAGE="cr.yandex/${YC_REGISTRY_ID}/kamhub:${GITHUB_SHA}"
           echo "Building $IMAGE"
           docker build -t "$IMAGE" .
           docker push "$IMAGE"
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
 
   deploy-serverless:
     needs: build-and-push
@@ -39,7 +52,7 @@ jobs:
         run: |
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
           echo "$HOME/yc/bin" >> $GITHUB_PATH
-          yc version
+          "$HOME/yc/bin/yc" version
       - name: Configure yc
         env:
           YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
@@ -47,16 +60,25 @@ jobs:
           YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
         run: |
           echo "$YC_SERVICE_ACCOUNT_KEY" > key.json
-          yc config set service-account-key key.json
-          yc config set cloud-id "$YC_CLOUD_ID"
-          yc config set folder-id "$YC_FOLDER_ID"
+          "$HOME/yc/bin/yc" config set service-account-key key.json
+          "$HOME/yc/bin/yc" config set cloud-id "$YC_CLOUD_ID"
+          "$HOME/yc/bin/yc" config set folder-id "$YC_FOLDER_ID"
       - name: Deploy Serverless Container
         env:
           SERVICE_NAME: kamhub-api
-          IMAGE: ${{ needs.build-and-push.outputs.IMAGE || env.IMAGE }}
+          IMAGE: ${{ needs.build-and-push.outputs.image }}
+          YC_SA_ID: ${{ secrets.YC_SA_ID }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
         run: |
           set -e
           NAME="$SERVICE_NAME"
+          yc() { "$HOME/yc/bin/yc" "$@"; }
           if ! yc serverless container get --name "$NAME" >/dev/null 2>&1; then
             yc serverless container create --name "$NAME"
           fi
@@ -65,6 +87,10 @@ jobs:
             --image "$IMAGE" \
             --cores 1 --memory 512MB --concurrency 8 \
             --execution-timeout 30s \
-            --service-account-id ${{ secrets.YC_SA_ID }} \
-            --environment "S3_ENDPOINT=${{ secrets.S3_ENDPOINT }},S3_REGION=${{ secrets.S3_REGION }},S3_BUCKET=${{ secrets.S3_BUCKET }},AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }},AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }},DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_SECRET=${{ secrets.JWT_SECRET }}"
+            --service-account-id "$YC_SA_ID" \
+            --environment "S3_ENDPOINT=$S3_ENDPOINT,S3_REGION=$S3_REGION,S3_BUCKET=$S3_BUCKET,AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY,DATABASE_URL=$DATABASE_URL,JWT_SECRET=$JWT_SECRET,NODE_ENV=production,NEXT_TELEMETRY_DISABLED=1"
+          # Публикуем контейнер и выводим URL
+          yc serverless container add-access-binding --name "$NAME" --role serverless.containers.invoker --subject system:allUsers || true
+          URL=$(yc serverless container get --name "$NAME" --format json | python3 -c "import sys,json;print(json.load(sys.stdin)['url'])")
+          echo "Public URL: $URL" >> "$GITHUB_STEP_SUMMARY"
 
