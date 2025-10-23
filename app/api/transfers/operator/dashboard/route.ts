@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
 import { TransferOperatorDashboard, TransferOperatorStats } from '@/types/transfer';
-import { config } from '@/lib/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,9 +28,9 @@ export async function GET(request: NextRequest) {
         FROM operators o
         LEFT JOIN transfer_vehicles v ON o.id = v.operator_id AND v.is_active = true
         LEFT JOIN transfer_drivers d ON o.id = d.operator_id AND d.is_active = true
-        LEFT JOIN transfer_routes r ON o.id = r.id AND r.is_active = true
-        LEFT JOIN transfer_schedules s ON v.id = s.vehicle_id AND s.is_active = true
-        LEFT JOIN transfer_bookings b ON s.id = b.schedule_id
+        LEFT JOIN transfer_routes r ON r.is_active = true
+        LEFT JOIN transfer_schedules s ON s.vehicle_id = v.id AND s.is_active = true
+        LEFT JOIN transfer_bookings b ON b.schedule_id = s.id
         WHERE o.id = $1
       `;
 
@@ -74,9 +73,9 @@ export async function GET(request: NextRequest) {
                COUNT(b.id) as total_bookings,
                COALESCE(AVG(br.rating), 0) as avg_rating
         FROM transfer_drivers d
-        LEFT JOIN transfer_schedules s ON d.id = s.driver_id AND s.is_active = true
-        LEFT JOIN transfer_bookings b ON s.id = b.schedule_id
-        LEFT JOIN transfer_reviews br ON d.id = br.driver_id
+        LEFT JOIN transfer_schedules s ON s.driver_id = d.id AND s.is_active = true
+        LEFT JOIN transfer_bookings b ON b.schedule_id = s.id
+        LEFT JOIN transfer_reviews br ON br.driver_id = d.id
         WHERE d.operator_id = $1 AND d.is_active = true
         GROUP BY d.id
         ORDER BY d.created_at DESC
@@ -121,8 +120,7 @@ export async function GET(request: NextRequest) {
         JOIN transfer_routes r ON s.route_id = r.id
         JOIN transfer_vehicles v ON s.vehicle_id = v.id
         JOIN transfer_drivers d ON s.driver_id = d.id
-        WHERE s.operator_id = $1 AND s.is_active = true
-        AND s.departure_time >= NOW()::time
+        WHERE v.operator_id = $1 AND s.is_active = true
         ORDER BY s.departure_time ASC
         LIMIT 10
       `;
