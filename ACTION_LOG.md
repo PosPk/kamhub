@@ -24,6 +24,7 @@
 - 2025-10-20 09:10 UTC — [APP] Добавлен UI импорта данных `hub/transfer-operator/import` и API `/api/transfers/admin/import`.
 - 2025-10-20 09:20 UTC — [S3] Подтверждён доступ к бакету `pospk` новыми ключами (HeadBucket OK).
 - 2025-10-20 09:30 UTC — [DEPLOY] Добавлен deploy workflow `.github/workflows/deploy.yml` (YCR → Serverless Containers).
+- 2025-10-20 09:40 UTC — [APP] Добавлен health-роут `/api/health/app` (DB + S3 проверка) для деплой-гейта.
 
 ---
 
@@ -87,19 +88,16 @@
 
 ---
 
-## Расширенный отчёт (2025-10-20 09:35 UTC)
+## Расширенный отчёт (2025-10-20 09:40 UTC)
 - Чем заменяем Vercel
   - Хостинг/рантайм: Yandex Cloud Serverless Containers (+ ALB, Certificate Manager)
-  - Контейнеры: Yandex Container Registry
-  - CI/CD: GitHub Actions (build/test/deploy), позже SourceCraft при необходимости
-  - Секреты и конфиги: GitHub Secrets + Yandex Lockbox (workflow для миграции готов)
-  - Объектное хранилище: Yandex Object Storage (бакет `pospk`), CDN — при необходимости
-  - DNS/TLS: Cloud DNS + Certificate Manager
-  - Наблюдаемость: Yandex Monitoring/Logging
+  - Контейнеры: YCR
+  - CI/CD: GitHub Actions; позже SourceCraft при необходимости
+  - Секреты/конфиги: GitHub Secrets + Yandex Lockbox
+  - Объектное хранилище: Yandex Object Storage (pospk)
+  - DNS/TLS/наблюдаемость: Cloud DNS, Certificate Manager, Monitoring/Logging
 - Слепые зоны/проверки
-  - S3: помимо HeadBucket — Put/Get/Delete и List по префиксам (будет добавлено и проверено)
-  - БД: конкурентные сценарии брони (идемпотентность/транзакции/уникальные ключи)
-  - Матчер: нормализация признаков, валидация весов на реальных данных
-  - Платежи: вебхуки/идемпотентность/rollback; уведомления — ретраи и логи
-- Итоги
-  - Блокеры по S3 сняты; готовим деплой; админ‑ввод данных запущен; план “max” согласован и в работе.
+  - S3 Put/Get/Delete по префиксам, листинг — next
+  - БД конкурентная бронь — идемпотентность/транзакции — next
+  - Матчер веса — нормализация признаков — next
+
