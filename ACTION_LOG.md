@@ -29,6 +29,10 @@
  - 2025-10-20 10:02 UTC — [BUILD] Обновил `next.config.js`: `ignoreDuringBuilds`, `output: 'standalone'` для Docker.
  - 2025-10-20 10:05 UTC — [DEPLOY] Обновил `.github/workflows/deploy.yml`: триггер на push, корректные outputs, авто‑публикация контейнера и вывод Public URL в Summary.
  - 2025-10-20 10:06 UTC — [DEPLOY] Добавил `Dockerfile` (Next.js standalone) и `.dockerignore`.
+ - 2025-10-20 10:20 UTC — [DB] Добавлена схема `transfer_seat_holds` (TTL холды) + фун-ции/индексы.
+ - 2025-10-20 10:25 UTC — [DB] ALTER для `transfer_drivers`: `experience_years`, `working_hours`, `current_location` (+GiST индекс).
+ - 2025-10-20 10:30 UTC — [API] Роуты холдов: `/api/transfers/holds/{create,confirm,cancel}`.
+ - 2025-10-20 10:35 UTC — [UI] Страница `hub/transfer-operator/holds` для ручного теста холдов.
 
 ---
 
