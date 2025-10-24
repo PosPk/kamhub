@@ -1,0 +1,71 @@
+name: DB - Apply Transfer Schema Migrations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/scan-repo-for-errors-and-secrets-1030
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install prerequisites (yc, psql, jq)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq postgresql-client
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
+          echo "$HOME/yc/bin" >> $GITHUB_PATH
+          $HOME/yc/bin/yc version
+
+      - name: Configure yc
+        env:
+          YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          set -e
+          echo "$YC_SERVICE_ACCOUNT_KEY" > key.json
+          $HOME/yc/bin/yc config set service-account-key key.json
+          $HOME/yc/bin/yc config set cloud-id "$YC_CLOUD_ID"
+          $HOME/yc/bin/yc config set folder-id "$YC_FOLDER_ID"
+
+      - name: Resolve Managed PG host
+        id: pg
+        env:
+          CLUSTER_NAME: kamhub-pg
+        run: |
+          set -e
+          HOST=$($HOME/yc/bin/yc managed-postgresql host list --cluster-name "$CLUSTER_NAME" --format json | jq -r '[.[] | select(.assign_public_ip==true)][0].public_ip_address // empty')
+          if [ -z "$HOST" ]; then
+            NAME=$($HOME/yc/bin/yc managed-postgresql host list --cluster-name "$CLUSTER_NAME" --format json | jq -r '.[0].name')
+            HOST=$($HOME/yc/bin/yc managed-postgresql host get --cluster-name "$CLUSTER_NAME" --name "$NAME" --format json | jq -r '.replica_addresses[0].address // empty')
+          fi
+          echo "host=$HOST" >> $GITHUB_OUTPUT
+
+      - name: Apply SQL schema (transfer + holds + drivers geo + payments)
+        env:
+          HOST: ${{ steps.pg.outputs.host }}
+          PGUSER: ${{ secrets.PG_APP_USER || 'kamhub_user' }}
+          PGDATABASE: ${{ secrets.PG_APP_DB || 'kamhub' }}
+          PGPASSWORD: ${{ secrets.PG_APP_PASSWORD }}
+          PGSSLMODE: require
+        run: |
+          set -e
+          if [ -z "$PGPASSWORD" ]; then
+            echo "PG_APP_PASSWORD secret is required" >&2
+            exit 1
+          fi
+          psql -h "$HOST" -p 6432 -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 -f lib/database/transfer_schema.sql
+          psql -h "$HOST" -p 6432 -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 -f lib/database/transfer_holds_schema.sql
+          psql -h "$HOST" -p 6432 -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 -f lib/database/transfer_alter_add_driver_geo.sql
+          psql -h "$HOST" -p 6432 -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 -f lib/database/transfer_payments_schema.sql
+
+      - name: Summarize
+        run: |
+          echo "Transfer DB migrations applied to ${{ steps.pg.outputs.host }} / ${{ env.PGDATABASE }}" >> "$GITHUB_STEP_SUMMARY"
