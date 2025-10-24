@@ -48,6 +48,20 @@ jobs:
           fi
           echo "host=$HOST" >> $GITHUB_OUTPUT
 
+      - name: Ensure DB user password matches secret
+        if: ${{ steps.pg.outputs.host != '' }}
+        env:
+          CLUSTER_NAME: kamhub-pg
+          PGUSER: ${{ secrets.PG_APP_USER || 'kamhub_user' }}
+          PGPASSWORD: ${{ secrets.PG_APP_PASSWORD }}
+        run: |
+          set -e
+          if [ -z "$PGPASSWORD" ]; then
+            echo "PG_APP_PASSWORD secret is required" >&2
+            exit 1
+          fi
+          $HOME/yc/bin/yc managed-postgresql user update --cluster-name "$CLUSTER_NAME" --name "$PGUSER" --password "$PGPASSWORD"
+
       - name: Apply SQL schema (transfer + holds + drivers geo + payments)
         env:
           HOST: ${{ steps.pg.outputs.host }}
@@ -59,6 +73,10 @@ jobs:
           set -e
           if [ -z "$PGPASSWORD" ]; then
             echo "PG_APP_PASSWORD secret is required" >&2
+            exit 1
+          fi
+          if [ -z "$HOST" ]; then
+            echo "Managed PG host not resolved; ensure cluster 'kamhub-pg' exists and has public access" >&2
             exit 1
           fi
           psql -h "$HOST" -p 6432 -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 -f lib/database/transfer_schema.sql
