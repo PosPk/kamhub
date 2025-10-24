@@ -1,0 +1,44 @@
+name: docker-ycr
+on:
+  push:
+    branches: [ main, chore/add-yc-health-workflow ]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node (for build cache keys)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Login to Yandex Container Registry
+        env:
+          YC_OAUTH_TOKEN: ${{ secrets.YC_OAUTH_TOKEN }}
+        run: |
+          echo "$YC_OAUTH_TOKEN" | docker login --username iam --password-stdin cr.yandex
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: cr.yandex/${{ secrets.YCR_REGISTRY }}/${{ secrets.YCR_REPO }}/kamhub
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

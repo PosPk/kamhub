@@ -1,0 +1,46 @@
+name: deploy-vm
+on:
+  workflow_dispatch:
+    inputs:
+      vm_host:
+        description: 'VM SSH host (user@ip)'
+        required: true
+      env_file_path:
+        description: 'Env file path on VM (e.g., /etc/kamhub.env)'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to YCR
+        env:
+          YC_OAUTH_TOKEN: ${{ secrets.YC_OAUTH_TOKEN }}
+        run: |
+          echo "$YC_OAUTH_TOKEN" | docker login --username iam --password-stdin cr.yandex
+
+      - name: Select image
+        id: img
+        run: |
+          IMAGE="cr.yandex/${{ secrets.YCR_REGISTRY }}/${{ secrets.YCR_REPO }}/kamhub:latest"
+          echo "image=$IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Copy compose (optional)
+        if: false
+        run: echo 'skipped'
+
+      - name: Deploy on VM via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ github.event.inputs.vm_host }}
+          username: ${{ secrets.VM_SSH_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            set -e
+            sudo docker pull ${{ steps.img.outputs.image }}
+            sudo docker rm -f kamhub || true
+            sudo docker run -d --name kamhub -p 80:8080 --env-file ${{ github.event.inputs.env_file_path }} ${{ steps.img.outputs.image }}
+            sleep 2
+            curl -sS -m 15 http://127.0.0.1/api/health/db || true

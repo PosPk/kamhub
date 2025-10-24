@@ -1,6 +1,5 @@
 # 🏔️ Kamchatour Hub - Экосистема туризма Камчатки
 
-[![Deploy Status](https://img.shields.io/badge/Deploy-Vercel-green)](https://kamhub-tq9irro7s-pospks-projects.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-14.2.15-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4.5-blue)](https://www.typescriptlang.org/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4.10-38B2AC)](https://tailwindcss.com/)
@@ -22,21 +21,20 @@ Kamchatour Hub - это комплексная экосистема для ту�
 
 ## 🚀 **БЫСТРЫЙ СТАРТ**
 
-### **Деплой на Vercel**
+### **Деплой в Yandex Cloud (контейнер)**
 
 ```bash
-# Клонируйте репозиторий
-git clone https://github.com/PosPk/kamhub.git
-cd kamhub
+# Сборка образа
+docker build -t cr.yandex/<registry>/<repo>/kamhub:latest .
 
-# Установите зависимости
-npm install
+# Логин в YCR и push
+yc iam create-token | docker login --username iam --password-stdin cr.yandex
+docker push cr.yandex/<registry>/<repo>/kamhub:latest
 
-# Настройте переменные окружения
-cp .env.example .env.local
-
-# Задеплойте на Vercel
-vercel --prod
+# Запуск на ВМ
+ssh user@vm "docker pull cr.yandex/<registry>/<repo>/kamhub:latest && \
+  docker rm -f kamhub || true && \
+  docker run -d --name kamhub -p 80:8080 --env-file /etc/kamhub.env cr.yandex/<registry>/<repo>/kamhub:latest"
 ```
 
 ### **Локальная разработка**
@@ -289,22 +287,14 @@ npm run migrate:status
 
 ## 🚀 **ДЕПЛОЙ**
 
-### **Vercel (рекомендуется)**
-```bash
-# Установите Vercel CLI
-npm i -g vercel
+### **CI/CD (GitHub Actions → YCR → VM/Serverless)**
+См. workflows: сборка Docker-образа, push в YCR, деплой на ВМ через SSH.
 
-# Деплой
-vercel --prod
-```
-
-### **Docker**
+### **Docker (локально)**
 ```bash
-# Сборка образа
 docker build -t kamhub .
-
-# Запуск контейнера
-docker run -p 3000:3000 kamhub
+docker run -p 8080:8080 --env-file .env.local kamhub
+open http://localhost:8080
 ```
 
 ## 📱 **МОБИЛЬНАЯ ВЕРСИЯ**
@@ -390,4 +380,4 @@ MIT License - см. файл [LICENSE](LICENSE)
 
 **Сделано с ❤️ для Камчатки** 🏔️
 
-[![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PosPk/kamhub)
+
