@@ -33,6 +33,7 @@
  - 2025-10-20 10:25 UTC — [DB] ALTER для `transfer_drivers`: `experience_years`, `working_hours`, `current_location` (+GiST индекс).
  - 2025-10-20 10:30 UTC — [API] Роуты холдов: `/api/transfers/holds/{create,confirm,cancel}`.
  - 2025-10-20 10:35 UTC — [UI] Страница `hub/transfer-operator/holds` для ручного теста холдов.
+ - 2025-10-20 10:50 UTC — [DB] Триггернуто применение миграций (provision + migrate) через GitHub Actions.
 
 ---
 
