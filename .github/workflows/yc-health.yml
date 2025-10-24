@@ -1,0 +1,37 @@
+name: yc-health
+on:
+  workflow_dispatch:
+
+jobs:
+  yc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yc
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
+          echo "$HOME/yc/bin" >> $GITHUB_PATH
+
+      - name: Auth Yandex Cloud
+        env:
+          YC_SA_KEY_JSON: ${{ secrets.YC_SA_KEY_JSON }}
+          YC_OAUTH_TOKEN: ${{ secrets.YC_OAUTH_TOKEN }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          if [ -n "$YC_SA_KEY_JSON" ]; then
+            echo "$YC_SA_KEY_JSON" > sa-key.json
+            yc init --service-account-key sa-key.json --cloud-id "$YC_CLOUD_ID" --folder-id "$YC_FOLDER_ID"
+          else
+            yc config set token "$YC_OAUTH_TOKEN"
+            yc config set cloud-id "$YC_CLOUD_ID"
+            yc config set folder-id "$YC_FOLDER_ID"
+          fi
+          yc config list
+
+      - name: Sanity checks
+        run: |
+          yc compute instance list --format table || true
+          yc container registry list --format table || true
+          yc container registry image list --limit 5 --format table || true
