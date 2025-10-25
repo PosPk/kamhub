@@ -1,0 +1,50 @@
+name: IaC - Apply VPC Security Groups
+
+on:
+  push:
+    branches:
+      - cursor/scan-repo-for-errors-and-secrets-1030
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tf-apply-sg:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/terraform
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.6
+
+      - name: Write SA key and export YC env
+        env:
+          YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+          YC_ZONE: ${{ secrets.YC_ZONE || 'ru-central1-a' }}
+        run: |
+          set -e
+          echo "$YC_SERVICE_ACCOUNT_KEY" > $GITHUB_WORKSPACE/key.json
+          echo "YC_SERVICE_ACCOUNT_KEY_FILE=$GITHUB_WORKSPACE/key.json" >> $GITHUB_ENV
+          echo "YC_CLOUD_ID=$YC_CLOUD_ID" >> $GITHUB_ENV
+          echo "YC_FOLDER_ID=$YC_FOLDER_ID" >> $GITHUB_ENV
+          echo "YC_ZONE=$YC_ZONE" >> $GITHUB_ENV
+          echo "TF_VAR_cloud_id=$YC_CLOUD_ID" >> $GITHUB_ENV
+          echo "TF_VAR_folder_id=$YC_FOLDER_ID" >> $GITHUB_ENV
+          echo "TF_VAR_zone=$YC_ZONE" >> $GITHUB_ENV
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Plan
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -input=false -auto-approve tfplan

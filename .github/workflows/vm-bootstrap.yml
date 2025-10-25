@@ -1,0 +1,148 @@
+name: VM - Bootstrap and Start App
+
+on:
+  push:
+    branches:
+      - cursor/scan-repo-for-errors-and-secrets-1030
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  vm-bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yc CLI and tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq openssh-client curl
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
+          echo "$HOME/yc/bin" >> $GITHUB_PATH
+          $HOME/yc/bin/yc version
+
+      - name: Configure yc
+        env:
+          YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          set -e
+          echo "$YC_SERVICE_ACCOUNT_KEY" > key.json
+          $HOME/yc/bin/yc config set service-account-key key.json
+          $HOME/yc/bin/yc config set cloud-id "$YC_CLOUD_ID"
+          $HOME/yc/bin/yc config set folder-id "$YC_FOLDER_ID"
+
+      - name: Resolve VM and IP
+        id: vm
+        env:
+          VM_NAME: kamhub-api-vm
+          VM_IP: ''
+        run: |
+          set -e
+          IP="$VM_IP"
+          if [ -z "$IP" ]; then
+            # Try by name
+            IP=$($HOME/yc/bin/yc compute instance get --name "$VM_NAME" --format json | jq -r '.network_interfaces[0].primary_v4_address.one_to_one_nat.address // empty') || true
+          fi
+          if [ -z "$IP" ]; then
+            echo "VM IP not resolved" >&2
+            exit 1
+          fi
+          echo "ip=$IP" >> $GITHUB_OUTPUT
+          echo "VM external IP: $IP"
+
+      - name: Ensure Security Group (80/443/22) and attach to VM
+        env:
+          IP: ${{ steps.vm.outputs.ip }}
+        run: |
+          set -e
+          yc() { $HOME/yc/bin/yc "$@"; }
+          NAME=$(yc compute instance list --format json | jq -r --arg IP "$IP" '.[] | select(any(.network_interfaces[]; .primary_v4_address.one_to_one_nat.address==$IP)) | .name')
+          NET_ID=$(yc vpc network list --format json | jq -r '.[0].id')
+          SG_ID=$(yc vpc security-group list --format json | jq -r '.[] | select(.name=="kamhub-web") | .id')
+          if [ -z "$SG_ID" ]; then
+            SG_ID=$(yc vpc security-group create --name kamhub-web --network-id "$NET_ID" --format json | jq -r .id)
+            yc vpc security-group add-rule --id "$SG_ID" --direction ingress --protocol tcp --port 80  --v4-cidrs 0.0.0.0/0
+            yc vpc security-group add-rule --id "$SG_ID" --direction ingress --protocol tcp --port 443 --v4-cidrs 0.0.0.0/0
+            yc vpc security-group add-rule --id "$SG_ID" --direction ingress --protocol tcp --port 22  --v4-cidrs 0.0.0.0/0
+            yc vpc security-group add-rule --id "$SG_ID" --direction egress  --protocol any             --v4-cidrs 0.0.0.0/0
+          fi
+          yc compute instance update-network-interface --name "$NAME" --index 0 --security-group-ids "$SG_ID"
+
+      - name: Prepare SSH access
+        id: ssh
+        env:
+          IP: ${{ steps.vm.outputs.ip }}
+        run: |
+          set -e
+          ssh-keygen -t ed25519 -N '' -f ./ycvm_key
+          PUB=$(cat ./ycvm_key.pub)
+          $HOME/yc/bin/yc compute instance add-metadata --name kamhub-api-vm --metadata "ssh-keys=ubuntu:${PUB}"
+          echo "key=ycvm_key" >> $GITHUB_OUTPUT
+
+      - name: Resolve Managed PG host
+        id: pg
+        env:
+          CLUSTER_NAME: kamhub-pg
+        run: |
+          set -e
+          HOST=$($HOME/yc/bin/yc managed-postgresql host list --cluster-name "$CLUSTER_NAME" --format json | jq -r '[.[] | select(.assign_public_ip==true)][0].public_ip_address // empty')
+          if [ -z "$HOST" ]; then
+            NAME=$($HOME/yc/bin/yc managed-postgresql host list --cluster-name "$CLUSTER_NAME" --format json | jq -r '.[0].name')
+            HOST=$($HOME/yc/bin/yc managed-postgresql host get --cluster-name "$CLUSTER_NAME" --name "$NAME" --format json | jq -r '.replica_addresses[0].address // empty')
+          fi
+          echo "host=$HOST" >> $GITHUB_OUTPUT
+
+      - name: Start app container on VM
+        env:
+          IP: ${{ steps.vm.outputs.ip }}
+          SSH_KEY: ${{ steps.ssh.outputs.key }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PG_APP_USER: ${{ secrets.PG_APP_USER || 'kamhub_user' }}
+          PG_APP_DB: ${{ secrets.PG_APP_DB || 'kamhub' }}
+          PG_APP_PASSWORD: ${{ secrets.PG_APP_PASSWORD }}
+          PG_HOST: ${{ steps.pg.outputs.host }}
+        run: |
+          set -e
+          if [ -z "$PG_APP_PASSWORD" ]; then
+            echo "PG_APP_PASSWORD not set" >&2
+            exit 1
+          fi
+          DB_URL="postgresql://${PG_APP_USER}:${PG_APP_PASSWORD}@${PG_HOST}:6432/${PG_APP_DB}?sslmode=require"
+          ssh -o StrictHostKeyChecking=no -i "./${SSH_KEY}" ubuntu@"$IP" bash -lc "'
+            set -euxo pipefail
+            sudo apt-get update -y && sudo apt-get install -y docker.io ca-certificates curl jq || true
+            sudo systemctl enable --now docker || true
+            curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i \$HOME/yc -n || true
+            export PATH=\$HOME/yc/bin:\$PATH
+            TOKEN=\$(yc iam create-token)
+            echo \"\$TOKEN\" | sudo docker login --username iam --password-stdin cr.yandex
+            REPO=\$(yc container registry repository list --format json | jq -r \"([.[].name] | map(select(test(\\\\\"/kamhub$\\\\\"))) + ([.[0].name] // []))[0]\")
+            IMAGE=\$(yc container registry image list --repository-name \"\$REPO\" --limit 1 --format json | jq -r '.[0].name')
+            sudo docker pull \"\$IMAGE\"
+            sudo docker rm -f kamhub || true
+            sudo docker run -d --name kamhub -p 80:8080 \\
+              -e NODE_ENV=production -e NEXT_TELEMETRY_DISABLED=1 \\
+              -e S3_ENDPOINT='${S3_ENDPOINT}' -e S3_REGION='${S3_REGION}' -e S3_BUCKET='${S3_BUCKET}' \\
+              -e AWS_ACCESS_KEY_ID='${AWS_ACCESS_KEY_ID}' -e AWS_SECRET_ACCESS_KEY='${AWS_SECRET_ACCESS_KEY}' \\
+              -e JWT_SECRET='${JWT_SECRET}' -e DATABASE_URL='${DB_URL}' \\
+              \"\$IMAGE\"
+            sudo docker ps
+          '"
+
+      - name: Verify health
+        env:
+          IP: ${{ steps.vm.outputs.ip }}
+        run: |
+          set -e
+          echo "Checking http://$IP/api/health/app" | tee -a $GITHUB_STEP_SUMMARY
+          curl -sS -m 20 -w "\nHTTP_STATUS:%{http_code}\n" http://$IP/api/health/app | tee -a $GITHUB_STEP_SUMMARY

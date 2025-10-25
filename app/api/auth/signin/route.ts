@@ -6,8 +6,12 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Проверяем демо-пользователя
-    if (email === 'pospk@mail.ru' && password === 'Gr96Ww32') {
+    // Безопасный демо-логин (только при явном разрешении через переменные окружения)
+    const demoEmail = process.env.DEMO_USER_EMAIL;
+    const demoPassword = process.env.DEMO_USER_PASSWORD;
+    const demoEnabled = process.env.ENABLE_DEMO_LOGIN === 'true' && process.env.NODE_ENV !== 'production';
+
+    if (demoEnabled && demoEmail && demoPassword && email === demoEmail && password === demoPassword) {
       const demoUser = {
         id: 'demo_user_123',
         email,

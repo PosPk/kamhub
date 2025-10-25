@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     // Формируем SQL запрос с фильтрами
-    let whereConditions = ['t.is_active = true'];
-    let queryParams: any[] = [];
+    const whereConditions = ['t.is_active = true'];
+    const queryParams: any[] = [];
     let paramIndex = 1;
 
     if (activity) {

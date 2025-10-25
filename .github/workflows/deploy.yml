@@ -1,0 +1,119 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - cursor/scan-repo-for-errors-and-secrets-1030
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+
+      - name: Login to Yandex Cloud Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: cr.yandex
+          username: json_key
+          password: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+
+      - name: Build and push image
+        id: meta
+        env:
+          YC_REGISTRY_ID: ${{ secrets.YC_REGISTRY_ID }}
+        run: |
+          set -e
+          IMAGE="cr.yandex/${YC_REGISTRY_ID}/kamhub:${GITHUB_SHA}"
+          echo "Building $IMAGE"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+  deploy-compute:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install yc CLI
+        run: |
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i $HOME/yc -n
+          echo "$HOME/yc/bin" >> $GITHUB_PATH
+          "$HOME/yc/bin/yc" version
+      - name: Configure yc
+        env:
+          YC_SERVICE_ACCOUNT_KEY: ${{ secrets.YC_SERVICE_ACCOUNT_KEY }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          echo "$YC_SERVICE_ACCOUNT_KEY" > key.json
+          "$HOME/yc/bin/yc" config set service-account-key key.json
+          "$HOME/yc/bin/yc" config set cloud-id "$YC_CLOUD_ID"
+          "$HOME/yc/bin/yc" config set folder-id "$YC_FOLDER_ID"
+      - name: Create/Update Compute VM and run container
+        env:
+          IMAGE: ${{ needs.build-and-push.outputs.image }}
+          YC_SA_ID: ${{ secrets.YC_SA_ID }}
+          YC_ZONE: ${{ secrets.YC_ZONE || 'ru-central1-a' }}
+          SUBNET_NAME: ${{ secrets.YC_SUBNET_NAME || 'default-ru-central1-a' }}
+          S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+          S3_REGION: ${{ secrets.S3_REGION }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        run: |
+          set -e
+          yc() { "$HOME/yc/bin/yc" "$@"; }
+          NAME="kamhub-api-vm"
+          # Подготовим cloud-init
+          cat > cloud-init.yaml <<'CIYAML'
+          #cloud-config
+          package_update: true
+          packages:
+            - docker.io
+            - ca-certificates
+            - curl
+          runcmd:
+            - [ sh, -lc, "systemctl enable --now docker" ]
+            - [ sh, -lc, "curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -i /usr/local/yc -n" ]
+            - [ sh, -lc, "ln -sf /usr/local/yc/bin/yc /usr/local/bin/yc" ]
+            - [ sh, -lc, "TOKEN=\$(yc iam create-token) && echo \"\$TOKEN\" | docker login --username iam --password-stdin cr.yandex" ]
+            - [ sh, -lc, "docker pull ${IMAGE}" ]
+            - [ sh, -lc, "docker rm -f kamhub || true" ]
+            - [ sh, -lc, "docker run -d --name kamhub -p 80:8080 \"]
+            - [ sh, -lc, "  -e NODE_ENV=production -e NEXT_TELEMETRY_DISABLED=1 \"]
+            - [ sh, -lc, "  -e S3_ENDPOINT=${S3_ENDPOINT} -e S3_REGION=${S3_REGION} -e S3_BUCKET=${S3_BUCKET} \"]
+            - [ sh, -lc, "  -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \"]
+            - [ sh, -lc, "  -e DATABASE_URL=${DATABASE_URL} -e JWT_SECRET=${JWT_SECRET} \"]
+            - [ sh, -lc, "  ${IMAGE}" ]
+          CIYAML
+          # Удалим VM если существует
+          yc compute instance delete --name "$NAME" --quiet || true
+          # Создадим VM
+          yc compute instance create \
+            --name "$NAME" \
+            --zone "${YC_ZONE}" \
+            --cores 2 --memory 2GB \
+            --network-interface subnet-name="${SUBNET_NAME}",nat-ip-version=ipv4 \
+            --service-account-id "${YC_SA_ID}" \
+            --create-boot-disk image-folder-id=standard-images,image-family=ubuntu-2204-lts,type=network-ssd,size=20 \
+            --metadata-from-file user-data=cloud-init.yaml
+          # Выведем публичный IP
+          IP=$(yc compute instance get --name "$NAME" --format json | python3 -c "import sys,json;ni=json.load(sys.stdin)['network_interfaces'][0];print(ni['primary_v4_address']['one_to_one_nat']['address'])")
+          echo "Public IP: http://$IP" >> "$GITHUB_STEP_SUMMARY"
+

@@ -39,7 +39,8 @@ describe('Loyalty API Routes', () => {
         body: JSON.stringify({
           userId: 'test_user_123',
           promoCode: 'WELCOME10',
-          bookingId: 'test_booking_123'
+          bookingId: 'test_booking_123',
+          amount: 2000
         }),
         headers: {
           'Content-Type': 'application/json'

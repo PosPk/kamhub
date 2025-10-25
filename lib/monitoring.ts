@@ -216,10 +216,10 @@ export const errors = {
 };
 
 // Middleware для Next.js API routes
-export function withMonitoring(handler: Function) {
+export function withMonitoring<T extends (...args: any[]) => any>(handler: T) {
   return async (req: any, res: any) => {
     const startTime = Date.now();
-    const requestId = Math.random().toString(36).substr(2, 9);
+    const requestId = Math.random().toString(36).slice(2, 11);
 
     try {
       // Логируем начало запроса
