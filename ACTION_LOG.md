@@ -36,6 +36,7 @@
  - 2025-10-20 10:50 UTC — [DB] Триггернуто применение миграций (provision + migrate) через GitHub Actions.
  - 2025-10-20 11:10 UTC — [INFRA] Добавлены Terraform SG: `kamhub-web` (80/443), `kamhub-db` (6432 TEMP public).
  - 2025-10-20 11:12 UTC — [CI] Добавлен VM bootstrap workflow: SG attach, SSH key, запуск контейнера с DB_URL, health‑проверка.
+ - 2025-10-20 11:20 UTC — [CI] Триггернул запуск terraform-sg/db-migrate/vm-bootstrap через push (workflow_dispatch недоступен).
 
 ---
 
