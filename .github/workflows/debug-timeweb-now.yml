@@ -59,11 +59,22 @@ jobs:
           echo ""
           echo ""
           echo "=========================================="
-          echo "📋 НОВЫЕ ЛОГИ"
+          echo "🔨 BUILD LOGS"
           echo "=========================================="
           
-          # Получаем новые логи
-          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=runtime&limit=50" \
+          # Получаем build логи
+          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=build&limit=100" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
+            -H "Content-Type: application/json"
+          
+          echo ""
+          echo ""
+          echo "=========================================="
+          echo "📋 RUNTIME LOGS"
+          echo "=========================================="
+          
+          # Получаем runtime логи
+          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=runtime&limit=100" \
             -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
             -H "Content-Type: application/json"
           
