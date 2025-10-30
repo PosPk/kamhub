@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
 import { TransferBookingRequest, TransferBookingResponse } from '@/types/transfer';
-import { config } from '@/lib/config';
 import { smsService } from '@/lib/notifications/sms';
 import { emailService } from '@/lib/notifications/email';
 import { telegramService } from '@/lib/notifications/telegram';

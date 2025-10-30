@@ -108,7 +108,7 @@ export function isSeasonSuitable(tourSeasons: Season[], currentSeason: Season): 
 
 // Генерация случайного ID
 export function generateId(): string {
-  return Math.random().toString(36).substr(2, 9);
+  return Math.random().toString(36).slice(2, 11);
 }
 
 // Валидация email

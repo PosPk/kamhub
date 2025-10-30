@@ -289,7 +289,6 @@ function getWeatherRecommendations(condition: string | number, windSpeed: number
 // Функция для генерации прогноза
 function generateForecast(daily: any): any[] {
   const forecast = [];
-  const today = new Date();
 
   for (let i = 0; i < Math.min(7, daily.time.length); i++) {
     const date = new Date(daily.time[i]);
