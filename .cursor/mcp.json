@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "timeweb-mcp-server": {
+      "command": "node",
+      "args": ["tools/timeweb-mcp-server/dist/index.js"],
+      "env": {
+        "TIMEWEB_TOKEN": "CHANGE_ME"
+      }
+    }
+  }
+}
