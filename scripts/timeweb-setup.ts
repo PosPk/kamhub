@@ -15,6 +15,12 @@ import * as fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 
+// Helper для получения сообщения об ошибке
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
 interface TimewebConfig {
   apiToken: string;
   apiUrl: string;
@@ -66,7 +72,7 @@ class TimewebCloudSetup {
       console.log(`   Аккаунт зарегистрирован: ${response.status?.registered_at ? new Date(response.status.registered_at).toLocaleDateString() : 'N/A'}`);
       return true;
     } catch (error) {
-      console.error('❌ Ошибка доступа к API:', error.message);
+      console.error('❌ Ошибка доступа к API:', getErrorMessage(error));
       return false;
     }
   }
@@ -108,7 +114,7 @@ class TimewebCloudSetup {
       console.log(`✅ Доступно пресетов: ${response.presets?.length || 0}`);
       return response.presets || [];
     } catch (error) {
-      console.error('❌ Ошибка получения пресетов:', error.message);
+      console.error('❌ Ошибка получения пресетов:', getErrorMessage(error));
       return [];
     }
   }
@@ -147,7 +153,7 @@ class TimewebCloudSetup {
       
       return response.server;
     } catch (error) {
-      console.error('❌ Ошибка создания VDS:', error.message);
+      console.error('❌ Ошибка создания VDS:', getErrorMessage(error));
       throw error;
     }
   }
@@ -185,7 +191,7 @@ class TimewebCloudSetup {
       
       return response.database;
     } catch (error) {
-      console.error('❌ Ошибка создания БД:', error.message);
+      console.error('❌ Ошибка создания БД:', getErrorMessage(error));
       throw error;
     }
   }
@@ -214,7 +220,7 @@ class TimewebCloudSetup {
       
       return response.bucket;
     } catch (error) {
-      console.error('❌ Ошибка создания S3 bucket:', error.message);
+      console.error('❌ Ошибка создания S3 bucket:', getErrorMessage(error));
       throw error;
     }
   }
@@ -259,7 +265,7 @@ class TimewebCloudSetup {
       
       return groupResponse.group;
     } catch (error) {
-      console.error('❌ Ошибка настройки Firewall:', error.message);
+      console.error('❌ Ошибка настройки Firewall:', getErrorMessage(error));
       throw error;
     }
   }
@@ -401,7 +407,7 @@ SENTRY_DSN=your_sentry_dsn_here
         rollbackNeeded = true;
         await this.sleep(2000);
       } catch (error) {
-        throw new Error(`Не удалось создать VDS: ${error.message}`);
+        throw new Error(`Не удалось создать VDS: ${getErrorMessage(error)}`);
       }
 
       // 4. Создание базы данных
@@ -410,9 +416,9 @@ SENTRY_DSN=your_sentry_dsn_here
         resources.database = await this.createDatabase();
         await this.sleep(2000);
       } catch (error) {
-        console.error('❌ Ошибка создания БД:', error.message);
+        console.error('❌ Ошибка создания БД:', getErrorMessage(error));
         await this.rollback(resources);
-        throw new Error(`Не удалось создать БД: ${error.message}`);
+        throw new Error(`Не удалось создать БД: ${getErrorMessage(error)}`);
       }
 
       // 5. Создание S3 bucket
@@ -421,9 +427,9 @@ SENTRY_DSN=your_sentry_dsn_here
         resources.s3 = await this.createS3Bucket();
         await this.sleep(2000);
       } catch (error) {
-        console.error('❌ Ошибка создания S3:', error.message);
+        console.error('❌ Ошибка создания S3:', getErrorMessage(error));
         await this.rollback(resources);
-        throw new Error(`Не удалось создать S3: ${error.message}`);
+        throw new Error(`Не удалось создать S3: ${getErrorMessage(error)}`);
       }
 
       // 6. Настройка Firewall
@@ -432,7 +438,7 @@ SENTRY_DSN=your_sentry_dsn_here
         try {
           resources.firewall = await this.setupFirewall(resources.vds.id);
         } catch (error) {
-          console.error('⚠️ Предупреждение: Firewall не настроен:', error.message);
+          console.error('⚠️ Предупреждение: Firewall не настроен:', getErrorMessage(error));
           // Не критично, продолжаем
         }
       }
@@ -460,7 +466,7 @@ SENTRY_DSN=your_sentry_dsn_here
       console.log('   bash scripts/deploy-to-timeweb.sh');
 
     } catch (error) {
-      console.error('\n❌ ОШИБКА ПРИ НАСТРОЙКЕ:', error.message);
+      console.error('\n❌ ОШИБКА ПРИ НАСТРОЙКЕ:', getErrorMessage(error));
       
       if (rollbackNeeded) {
         console.error('\n🔄 Запуск отката созданных ресурсов...');
@@ -492,7 +498,7 @@ SENTRY_DSN=your_sentry_dsn_here
           await this.apiRequest('DELETE', `/api/v1/firewall/groups/${resources.firewall.id}`);
           console.log('   ✅ Firewall удалён');
         } catch (e) {
-          console.log('   ⚠️ Firewall не удалён:', e.message);
+          console.log('   ⚠️ Firewall не удалён:', getErrorMessage(e));
         }
       }
 
@@ -502,7 +508,7 @@ SENTRY_DSN=your_sentry_dsn_here
           await this.apiRequest('DELETE', `/api/v1/storages/buckets/${resources.s3.id}`);
           console.log('   ✅ S3 bucket удалён');
         } catch (e) {
-          console.log('   ⚠️ S3 bucket не удалён:', e.message);
+          console.log('   ⚠️ S3 bucket не удалён:', getErrorMessage(e));
         }
       }
 
@@ -512,7 +518,7 @@ SENTRY_DSN=your_sentry_dsn_here
           await this.apiRequest('DELETE', `/api/v1/databases/${resources.database.id}`);
           console.log('   ✅ База данных удалена');
         } catch (e) {
-          console.log('   ⚠️ База данных не удалена:', e.message);
+          console.log('   ⚠️ База данных не удалена:', getErrorMessage(e));
         }
       }
 
@@ -522,7 +528,7 @@ SENTRY_DSN=your_sentry_dsn_here
           await this.apiRequest('DELETE', `/api/v1/servers/${resources.vds.id}`);
           console.log('   ✅ VDS сервер удалён');
         } catch (e) {
-          console.log('   ⚠️ VDS сервер не удалён:', e.message);
+          console.log('   ⚠️ VDS сервер не удалён:', getErrorMessage(e));
         }
       }
 
@@ -530,7 +536,7 @@ SENTRY_DSN=your_sentry_dsn_here
       console.log('   Проверьте панель Timeweb Cloud для подтверждения удаления');
       
     } catch (error) {
-      console.error('\n⚠️ Ошибка при откате:', error.message);
+      console.error('\n⚠️ Ошибка при откате:', getErrorMessage(error));
       console.error('   Возможно, потребуется вручную удалить ресурсы в панели Timeweb Cloud');
     }
   }
@@ -562,7 +568,7 @@ SENTRY_DSN=your_sentry_dsn_here
       const { stdout } = await execAsync(curlCmd);
       return JSON.parse(stdout);
     } catch (error) {
-      throw new Error(`API Request failed: ${error.message}`);
+      throw new Error(`API Request failed: ${getErrorMessage(error)}`);
     }
   }
 
@@ -653,4 +659,5 @@ if (require.main === module) {
   });
 }
 
-export { TimewebCloudSetup, TimewebConfig };
+export type { TimewebConfig };
+export { TimewebCloudSetup };

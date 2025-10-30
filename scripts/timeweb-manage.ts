@@ -22,6 +22,12 @@ import * as fs from 'fs/promises';
 
 const execAsync = promisify(exec);
 
+// Helper для получения сообщения об ошибке
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
 class TimewebManager {
   private apiToken: string;
   private apiUrl: string = 'https://api.timeweb.cloud';
@@ -62,7 +68,7 @@ class TimewebManager {
         console.log(`   Disk: ${server.disk / 1024} GB`);
       });
     } catch (error) {
-      console.error('❌ Ошибка получения серверов:', error.message);
+      console.error('❌ Ошибка получения серверов:', getErrorMessage(error));
     }
   }
 
@@ -93,7 +99,7 @@ class TimewebManager {
         console.log(`   RAM: ${db.ram / 1024} GB`);
       });
     } catch (error) {
-      console.error('❌ Ошибка получения БД:', error.message);
+      console.error('❌ Ошибка получения БД:', getErrorMessage(error));
     }
   }
 
@@ -122,7 +128,7 @@ class TimewebManager {
         console.log(`   Objects: ${bucket.object_amount || 0}`);
       });
     } catch (error) {
-      console.error('❌ Ошибка получения buckets:', error.message);
+      console.error('❌ Ошибка получения buckets:', getErrorMessage(error));
     }
   }
 
@@ -149,7 +155,7 @@ class TimewebManager {
         console.log(`   Rules: ${group.rules_count || 0}`);
       });
     } catch (error) {
-      console.error('❌ Ошибка получения firewall групп:', error.message);
+      console.error('❌ Ошибка получения firewall групп:', getErrorMessage(error));
     }
   }
 
@@ -198,7 +204,7 @@ class TimewebManager {
       const response = await this.apiRequest('GET', endpoint);
       console.log(JSON.stringify(response, null, 2));
     } catch (error) {
-      console.error('❌ Ошибка получения статуса:', error.message);
+      console.error('❌ Ошибка получения статуса:', getErrorMessage(error));
     }
   }
 
@@ -218,7 +224,7 @@ class TimewebManager {
       console.log('   Сервер перезагружается...');
       console.log('   Это может занять 2-5 минут');
     } catch (error) {
-      console.error('❌ Ошибка перезагрузки:', error.message);
+      console.error('❌ Ошибка перезагрузки:', getErrorMessage(error));
     }
   }
 
@@ -247,7 +253,7 @@ class TimewebManager {
       console.log('✅ Резервная копия создается');
       console.log(`   ID backup: ${response.backup?.id || 'N/A'}`);
     } catch (error) {
-      console.error('❌ Ошибка создания backup:', error.message);
+      console.error('❌ Ошибка создания backup:', getErrorMessage(error));
     }
   }
 
@@ -294,7 +300,7 @@ class TimewebManager {
       
       console.log('✅ Ресурс удален');
     } catch (error) {
-      console.error('❌ Ошибка удаления:', error.message);
+      console.error('❌ Ошибка удаления:', getErrorMessage(error));
     }
   }
 
@@ -314,7 +320,7 @@ class TimewebManager {
       console.log(`\nБаланс: ${finances.balance || 0}₽`);
       console.log(`Авто-пополнение: ${finances.autopay_enabled ? '✅ Включено' : '❌ Выключено'}`);
     } catch (error) {
-      console.error('❌ Ошибка получения информации:', error.message);
+      console.error('❌ Ошибка получения информации:', getErrorMessage(error));
     }
   }
 
@@ -397,7 +403,7 @@ class TimewebManager {
       const { stdout } = await execAsync(curlCmd);
       return JSON.parse(stdout);
     } catch (error) {
-      throw new Error(`API Request failed: ${error.message}`);
+      throw new Error(`API Request failed: ${getErrorMessage(error)}`);
     }
   }
 
@@ -576,7 +582,7 @@ async function main() {
 // Запуск
 if (require.main === module) {
   main().catch((error) => {
-    console.error('💥 Ошибка:', error.message);
+    console.error('💥 Ошибка:', getErrorMessage(error));
     process.exit(1);
   });
 }

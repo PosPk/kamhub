@@ -13,6 +13,7 @@ export default function ToursPage() {
     const j=await r.json(); setText(j.itinerary||j.error||''); setLoading(false);
   }
   return (<main style={{minHeight:'100vh',background:'#000',color:'#fff',padding:24}}>
+    {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
     <a href="/" style={{color:'#E6C149'}}>← На главную</a>
     <h1 style={{fontWeight:900,fontSize:28,marginTop:12}}>Туры</h1>
     <button onClick={()=>setOpen(true)} style={{background:'#E6C149',color:'#111',padding:'10px 16px',borderRadius:10,fontWeight:700,marginTop:12}}>AI.KAM</button>

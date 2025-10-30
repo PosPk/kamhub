@@ -13,6 +13,12 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+// Helper для получения сообщения об ошибке
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
 interface CheckResult {
   name: string;
   status: 'ok' | 'warning' | 'error';
@@ -90,7 +96,7 @@ class TimewebChecker {
         name: 'API Токен',
         status: 'error',
         message: 'Токен недействителен или истёк',
-        details: error.message,
+        details: getErrorMessage(error),
       });
     }
   }
@@ -132,7 +138,7 @@ class TimewebChecker {
         name: 'Баланс аккаунта',
         status: 'warning',
         message: 'Не удалось проверить баланс',
-        details: error.message,
+        details: getErrorMessage(error),
       });
     }
   }
@@ -168,7 +174,7 @@ class TimewebChecker {
         name: 'Лимиты аккаунта',
         status: 'warning',
         message: 'Не удалось проверить лимиты',
-        details: error.message,
+        details: getErrorMessage(error),
       });
     }
   }
@@ -255,7 +261,7 @@ class TimewebChecker {
         name: 'Имена ресурсов',
         status: 'warning',
         message: 'Не удалось проверить имена',
-        details: error.message,
+        details: getErrorMessage(error),
       });
     }
   }
@@ -304,7 +310,7 @@ class TimewebChecker {
       const { stdout } = await execAsync(cmd);
       return JSON.parse(stdout);
     } catch (error) {
-      throw new Error(`API request failed: ${error.message}`);
+      throw new Error(`API request failed: ${getErrorMessage(error)}`);
     }
   }
 }
@@ -332,7 +338,7 @@ async function main() {
 
 if (require.main === module) {
   main().catch(error => {
-    console.error('💥 Критическая ошибка:', error.message);
+    console.error('💥 Критическая ошибка:', getErrorMessage(error));
     process.exit(1);
   });
 }

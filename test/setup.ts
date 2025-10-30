@@ -4,8 +4,10 @@ import { query } from '../lib/database';
 // Мок для базы данных в тестах
 beforeAll(async () => {
   // Настройка тестовой базы данных
-  process.env.NODE_ENV = 'test';
-  process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/kamchatour_hub_test';
+  // NODE_ENV устанавливается через vitest.config.ts, не изменяем здесь
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/kamchatour_hub_test';
+  }
 });
 
 afterEach(async () => {
