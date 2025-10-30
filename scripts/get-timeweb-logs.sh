@@ -6,13 +6,13 @@
 set -e
 
 APP_ID="125051"
-API_TOKEN="${TIMEWEB_API_TOKEN}"
+API_TOKEN="${TIMEWEB_API_TOKEN1:-${TIMEWEB_API_TOKEN}}"
 
 if [ -z "$API_TOKEN" ]; then
-    echo "❌ Ошибка: TIMEWEB_API_TOKEN не установлен"
+    echo "❌ Ошибка: TIMEWEB_API_TOKEN1 не установлен"
     echo ""
     echo "Использование:"
-    echo "  export TIMEWEB_API_TOKEN=your_token"
+    echo "  export TIMEWEB_API_TOKEN1=your_token"
     echo "  bash scripts/get-timeweb-logs.sh"
     exit 1
 fi

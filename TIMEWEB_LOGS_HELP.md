@@ -5,9 +5,9 @@
 ### Шаг 1: Убедитесь что токен в GitHub Secrets
 
 1. Откройте: https://github.com/PosPk/kamhub/settings/secrets/actions
-2. Проверьте что есть секрет: `TIMEWEB_API_TOKEN`
+2. Проверьте что есть секрет: `TIMEWEB_API_TOKEN1`
 3. Если нет - создайте:
-   - Name: `TIMEWEB_API_TOKEN`
+   - Name: `TIMEWEB_API_TOKEN1`
    - Value: ваш токен из https://timeweb.cloud/my/api-keys
 
 ### Шаг 2: Запустите GitHub Action
@@ -28,7 +28,7 @@
 
 ```bash
 # Экспортируйте токен
-export TIMEWEB_API_TOKEN="ваш_токен_здесь"
+export TIMEWEB_API_TOKEN1="ваш_токен_здесь"
 
 # Запустите скрипт
 bash scripts/get-timeweb-logs.sh

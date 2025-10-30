@@ -15,7 +15,7 @@ jobs:
           # Получаем логи через API
           curl -s -X GET \
             "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=runtime&limit=100" \
-            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
             -H "Content-Type: application/json" \
             | jq -r '.logs[] | .message' || echo "Failed to fetch logs"
           
@@ -25,6 +25,6 @@ jobs:
           # Проверяем статус приложения
           curl -s -X GET \
             "https://api.timeweb.cloud/api/v1/apps/125051" \
-            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
             -H "Content-Type: application/json" \
             | jq '.'
