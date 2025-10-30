@@ -7,10 +7,11 @@ import { emailService } from '@/lib/notifications/email';
 import { telegramService } from '@/lib/notifications/telegram';
 import { transferPayments } from '@/lib/payments/transfer-payments';
 import { matchingEngine } from '@/lib/transfers/matching';
+import { createBookingWithLock } from '@/lib/transfers/booking';
 
 export const dynamic = 'force-dynamic';
 
-// POST /api/transfers/book - Бронирование трансфера
+// POST /api/transfers/book - Бронирование трансфера (THREAD-SAFE)
 export async function POST(request: NextRequest) {
   try {
     const body: TransferBookingRequest = await request.json();
@@ -95,54 +96,33 @@ export async function POST(request: NextRequest) {
 
       const schedule = scheduleResult.rows[0];
 
-      // Проверяем доступность мест
-      if (schedule.available_seats < body.passengersCount) {
+      // 🔒 БЕЗОПАСНОЕ БРОНИРОВАНИЕ С ТРАНЗАКЦИОННЫМИ БЛОКИРОВКАМИ
+      // Защита от race conditions и overbooking
+      const bookingResult = await createBookingWithLock({
+        scheduleId: body.scheduleId,
+        passengersCount: body.passengersCount,
+        userId: 'user_123', // TODO: получать из JWT токена
+        contactInfo: body.contactInfo,
+        specialRequests: body.specialRequests
+      });
+
+      if (!bookingResult.success) {
         return NextResponse.json({
           success: false,
-          error: `Недостаточно свободных мест. Доступно: ${schedule.available_seats}`
-        }, { status: 400 });
+          error: bookingResult.error,
+          errorCode: bookingResult.errorCode
+        }, { 
+          status: bookingResult.errorCode === 'INSUFFICIENT_SEATS' ? 400 : 
+                 bookingResult.errorCode === 'LOCK_TIMEOUT' ? 409 : 500
+        });
       }
 
-      // Генерируем код подтверждения
-      const confirmationCode = generateConfirmationCode();
-
-      // Создаем бронирование
-      const bookingQuery = `
-        INSERT INTO transfer_bookings (
-          user_id, operator_id, route_id, vehicle_id, driver_id, schedule_id,
-          booking_date, departure_time, passengers_count, total_price,
-          status, special_requests, contact_phone, contact_email, confirmation_code
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-        RETURNING *
-      `;
-
-      const totalPrice = parseFloat(schedule.price_per_person) * body.passengersCount;
-      const bookingDate = new Date().toISOString().split('T')[0]; // Сегодняшняя дата
-
-      const bookingResult = await query(bookingQuery, [
-        'user_123', // Заглушка для user_id, в реальном приложении получаем из сессии
-        schedule.operator_id,
-        schedule.route_id,
-        schedule.vehicle_id,
-        bestDriver.driverId, // Используем ID найденного водителя
-        schedule.id,
-        bookingDate,
-        schedule.departure_time,
-        body.passengersCount,
-        totalPrice,
-        'pending',
-        body.specialRequests || null,
-        body.contactInfo.phone,
-        body.contactInfo.email,
-        confirmationCode
-      ]);
-
-      const booking = bookingResult.rows[0];
+      const booking = bookingResult.booking;
 
       // 2. СОЗДАНИЕ ПЛАТЕЖА
       const paymentRequest = {
         bookingId: booking.id,
-        amount: totalPrice,
+        amount: parseFloat(booking.total_price),
         currency: 'RUB',
         paymentMethod: 'card' as const,
         customerInfo: {
@@ -150,43 +130,25 @@ export async function POST(request: NextRequest) {
           phone: body.contactInfo.phone,
           name: body.contactInfo.name || 'Не указано'
         },
-        description: `Оплата трансфера ${schedule.from_location} → ${schedule.to_location}`
+        description: `Оплата трансфера ${booking.scheduleInfo.fromLocation} → ${booking.scheduleInfo.toLocation}`
       };
 
       const paymentResult = await transferPayments.createPayment(paymentRequest);
       
       if (!paymentResult.success) {
         // Откатываем бронирование при ошибке платежа
-        await query('DELETE FROM transfer_bookings WHERE id = $1', [booking.id]);
+        // Импортируем функцию отмены
+        const { cancelBooking } = await import('@/lib/transfers/booking');
+        await cancelBooking(booking.id, 'Payment creation failed');
+        
         return NextResponse.json({
           success: false,
           error: `Ошибка создания платежа: ${paymentResult.error}`
         }, { status: 500 });
       }
 
-      // Обновляем количество доступных мест
-      const updateSeatsQuery = `
-        UPDATE transfer_schedules 
-        SET available_seats = available_seats - $1, updated_at = NOW()
-        WHERE id = $2
-      `;
-
-      await query(updateSeatsQuery, [body.passengersCount, body.scheduleId]);
-
-      // Создаем уведомление для перевозчика
-      const notificationQuery = `
-        INSERT INTO transfer_notifications (
-          booking_id, operator_id, type, title, message
-        ) VALUES ($1, $2, $3, $4, $5)
-      `;
-
-      await query(notificationQuery, [
-        booking.id,
-        schedule.operator_id,
-        'booking_created',
-        'Новое бронирование трансфера',
-        `Новое бронирование на ${schedule.departure_time} по маршруту ${schedule.from_location} → ${schedule.to_location}. Пассажиров: ${body.passengersCount}`
-      ]);
+      // Места уже обновлены в createBookingWithLock
+      // Уведомление уже создано в createBookingWithLock
 
       // Отправляем реальные уведомления
       await sendRealBookingNotifications(booking, schedule, schedule, body.contactInfo);
