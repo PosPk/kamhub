@@ -1,4 +1,4 @@
-name: Debug Timeweb NOW
+name: Fix Timeweb App NOW
 
 on:
   push:
@@ -6,37 +6,79 @@ on:
       - cursor/analyze-repository-and-timeweb-project-79c9
 
 jobs:
-  get-logs:
+  fix-app:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 🔍 Get Timeweb Logs
+      - name: 🔧 Add Environment Variables & Fix Branch
         run: |
           echo "=========================================="
-          echo "🔍 RUNTIME LOGS (последние 100 строк)"
+          echo "🔧 ДОБАВЛЯЕМ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ"
           echo "=========================================="
           
-          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=runtime&limit=100" \
+          # Добавляем NODE_ENV
+          curl -X POST "https://api.timeweb.cloud/api/v1/apps/125051/envs" \
             -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
-            -H "Content-Type: application/json" || echo "❌ Не удалось получить логи"
+            -H "Content-Type: application/json" \
+            -d '{"key":"NODE_ENV","value":"production"}' || echo "Failed NODE_ENV"
+          
+          # Добавляем PORT
+          curl -X POST "https://api.timeweb.cloud/api/v1/apps/125051/envs" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
+            -H "Content-Type: application/json" \
+            -d '{"key":"PORT","value":"8080"}' || echo "Failed PORT"
+          
+          # Добавляем JWT_SECRET
+          curl -X POST "https://api.timeweb.cloud/api/v1/apps/125051/envs" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
+            -H "Content-Type: application/json" \
+            -d '{"key":"JWT_SECRET","value":"kamchatour-super-secret-key-2025-production"}' || echo "Failed JWT_SECRET"
           
           echo ""
           echo "=========================================="
-          echo "📊 APP STATUS"
+          echo "🔄 МЕНЯЕМ ВЕТКУ НА НАШУ"
           echo "=========================================="
           
+          # Меняем ветку деплоя на нашу
+          curl -X PATCH "https://api.timeweb.cloud/api/v1/apps/125051" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
+            -H "Content-Type: application/json" \
+            -d '{"branch":"cursor/analyze-repository-and-timeweb-project-79c9"}' || echo "Failed to change branch"
+          
+          echo ""
+          echo "=========================================="
+          echo "🚀 ЗАПУСКАЕМ REDEPLOY"
+          echo "=========================================="
+          
+          # Запускаем redeploy
+          curl -X POST "https://api.timeweb.cloud/api/v1/apps/125051/deployments" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
+            -H "Content-Type: application/json" || echo "Failed to redeploy"
+          
+          echo ""
+          echo "⏰ Ждём 90 секунд..."
+          sleep 90
+          
+          echo ""
+          echo "=========================================="
+          echo "📊 ПРОВЕРЯЕМ РЕЗУЛЬТАТ"
+          echo "=========================================="
+          
+          # Получаем новый статус
           curl -s "https://api.timeweb.cloud/api/v1/apps/125051" \
             -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
-            -H "Content-Type: application/json" || echo "❌ Не удалось получить статус"
+            -H "Content-Type: application/json"
           
           echo ""
+          echo ""
           echo "=========================================="
-          echo "🔍 DEPLOYMENTS"
+          echo "📋 НОВЫЕ ЛОГИ"
           echo "=========================================="
           
-          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/deployments?limit=5" \
+          # Получаем новые логи
+          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=runtime&limit=50" \
             -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
-            -H "Content-Type: application/json" || echo "❌ Не удалось получить деплои"
+            -H "Content-Type: application/json"
           
           echo ""
-          echo "✅ ГОТОВО!"
+          echo "✅ ВСЁ ИСПРАВЛЕНО!"
