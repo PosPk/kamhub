@@ -32,6 +32,7 @@
     "@floating-ui/react": "^0.27.16",
     "@floating-ui/react-dom": "^2.1.6",
     "@next/swc-linux-x64-gnu": "^15.5.5",
+    "@sentry/nextjs": "^10.22.0",
     "@types/nodemailer": "^7.0.2",
     "clsx": "^2.0.0",
     "next": "14.2.15",
