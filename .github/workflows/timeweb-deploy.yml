@@ -1,0 +1,75 @@
+name: Timeweb Cloud - CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Action to run (check|status|provision|deploy)"
+        required: false
+        default: "check"
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'lib/**'
+      - 'components/**'
+      - 'scripts/**'
+      - '.github/workflows/timeweb-deploy.yml'
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install deps
+        run: npm ci
+      - name: Type check
+        run: npm run type-check
+      - name: Lint
+        run: npm run lint || true
+      - name: Timeweb check
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'check' || github.event_name == 'push' }}
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN }}
+        run: npm run timeweb:check
+      - name: Timeweb status
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'status' }}
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN }}
+        run: npm run timeweb:status
+      - name: Timeweb provision (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'provision' }}
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN }}
+          TIMEWEB_REGION: ${{ secrets.TIMEWEB_REGION }}
+          TIMEWEB_VDS_PRESET: ${{ secrets.TIMEWEB_VDS_PRESET }}
+        run: npm run timeweb:provision
+
+  deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'deploy' }}
+    needs: build-and-verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install deps and build
+        run: |
+          npm ci
+          npm run build
+      - name: Deploy to Timeweb VDS
+        env:
+          TIMEWEB_SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
+          TIMEWEB_SSH_USER: ${{ secrets.TIMEWEB_SSH_USER }}
+          TIMEWEB_SSH_KEY: ${{ secrets.TIMEWEB_SSH_KEY }}
+          TIMEWEB_APP_DIR: ${{ secrets.TIMEWEB_APP_DIR }}
+        run: |
+          bash scripts/deploy-to-timeweb.sh
