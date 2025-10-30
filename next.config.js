@@ -8,12 +8,16 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Reduce output size
+  // Output configuration for Timeweb
   output: 'standalone',
+  outputFileTracingRoot: process.cwd(),
   // Optimize images
   images: {
     unoptimized: true, // Timeweb Apps limitation
+    domains: [],
   },
+  // Disable x-powered-by header
+  poweredByHeader: false,
 };
 module.exports = nextConfig;
 
