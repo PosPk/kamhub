@@ -15,9 +15,24 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { processCloudPaymentsWebhook } from '@/lib/payments/cloudpayments-webhook';
-import { trackPaymentEvent, BusinessError } from '@/lib/monitoring/sentry-utils';
 import { transaction } from '@/lib/database';
-import * as Sentry from '@sentry/nextjs';
+
+// Note: Sentry monitoring temporarily disabled to reduce build size
+// import * as Sentry from '@sentry/nextjs';
+// import { trackPaymentEvent, BusinessError } from '@/lib/monitoring/sentry-utils';
+
+// Simple error class for business logic errors
+class BusinessError extends Error {
+  code: string;
+  details: any;
+  
+  constructor(message: string, code: string, details?: any) {
+    super(message);
+    this.name = 'BusinessError';
+    this.code = code;
+    this.details = details;
+  }
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -55,18 +70,6 @@ export async function POST(request: NextRequest) {
       console.error('❌ Webhook validation failed:', {
         error: validation.error,
         errorCode: validation.errorCode
-      });
-      
-      // Отправляем в Sentry
-      Sentry.captureMessage('CloudPayments webhook validation failed', {
-        level: 'error',
-        tags: {
-          error_code: validation.errorCode!,
-        },
-        extra: {
-          error: validation.error,
-          signature_present: !!signature,
-        },
       });
       
       // CloudPayments код 13 = отклонено (повторит позже)
@@ -169,13 +172,6 @@ export async function POST(request: NextRequest) {
                    'Ваше бронирование подтверждено! Платеж получен.', NOW())
         `, [bookingId, booking.user_id, booking.operator_id]);
         
-        // Track в Sentry
-        trackPaymentEvent('payment_success', {
-          bookingId,
-          amount: webhookData.Amount,
-          paymentId: transactionId
-        });
-        
         console.log('✅ Payment confirmed', {
           bookingId,
           transactionId,
@@ -216,13 +212,6 @@ export async function POST(request: NextRequest) {
         const { cancelBooking } = await import('@/lib/transfers/booking');
         await cancelBooking(bookingId, `Payment declined: ${webhookData.Reason}`);
         
-        // Track в Sentry
-        trackPaymentEvent('payment_failed', {
-          bookingId,
-          amount: webhookData.Amount,
-          error: webhookData.Reason
-        });
-        
         console.log('❌ Payment declined', {
           bookingId,
           transactionId,
@@ -238,19 +227,6 @@ export async function POST(request: NextRequest) {
     
   } catch (error: any) {
     console.error('❌ Webhook processing error:', error);
-    
-    // Логируем в Sentry
-    Sentry.captureException(error, {
-      tags: {
-        webhook_source: 'cloudpayments',
-      },
-      contexts: {
-        webhook: {
-          headers: Object.fromEntries(request.headers),
-          url: request.url,
-        },
-      },
-    });
     
     // CloudPayments код 13 = ошибка (повторит позже)
     return NextResponse.json({ 
