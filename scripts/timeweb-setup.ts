@@ -372,6 +372,7 @@ SENTRY_DSN=your_sentry_dsn_here
     console.log('=' .repeat(60));
 
     const resources: any = {};
+    let rollbackNeeded = false;
 
     try {
       // 1. Проверка API
@@ -384,20 +385,46 @@ SENTRY_DSN=your_sentry_dsn_here
       await this.getRegions();
 
       // 3. Создание VDS сервера
-      resources.vds = await this.createVDS();
-      await this.sleep(2000);
+      console.log('\n📦 Создание VDS сервера...');
+      try {
+        resources.vds = await this.createVDS();
+        rollbackNeeded = true;
+        await this.sleep(2000);
+      } catch (error) {
+        throw new Error(`Не удалось создать VDS: ${error.message}`);
+      }
 
       // 4. Создание базы данных
-      resources.database = await this.createDatabase();
-      await this.sleep(2000);
+      console.log('\n🗄️ Создание PostgreSQL...');
+      try {
+        resources.database = await this.createDatabase();
+        await this.sleep(2000);
+      } catch (error) {
+        console.error('❌ Ошибка создания БД:', error.message);
+        await this.rollback(resources);
+        throw new Error(`Не удалось создать БД: ${error.message}`);
+      }
 
       // 5. Создание S3 bucket
-      resources.s3 = await this.createS3Bucket();
-      await this.sleep(2000);
+      console.log('\n💾 Создание S3 bucket...');
+      try {
+        resources.s3 = await this.createS3Bucket();
+        await this.sleep(2000);
+      } catch (error) {
+        console.error('❌ Ошибка создания S3:', error.message);
+        await this.rollback(resources);
+        throw new Error(`Не удалось создать S3: ${error.message}`);
+      }
 
       // 6. Настройка Firewall
       if (resources.vds?.id) {
-        resources.firewall = await this.setupFirewall(resources.vds.id);
+        console.log('\n🔥 Настройка Firewall...');
+        try {
+          resources.firewall = await this.setupFirewall(resources.vds.id);
+        } catch (error) {
+          console.error('⚠️ Предупреждение: Firewall не настроен:', error.message);
+          // Не критично, продолжаем
+        }
       }
 
       // 7. Генерация .env файла
@@ -423,9 +450,78 @@ SENTRY_DSN=your_sentry_dsn_here
       console.log('   bash scripts/deploy-to-timeweb.sh');
 
     } catch (error) {
-      console.error('\n❌ Ошибка при настройке:', error.message);
-      console.error('\n💡 Совет: Проверьте API токен и доступность сервисов');
+      console.error('\n❌ ОШИБКА ПРИ НАСТРОЙКЕ:', error.message);
+      
+      if (rollbackNeeded) {
+        console.error('\n🔄 Запуск отката созданных ресурсов...');
+        await this.rollback(resources);
+      }
+      
+      console.error('\n💡 Советы:');
+      console.error('   • Проверьте баланс: https://timeweb.cloud/my/finance');
+      console.error('   • Проверьте токен: https://timeweb.cloud/my/api');
+      console.error('   • Удалите конфликтующие ресурсы');
+      console.error('   • Запустите проверку: npm run timeweb:check');
+      
       throw error;
+    }
+  }
+
+  /**
+   * Откат созданных ресурсов при ошибке
+   */
+  async rollback(resources: any): Promise<void> {
+    console.log('\n🔄 Откат созданных ресурсов...');
+
+    try {
+      // Удаляем в обратном порядке создания
+      
+      if (resources.firewall?.id) {
+        console.log('   Удаление Firewall группы...');
+        try {
+          await this.apiRequest('DELETE', `/api/v1/firewall/groups/${resources.firewall.id}`);
+          console.log('   ✅ Firewall удалён');
+        } catch (e) {
+          console.log('   ⚠️ Firewall не удалён:', e.message);
+        }
+      }
+
+      if (resources.s3?.id) {
+        console.log('   Удаление S3 bucket...');
+        try {
+          await this.apiRequest('DELETE', `/api/v1/storages/buckets/${resources.s3.id}`);
+          console.log('   ✅ S3 bucket удалён');
+        } catch (e) {
+          console.log('   ⚠️ S3 bucket не удалён:', e.message);
+        }
+      }
+
+      if (resources.database?.id) {
+        console.log('   Удаление базы данных...');
+        try {
+          await this.apiRequest('DELETE', `/api/v1/databases/${resources.database.id}`);
+          console.log('   ✅ База данных удалена');
+        } catch (e) {
+          console.log('   ⚠️ База данных не удалена:', e.message);
+        }
+      }
+
+      if (resources.vds?.id) {
+        console.log('   Удаление VDS сервера...');
+        try {
+          await this.apiRequest('DELETE', `/api/v1/servers/${resources.vds.id}`);
+          console.log('   ✅ VDS сервер удалён');
+        } catch (e) {
+          console.log('   ⚠️ VDS сервер не удалён:', e.message);
+        }
+      }
+
+      console.log('\n✅ Откат завершён');
+      console.log('   Проверьте панель Timeweb Cloud для подтверждения удаления');
+      
+    } catch (error) {
+      console.error('\n⚠️ Ошибка при откате:', error.message);
+      console.error('   Возможно, потребуется вручную удалить ресурсы в панели Timeweb Cloud');
     }
   }
 
