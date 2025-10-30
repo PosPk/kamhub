@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import UI improvements */
+@import './ui-improvements.css';
+
 /* Premium Black & Gold Theme */
 :root {
   --premium-black: #0a0a0a;
