@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploys the Next.js app to a Timeweb VDS via SSH.
+# Deploys the Next.js app to a Timeweb VDS via SSH. (auto-trigger)
 # Requirements (one of auth methods):
 # - (preferred) TIMEWEB_SSH_KEY: private key content (with TIMEWEB_SSH_HOST, TIMEWEB_SSH_USER)
 # - (alternative) TIMEWEB_SSH_PASSWORD: password for SSH (with TIMEWEB_SSH_HOST, TIMEWEB_SSH_USER)
