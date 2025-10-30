@@ -8,8 +8,8 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // DISABLE standalone for Timeweb - regular build is smaller
-  // output: 'standalone',
+  // Enable standalone for Timeweb Apps
+  output: 'standalone',
   // Optimize images
   images: {
     unoptimized: true,

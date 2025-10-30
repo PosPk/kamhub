@@ -1,7 +1,7 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm install --production=false && npm run build",
-  "startCommand": "npm start",
+  "startCommand": "node .next/standalone/server.js",
   "nodeVersion": "20",
   "port": 8080,
   "env": {
