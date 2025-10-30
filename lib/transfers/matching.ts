@@ -4,7 +4,7 @@
 // =============================================
 
 import { query } from '@/lib/database';
-import { TransferBookingRequest, TransferOption } from '@/types/transfer';
+import { TransferBookingRequest } from '@/types/transfer';
 
 interface MatchingCriteria {
   vehicleType?: string;
@@ -230,7 +230,7 @@ export class TransferMatchingEngine {
     if (bonusScore > 0) reasons.push('Дополнительные преимущества');
 
     // 7. Штрафы
-    const penaltyScore = this.calculatePenaltyScore(driver, criteria);
+    const penaltyScore = this.calculatePenaltyScore(driver);
     totalScore += penaltyScore;
     if (penaltyScore < 0) reasons.push('Есть ограничения');
 
@@ -278,7 +278,7 @@ export class TransferMatchingEngine {
   }
 
   // Расчет штрафных баллов
-  private calculatePenaltyScore(driver: any, criteria: MatchingCriteria): number {
+  private calculatePenaltyScore(driver: any): number {
     let penalty = 0;
 
     // Штраф за несоответствие рабочему времени
