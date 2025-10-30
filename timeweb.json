@@ -3,9 +3,10 @@
   "buildCommand": "npm install --production=false && npm run build",
   "startCommand": "npm start",
   "nodeVersion": "20",
-  "port": 3000,
+  "port": 8080,
   "env": {
     "NODE_ENV": "production",
+    "PORT": "8080",
     "SKIP_SENTRY": "true"
   }
 }
