@@ -26,6 +26,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+      - name: Export TIMEWEB_TOKEN (TIMEWEB_TOKEN or TIMEWEB_TOKEN1)
+        shell: bash
+        run: |
+          if [ -n "${{ secrets.TIMEWEB_TOKEN }}" ]; then
+            echo "TIMEWEB_TOKEN=${{ secrets.TIMEWEB_TOKEN }}" >> $GITHUB_ENV
+          elif [ -n "${{ secrets.TIMEWEB_TOKEN1 }}" ]; then
+            echo "TIMEWEB_TOKEN=${{ secrets.TIMEWEB_TOKEN1 }}" >> $GITHUB_ENV
+          else
+            echo "TIMEWEB_TOKEN=" >> $GITHUB_ENV
+          fi
       - name: Install deps
         run: npm ci
       - name: Type check
@@ -34,18 +44,13 @@ jobs:
         run: npm run lint || true
       - name: Timeweb check
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'check' || github.event_name == 'push' }}
-        env:
-          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN }}
         run: npm run timeweb:check
       - name: Timeweb status
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'status' }}
-        env:
-          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN }}
         run: npm run timeweb:status
       - name: Timeweb provision (dry-run)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.action == 'provision' }}
         env:
-          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN }}
           TIMEWEB_REGION: ${{ secrets.TIMEWEB_REGION }}
           TIMEWEB_VDS_PRESET: ${{ secrets.TIMEWEB_VDS_PRESET }}
         run: npm run timeweb:provision
