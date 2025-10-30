@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: kamchatour-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kamchatour
+      POSTGRES_USER: kamuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-kampass2024}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./lib/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./lib/database/transfer_schema.sql:/docker-entrypoint-initdb.d/02-transfer.sql:ro
+      - ./lib/database/loyalty_schema.sql:/docker-entrypoint-initdb.d/03-loyalty.sql:ro
+      - ./lib/database/seat_holds_schema.sql:/docker-entrypoint-initdb.d/04-seat-holds.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kamuser -d kamchatour"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: kamchatour-app
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    environment:
+      # Database
+      DATABASE_URL: postgresql://kamuser:${DB_PASSWORD:-kampass2024}@postgres:5432/kamchatour
+      DATABASE_SSL: "false"
+      DATABASE_MAX_CONNECTIONS: "20"
+      
+      # Application
+      NODE_ENV: production
+      NEXT_PUBLIC_APP_URL: ${APP_URL:-http://localhost:3002}
+      
+      # Security
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-in-production-12345678}
+      JWT_EXPIRES_IN: "7d"
+      
+      # AI APIs (optional)
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      
+      # Payments (optional)
+      CLOUDPAYMENTS_PUBLIC_ID: ${CLOUDPAYMENTS_PUBLIC_ID:-}
+      CLOUDPAYMENTS_API_SECRET: ${CLOUDPAYMENTS_API_SECRET:-}
+      
+      # Monitoring (optional)
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis (optional - for rate limiting)
+  redis:
+    image: redis:7-alpine
+    container_name: kamchatour-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: kamchatour-network

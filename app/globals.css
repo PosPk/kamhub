@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Black & Gold Theme */
+:root {
+  --premium-black: #0a0a0a;
+  --premium-gold: #d4af37;
+  --gold-gradient: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
+}
+
+.bg-premium-black {
+  background-color: var(--premium-black);
+}
+
+.text-premium-gold {
+  color: var(--premium-gold);
+}
+
+.bg-premium-gold {
+  background-color: var(--premium-gold);
+}
+
+.text-premium-black {
+  color: var(--premium-black);
+}
+
+.bg-gold-gradient {
+  background: var(--gold-gradient);
+}
+
+.gradient-gold-aurora {
+  background: linear-gradient(45deg, 
+    rgba(212, 175, 55, 0.1) 0%, 
+    rgba(255, 215, 0, 0.2) 25%, 
+    rgba(184, 134, 11, 0.1) 50%, 
+    rgba(212, 175, 55, 0.2) 75%, 
+    rgba(255, 215, 0, 0.1) 100%);
+}
+
+.animate-aurora {
+  animation: aurora 8s ease-in-out infinite;
+}
+
+@keyframes aurora {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+}
+
+.text-gold {
+  color: var(--premium-gold);
+}
+
+.gold-glow {
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+.button-gold {
+  @apply bg-premium-gold text-premium-black px-4 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors;
+}
+
+.map-button-glow {
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+  transition: all 0.3s ease;
+}
+
+.map-button-glow:hover {
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+  transform: scale(1.02);
+}
+
+.kamchatka-button {
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+}
+
+/* Floating UI Styles */
+
+:root {
+  --gold: #E6C149;
+  --black: #000000;
+}
+
+html, body {
+  background: var(--black);
+  color: #ffffff;
+}
+
+.button-gold {
+  @apply bg-[color:var(--gold)] text-black font-bold rounded-lg px-4 py-2 shadow-gold;
+}
+
+.card-dark {
+  @apply bg-neutral-900 border border-neutral-800 rounded-xl;
+}
+
+/* Custom classes for the full site */
+.gradient-gold-aurora {
+  background: radial-gradient(1200px 600px at 20% 80%, rgba(230,193,73,0.18), transparent 60%), 
+              radial-gradient(1000px 500px at 80% 20%, rgba(162,210,255,0.12), transparent 60%);
+}
+
+.animate-aurora {
+  animation: aurora 20s ease-in-out infinite;
+}
+
+@keyframes aurora {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+.text-gold {
+  color: var(--gold);
+}
+
+.gold-glow {
+  text-shadow: 0 0 20px rgba(230,193,73,0.5);
+}
+
+.map-button-glow {
+  box-shadow: 0 0 40px rgba(230,193,73,0.25);
+  transition: box-shadow 0.3s ease;
+}
+
+.map-button-glow:hover {
+  box-shadow: 0 0 60px rgba(230,193,73,0.35);
+}
+
+.kamchatka-button {
+  transition: transform 0.3s ease;
+}
+
+.kamchatka-button:hover {
+  transform: scale(1.05);
+}

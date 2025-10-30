@@ -1,0 +1,96 @@
+<svg width="400" height="600" viewBox="0 0 400 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Контур полуострова Камчатка -->
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4af37;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ffd700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8860b;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Основной контур Камчатки -->
+  <path d="
+    M 200 50
+    L 220 80
+    L 240 70
+    L 260 90
+    L 270 120
+    L 280 140
+    L 285 160
+    L 290 180
+    L 295 210
+    L 298 240
+    L 300 270
+    L 298 300
+    L 295 330
+    L 290 360
+    L 285 390
+    L 280 420
+    L 270 450
+    L 260 480
+    L 250 510
+    L 240 540
+    L 230 560
+    L 220 580
+    L 210 590
+    L 200 595
+    L 190 590
+    L 180 580
+    L 170 560
+    L 165 540
+    L 160 510
+    L 158 480
+    L 155 450
+    L 153 420
+    L 152 390
+    L 150 360
+    L 148 330
+    L 147 300
+    L 145 270
+    L 148 240
+    L 150 210
+    L 155 180
+    L 160 160
+    L 165 140
+    L 170 120
+    L 175 100
+    L 180 80
+    L 190 60
+    Z
+  " 
+  stroke="url(#goldGradient)" 
+  stroke-width="3" 
+  fill="rgba(212, 175, 55, 0.2)" 
+  filter="url(#glow)"/>
+  
+  <!-- Вулканы (точки) -->
+  <circle cx="220" cy="150" r="5" fill="#ffd700" filter="url(#glow)">
+    <animate attributeName="opacity" values="1;0.6;1" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="240" cy="220" r="5" fill="#ffd700" filter="url(#glow)">
+    <animate attributeName="opacity" values="1;0.6;1" dur="2.5s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="200" cy="300" r="5" fill="#ffd700" filter="url(#glow)">
+    <animate attributeName="opacity" values="1;0.6;1" dur="3s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="180" cy="400" r="5" fill="#ffd700" filter="url(#glow)">
+    <animate attributeName="opacity" values="1;0.6;1" dur="2.2s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Метка "Петропавловск-Камчатский" -->
+  <circle cx="160" cy="480" r="8" fill="#d4af37" stroke="#ffd700" stroke-width="2" filter="url(#glow)">
+    <animate attributeName="r" values="8;10;8" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+  
+  <!-- Название -->
+  <text x="200" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="url(#goldGradient)" filter="url(#glow)">
+    КАМЧАТКА
+  </text>
+</svg>
