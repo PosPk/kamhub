@@ -181,17 +181,23 @@ log_info "Сборка приложения..."
 npm run build
 log_info "Приложение собрано"
 
-# Запуск через PM2
+# Создание директории для логов
+mkdir -p $APP_DIR/logs
+
+# Запуск через PM2 с ecosystem.config.js
 log_info "Запуск через PM2..."
 if pm2 list | grep -q $APP_NAME; then
     log_info "Приложение уже запущено, перезапускаем..."
-    pm2 reload $APP_NAME
+    pm2 reload ecosystem.config.js --update-env
 else
-    pm2 start npm --name "$APP_NAME" -- start
+    pm2 start ecosystem.config.js
 fi
 
 pm2 save
-pm2 startup | tail -n 1 | bash
+
+# Настройка автозапуска PM2
+log_info "Настройка автозапуска PM2..."
+pm2 startup | tail -n 1 | bash || log_warn "PM2 startup уже настроен"
 
 log_info "Приложение запущено!"
 echo ""

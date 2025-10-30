@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const runtime = 'edge'
+// Для Timeweb Cloud используем Node.js runtime вместо Edge
+// Edge runtime доступен только на Vercel
+export const runtime = 'nodejs'
 
 async function callGroq(prompt: string) {
   const apiKey = process.env.GROQ_API_KEY
