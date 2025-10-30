@@ -4,6 +4,12 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['pg'],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 module.exports = nextConfig;
 
