@@ -1,0 +1,42 @@
+name: Debug Timeweb NOW
+
+on:
+  push:
+    branches:
+      - cursor/analyze-repository-and-timeweb-project-79c9
+
+jobs:
+  get-logs:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Get Timeweb Logs
+        run: |
+          echo "=========================================="
+          echo "🔍 RUNTIME LOGS (последние 100 строк)"
+          echo "=========================================="
+          
+          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=runtime&limit=100" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
+            -H "Content-Type: application/json" || echo "❌ Не удалось получить логи"
+          
+          echo ""
+          echo "=========================================="
+          echo "📊 APP STATUS"
+          echo "=========================================="
+          
+          curl -s "https://api.timeweb.cloud/api/v1/apps/125051" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
+            -H "Content-Type: application/json" || echo "❌ Не удалось получить статус"
+          
+          echo ""
+          echo "=========================================="
+          echo "🔍 DEPLOYMENTS"
+          echo "=========================================="
+          
+          curl -s "https://api.timeweb.cloud/api/v1/apps/125051/deployments?limit=5" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
+            -H "Content-Type: application/json" || echo "❌ Не удалось получить деплои"
+          
+          echo ""
+          echo "✅ ГОТОВО!"
