@@ -16,20 +16,20 @@ jobs:
           echo "🔧 ДОБАВЛЯЕМ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ ЧЕРЕЗ PATCH"
           echo "=========================================="
           
-          # Обновляем приложение с переменными окружения
+          # Обновляем приложение с переменными окружения (object format!)
           curl -X PATCH "https://api.timeweb.cloud/api/v1/apps/125051" \
             -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
             -H "Content-Type: application/json" \
             -d '{
               "branch": "cursor/analyze-repository-and-timeweb-project-79c9",
-              "envs": [
-                {"key": "NODE_ENV", "value": "production"},
-                {"key": "PORT", "value": "8080"},
-                {"key": "JWT_SECRET", "value": "kamchatour-super-secret-key-2025-production"},
-                {"key": "NEXTAUTH_URL", "value": "https://pospk-kamhub-70c4.twc1.net"},
-                {"key": "NEXT_PUBLIC_API_URL", "value": "https://pospk-kamhub-70c4.twc1.net/api"},
-                {"key": "SKIP_SENTRY", "value": "true"}
-              ]
+              "envs": {
+                "NODE_ENV": "production",
+                "PORT": "8080",
+                "JWT_SECRET": "kamchatour-super-secret-key-2025-production",
+                "NEXTAUTH_URL": "https://pospk-kamhub-70c4.twc1.net",
+                "NEXT_PUBLIC_API_URL": "https://pospk-kamhub-70c4.twc1.net/api",
+                "SKIP_SENTRY": "true"
+              }
             }'
           
           echo ""
