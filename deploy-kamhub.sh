@@ -275,15 +275,25 @@ info "Настройка Firewall (UFW)..."
 
 apt-get install -y ufw
 
-# Разрешаем порты
+# КРИТИЧЕСКИ ВАЖНО: Разрешаем SSH (порт 22) ДО включения UFW!
+info "Разрешаем порт 22 (SSH)..."
 ufw allow 22/tcp
+
+# Разрешаем HTTP и HTTPS
 ufw allow 80/tcp
 ufw allow 443/tcp
 
-# Включаем firewall
+# Проверяем, что правила добавлены
+ufw show added
+
+# Включаем firewall (с подтверждением)
+info "Включаем UFW..."
 echo "y" | ufw enable
 
-success "Firewall настроен"
+# Проверяем статус
+ufw status verbose
+
+success "Firewall настроен (порт 22 открыт!)"
 
 #============================================
 # ФИНАЛЬНАЯ ПРОВЕРКА
