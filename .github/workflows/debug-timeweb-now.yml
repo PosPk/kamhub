@@ -17,7 +17,7 @@ jobs:
           echo "=========================================="
           
           curl -s "https://api.timeweb.cloud/api/v1/apps/125051/logs?type=runtime&limit=100" \
-            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
             -H "Content-Type: application/json" || echo "❌ Не удалось получить логи"
           
           echo ""
@@ -26,7 +26,7 @@ jobs:
           echo "=========================================="
           
           curl -s "https://api.timeweb.cloud/api/v1/apps/125051" \
-            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
             -H "Content-Type: application/json" || echo "❌ Не удалось получить статус"
           
           echo ""
@@ -35,7 +35,7 @@ jobs:
           echo "=========================================="
           
           curl -s "https://api.timeweb.cloud/api/v1/apps/125051/deployments?limit=5" \
-            -H "Authorization: Bearer ${{ secrets.TIMEWEB_API_TOKEN1 }}" \
+            -H "Authorization: Bearer ${{ secrets.TIMEWEB_TOKEN1 }}" \
             -H "Content-Type: application/json" || echo "❌ Не удалось получить деплои"
           
           echo ""
