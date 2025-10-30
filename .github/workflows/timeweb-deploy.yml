@@ -70,11 +70,16 @@ jobs:
         run: |
           npm ci
           npm run build
+      - name: Install sshpass (if password auth used)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
       - name: Deploy to Timeweb VDS
         env:
           TIMEWEB_SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
           TIMEWEB_SSH_USER: ${{ secrets.TIMEWEB_SSH_USER }}
           TIMEWEB_SSH_KEY: ${{ secrets.TIMEWEB_SSH_KEY }}
+          TIMEWEB_SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
           TIMEWEB_APP_DIR: ${{ secrets.TIMEWEB_APP_DIR }}
         run: |
           bash scripts/deploy-to-timeweb.sh
