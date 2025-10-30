@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+const DEMO_LOGIN_ENABLED = process.env.DEMO_LOGIN_ENABLED === 'true';
+
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Проверяем демо-пользователя
-    if (email === 'pospk@mail.ru' && password === 'Gr96Ww32') {
+    // Проверяем демо-пользователя (можно включить через переменную окружения DEMO_LOGIN_ENABLED=true)
+    if (DEMO_LOGIN_ENABLED && email === 'pospk@mail.ru' && password === 'Gr96Ww32') {
       const demoUser = {
         id: 'demo_user_123',
         email,

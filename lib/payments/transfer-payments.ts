@@ -276,7 +276,7 @@ export class TransferPaymentSystem {
 
   // Создание записи платежа в базе данных
   private async createPaymentRecord(request: PaymentRequest): Promise<string> {
-    const paymentId = `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const paymentId = `pay_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
     
     const queryText = `
       INSERT INTO transfer_payments (

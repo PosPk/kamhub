@@ -158,7 +158,7 @@ export class LoyaltySystem {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + this.expirationDays);
 
-      const transactionId = `loyalty_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const transactionId = `loyalty_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 
       await query(`
         INSERT INTO loyalty_transactions (
@@ -210,7 +210,7 @@ export class LoyaltySystem {
       }
 
       const discountAmount = pointsToRedeem * this.redeemRate;
-      const transactionId = `loyalty_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const transactionId = `loyalty_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 
       await query(`
         INSERT INTO loyalty_transactions (
@@ -280,7 +280,7 @@ export class LoyaltySystem {
     message: string;
   }> {
     try {
-      const promoCodeId = `promo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const promoCodeId = `promo_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
 
       await query(`
         INSERT INTO promo_codes (

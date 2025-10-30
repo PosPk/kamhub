@@ -86,7 +86,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   ): Promise<Order> => {
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const order: Order = {
-      id: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: `order_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       items,
       total,
       status: 'created',

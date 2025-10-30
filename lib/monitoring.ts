@@ -219,7 +219,7 @@ export const errors = {
 export function withMonitoring(handler: Function) {
   return async (req: any, res: any) => {
     const startTime = Date.now();
-    const requestId = Math.random().toString(36).substr(2, 9);
+    const requestId = Math.random().toString(36).slice(2, 11);
 
     try {
       // Логируем начало запроса

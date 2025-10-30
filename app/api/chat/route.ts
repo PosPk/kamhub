@@ -215,7 +215,8 @@ export async function POST(request: NextRequest) {
 async function getAIResponse(message: string, context?: any): Promise<{ content: string; metadata?: any }> {
   try {
     // Формируем промпт с контекстом Камчатки
-    const systemPrompt = `Ты - AI-гид по Камчатке. Твоя задача - помогать туристам планировать путешествия, отвечать на вопросы о достопримечательностях, погоде, безопасности и местных особенностях.
+    const ctx = context ? `\n\nДополнительный контекст: ${JSON.stringify(context)}` : '';
+    const systemPrompt = `Ты - AI-гид по Камчатке. Твоя задача - помогать туристам планировать путешествия, отвечать на вопросы о достопримечательностях, погоде, безопасности и местных особенностях.${ctx}
 
 Контекст:
 - Ты находишься в Камчатском крае, России

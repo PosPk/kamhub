@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
-import { TransferSearchRequest, TransferSearchResponse, TransferOption, SearchMetadata } from '@/types/transfer';
-import { config } from '@/lib/config';
+import { TransferOption, SearchMetadata } from '@/types/transfer';
 
 export const dynamic = 'force-dynamic';
 
@@ -287,9 +286,9 @@ export async function GET(request: NextRequest) {
 
 // Функция для генерации тестовых данных трансферов
 function generateMockTransfers(
-  from: string, 
-  to: string, 
-  date: string, 
+  from: string,
+  to: string,
+  date: string,
   passengers: number,
   vehicleType?: string | null,
   budgetMin?: number,
@@ -297,7 +296,7 @@ function generateMockTransfers(
 ): TransferOption[] {
   const mockTransfers: TransferOption[] = [
     {
-      scheduleId: 'schedule_1',
+      scheduleId: `schedule_1_${date}`,
       route: {
         id: 'route_1',
         name: `${from} → ${to}`,
@@ -356,7 +355,7 @@ function generateMockTransfers(
       stops: []
     },
     {
-      scheduleId: 'schedule_2',
+      scheduleId: `schedule_2_${date}`,
       route: {
         id: 'route_1',
         name: `${from} → ${to}`,
@@ -415,7 +414,7 @@ function generateMockTransfers(
       stops: []
     },
     {
-      scheduleId: 'schedule_3',
+      scheduleId: `schedule_3_${date}`,
       route: {
         id: 'route_1',
         name: `${from} → ${to}`,
