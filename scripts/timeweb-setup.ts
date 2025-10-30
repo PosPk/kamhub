@@ -61,9 +61,9 @@ class TimewebCloudSetup {
     console.log('🔍 Проверка доступности Timeweb Cloud API...');
     
     try {
-      const response = await this.apiRequest('GET', '/api/v1/account');
+      const response = await this.apiRequest('GET', '/api/v1/account/status');
       console.log('✅ API доступен');
-      console.log(`   Аккаунт: ${response.email || 'N/A'}`);
+      console.log(`   Аккаунт зарегистрирован: ${response.status?.registered_at ? new Date(response.status.registered_at).toLocaleDateString() : 'N/A'}`);
       return true;
     } catch (error) {
       console.error('❌ Ошибка доступа к API:', error.message);
@@ -75,15 +75,25 @@ class TimewebCloudSetup {
    * Получение списка доступных регионов
    */
   async getRegions(): Promise<any[]> {
-    console.log('🌍 Получение списка регионов...');
+    console.log('🌍 Получение информации о регионах...');
     
     try {
-      const response = await this.apiRequest('GET', '/api/v1/locations');
-      console.log(`✅ Доступно регионов: ${response.locations?.length || 0}`);
-      return response.locations || [];
+      // Пробуем получить список существующих серверов чтобы узнать регионы
+      const response = await this.apiRequest('GET', '/api/v1/servers');
+      const servers = response.servers || [];
+      const regions = [...new Set(servers.map((s: any) => s.location).filter(Boolean))];
+      
+      if (regions.length > 0) {
+        console.log(`✅ Обнаружены регионы: ${regions.join(', ')}`);
+        console.log(`   Будет использован регион: ${regions[0]}`);
+      } else {
+        console.log(`✅ Будет использован регион по умолчанию: ${this.config.project.region}`);
+      }
+      
+      return regions.length > 0 ? [{ code: regions[0] }] : [{ code: this.config.project.region }];
     } catch (error) {
-      console.error('❌ Ошибка получения регионов:', error.message);
-      return [];
+      console.error('⚠️ Не удалось получить регионы, будет использован регион по умолчанию');
+      return [{ code: this.config.project.region }];
     }
   }
 

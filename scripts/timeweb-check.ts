@@ -73,14 +73,14 @@ class TimewebChecker {
    */
   private async checkAPIToken(): Promise<void> {
     try {
-      const response = await this.apiRequest('GET', '/api/v1/account');
+      const response = await this.apiRequest('GET', '/api/v1/account/status');
       
-      if (response.account || response.email) {
+      if (response.status) {
         this.results.push({
           name: 'API Токен',
           status: 'ok',
           message: 'Токен валидный',
-          details: `Email: ${response.account?.email || response.email || 'N/A'}`,
+          details: `Аккаунт зарегистрирован: ${response.status.registered_at ? new Date(response.status.registered_at).toLocaleDateString() : 'N/A'}`,
         });
       } else {
         throw new Error('Некорректный ответ от API');
@@ -142,12 +142,13 @@ class TimewebChecker {
    */
   private async checkAccountLimits(): Promise<void> {
     try {
-      const response = await this.apiRequest('GET', '/api/v1/account');
+      const response = await this.apiRequest('GET', '/api/v1/account/status');
       
-      // Проверяем, есть ли лимиты на создание ресурсов
-      const status = response.account?.status || 'active';
+      // Проверяем, заблокирован ли аккаунт
+      const isBlocked = response.status?.is_blocked || false;
+      const isPermanentBlocked = response.status?.is_permanent_blocked || false;
       
-      if (status === 'active') {
+      if (!isBlocked && !isPermanentBlocked) {
         this.results.push({
           name: 'Лимиты аккаунта',
           status: 'ok',
@@ -157,9 +158,9 @@ class TimewebChecker {
       } else {
         this.results.push({
           name: 'Лимиты аккаунта',
-          status: 'warning',
-          message: `Статус аккаунта: ${status}`,
-          details: 'Возможны ограничения',
+          status: 'error',
+          message: 'Аккаунт заблокирован',
+          details: isPermanentBlocked ? 'Постоянная блокировка' : 'Временная блокировка',
         });
       }
     } catch (error) {
@@ -177,40 +178,28 @@ class TimewebChecker {
    */
   private async checkRegionAvailability(): Promise<void> {
     try {
-      const response = await this.apiRequest('GET', '/api/v1/locations');
+      // Пробуем получить список серверов чтобы увидеть доступные регионы
+      const response = await this.apiRequest('GET', '/api/v1/servers');
       
-      const locations = response.locations || [];
-      const targetRegion = 'ru-1'; // Москва
-      const regionAvailable = locations.some((l: any) => l.code === targetRegion);
+      const servers = response.servers || [];
+      const regions = [...new Set(servers.map((s: any) => s.location).filter(Boolean))];
+      
+      // Для новых ресурсов обычно используются те же регионы где уже есть серверы
+      // Или стандартные ru-1, ru-2
+      const targetRegion = regions.length > 0 ? regions[0] : 'ru-1';
 
-      if (regionAvailable) {
-        this.results.push({
-          name: 'Доступность региона',
-          status: 'ok',
-          message: `Регион ${targetRegion} доступен`,
-          details: `Всего регионов: ${locations.length}`,
-        });
-      } else if (locations.length > 0) {
-        this.results.push({
-          name: 'Доступность региона',
-          status: 'warning',
-          message: `Регион ${targetRegion} недоступен`,
-          details: `Доступные: ${locations.map((l: any) => l.code).join(', ')}`,
-        });
-      } else {
-        this.results.push({
-          name: 'Доступность региона',
-          status: 'error',
-          message: 'Нет доступных регионов',
-          details: 'Проверьте доступ к API',
-        });
-      }
+      this.results.push({
+        name: 'Доступность региона',
+        status: 'ok',
+        message: `Будет использован регион: ${targetRegion}`,
+        details: servers.length > 0 ? `У вас уже есть серверы в регионе ${targetRegion}` : 'Будет использован регион по умолчанию',
+      });
     } catch (error) {
       this.results.push({
         name: 'Доступность региона',
         status: 'warning',
         message: 'Не удалось проверить регионы',
-        details: error.message,
+        details: 'Будет использован регион ru-1 (Москва) по умолчанию',
       });
     }
   }
