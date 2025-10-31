@@ -18,6 +18,9 @@
 /* Import Homepage 2025 */
 @import './homepage-2025.css';
 
+/* Import Professional Homepage */
+@import './professional-homepage.css';
+
 /* Premium Black & Gold Theme */
 :root {
   --premium-black: #0a0a0a;
