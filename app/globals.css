@@ -856,9 +856,30 @@ body {
   box-shadow: 0 4px 16px var(--shadow-color);
 }
 
+/* Weather Particles Container */
+.weather-particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.weather-particle {
+  position: absolute;
+  top: -20px;
+  color: white;
+  user-select: none;
+  animation: snowfall linear infinite;
+}
+
 /* Обновляем Weather Particles для светлой темы */
 [data-theme="light"] .weather-particle {
   filter: brightness(0.6) saturate(1.5);
+  color: #3b82f6;
 }
 
 /* Обновляем Glassmorphism для светлой темы */
