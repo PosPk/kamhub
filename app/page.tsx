@@ -352,7 +352,7 @@ export default function HomePage2025() {
               >
                 <div style={{ fontSize: 48, marginBottom: 24, opacity: 0.3 }}>⭐⭐⭐⭐⭐</div>
                 <p style={{ fontSize: 20, lineHeight: 1.6, marginBottom: 32, color: 'var(--text-primary)' }}>
-                  "{testimonial.text}"
+                  &ldquo;{testimonial.text}&rdquo;
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                   <div style={{ 
