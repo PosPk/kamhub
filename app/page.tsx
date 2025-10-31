@@ -380,7 +380,7 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <p className="text-white/80 mb-3 text-sm leading-relaxed">"{review.text}"</p>
+                <p className="text-white/80 mb-3 text-sm leading-relaxed">&ldquo;{review.text}&rdquo;</p>
                 <div className="text-xs text-white/50">Тур: {review.tour}</div>
               </div>
             ))}
