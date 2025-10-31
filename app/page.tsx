@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Tour, Partner, Weather } from '@/types';
 import { TourCard } from '@/components/TourCard';
 import { PartnerCard } from '@/components/PartnerCard';
@@ -31,31 +31,31 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const snowContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchData();
     getUserLocation();
+    createSnowflakes();
+    setupScrollAnimations();
   }, []);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       
-      // Загружаем туры
       const toursResponse = await fetch('/api/tours?limit=6');
       const toursData = await toursResponse.json();
       if (toursData.success && toursData.data?.tours) {
         setTours(toursData.data.tours);
       }
 
-      // Загружаем партнеров
       const partnersResponse = await fetch('/api/partners?limit=6');
       const partnersData = await partnersResponse.json();
       if (partnersData.success && partnersData.data?.data) {
         setPartners(partnersData.data.data);
       }
 
-      // Загружаем eco-points
       const ecoPointsResponse = await fetch('/api/eco-points?limit=10');
       const ecoPointsData = await ecoPointsResponse.json();
       if (ecoPointsData.success && ecoPointsData.data) {
@@ -94,6 +94,48 @@ export default function Home() {
     }
   };
 
+  // Создаём снежинки/пепел
+  const createSnowflakes = () => {
+    if (typeof window === 'undefined') return;
+    
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile ? 20 : 40;
+    const container = snowContainerRef.current;
+    
+    if (!container) return;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'snowflake';
+      particle.innerHTML = Math.random() > 0.5 ? '❄' : '•'; // снег или пепел
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      particle.style.animationDelay = Math.random() * 5 + 's';
+      particle.style.fontSize = (Math.random() * 0.5 + 0.5) + 'em';
+      particle.style.opacity = (Math.random() * 0.3 + 0.3).toString();
+      container.appendChild(particle);
+    }
+  };
+
+  // Fade-in анимации при скролле
+  const setupScrollAnimations = () => {
+    if (typeof window === 'undefined') return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    setTimeout(() => {
+      document.querySelectorAll('.fade-in-element').forEach(el => {
+        observer.observe(el);
+      });
+    }, 100);
+  };
+
   // Поиск
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -115,417 +157,239 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-premium-black text-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl mx-6 mb-8 mt-6">
-        <div className="absolute inset-0 -z-10">
-          <div 
-            className="w-full h-[60vh] bg-cover bg-center"
-            style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070')",
-            }}
-          />
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-premium-gold/20 via-transparent to-blue-500/20 animate-aurora"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
-        
-        <div className="relative p-8 md:p-12 grid content-end gap-6 min-h-[60vh]">
-          <div className="max-w-3xl">
-            <h1 className="font-display text-5xl sm:text-7xl font-black leading-tight mb-4 bg-gradient-to-r from-premium-gold via-yellow-300 to-premium-gold bg-clip-text text-transparent">
-              Камчатка ждёт вас
-            </h1>
-            <p className="text-xl text-white/90 mb-8">
-              Вулканы, океан, медведи и гейзеры. Забронируйте незабываемое приключение.
-            </p>
-            
-            {/* Поиск */}
-            <div className="relative max-w-2xl">
-              <div className="flex gap-3">
-                <div className="flex-1 relative">
-                  <input 
-                    placeholder="Поиск туров: вулканы, рыбалка, медведи..." 
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full h-14 rounded-2xl px-6 text-slate-900 text-lg focus:outline-none focus:ring-4 focus:ring-premium-gold/50 shadow-xl"
-                    name="q" 
-                  />
-                  {showSearchResults && searchResults.length > 0 && (
-                    <div className="absolute top-full mt-2 w-full bg-white rounded-2xl shadow-2xl overflow-hidden z-50">
-                      {searchResults.slice(0, 5).map((tour: any) => (
-                        <a
-                          key={tour.id}
-                          href={`/tours/${tour.id}`}
-                          className="block p-4 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0"
-                        >
-                          <div className="font-bold text-gray-900">{tour.title}</div>
-                          <div className="text-sm text-gray-600">от {tour.priceFrom?.toLocaleString()} ₽</div>
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <a 
-                  href="/demo"
-                  className="h-14 rounded-2xl px-8 font-bold bg-gradient-to-r from-premium-gold to-yellow-600 text-premium-black flex items-center gap-2 hover:shadow-xl hover:shadow-premium-gold/50 transition-all transform hover:scale-105"
-                >
-                  🚀 Демо
-                </a>
-              </div>
-            </div>
-
-            {/* CTA кнопки */}
-            <div className="flex gap-4 mt-6">
-              <a 
-                href="/auth/login"
-                className="px-8 py-3 bg-blue-600/90 text-white border border-blue-400/40 rounded-xl hover:bg-blue-600 transition-all font-bold backdrop-blur-xl shadow-lg"
-              >
-                Войти
-              </a>
-              <a 
-                href="/auth/login"
-                className="px-8 py-3 bg-green-600/90 text-white border border-green-400/40 rounded-xl hover:bg-green-600 transition-all font-bold backdrop-blur-xl shadow-lg"
-              >
-                Стать партнёром
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Статистика */}
-      <section className="px-6 py-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-xl border border-blue-500/30 rounded-2xl p-6 text-center">
-            <div className="text-5xl font-black bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-2">
-              {tours.length || 5}
-            </div>
-            <div className="text-white/70 font-semibold">Активных туров</div>
-          </div>
-          <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-xl border border-green-500/30 rounded-2xl p-6 text-center">
-            <div className="text-5xl font-black bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent mb-2">
-              {partners.length || 10}
-            </div>
-            <div className="text-white/70 font-semibold">Проверенных партнёров</div>
-          </div>
-          <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 text-center">
-            <div className="text-5xl font-black bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent mb-2">
-              150+
-            </div>
-            <div className="text-white/70 font-semibold">Довольных туристов</div>
-          </div>
-          <div className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 backdrop-blur-xl border border-orange-500/30 rounded-2xl p-6 text-center">
-            <div className="text-5xl font-black bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent mb-2">
-              4.9
-            </div>
-            <div className="text-white/70 font-semibold">Средний рейтинг ⭐</div>
-          </div>
-        </div>
-      </section>
-
-      {/* Роли с иконками */}
-      <section className="px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black mb-4 bg-gradient-to-r from-premium-gold via-yellow-300 to-premium-gold bg-clip-text text-transparent">
-              Кому это нужно?
-            </h2>
-            <p className="text-xl text-white/70">Выберите свою роль в экосистеме</p>
-          </div>
+    <main className="min-h-screen bg-kamchatka-gradient text-white overflow-x-hidden">
+      {/* Анимированный фон со снегом/пеплом */}
+      <div ref={snowContainerRef} className="snow-container" />
+      
+      {/* Hero Section - MOBILE FIRST, SAMSUNG STYLE */}
+      <section className="hero-section fade-in-element">
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Камчатка
+          </h1>
+          <p className="hero-subtitle">
+            Вулканы • Океан • Медведи
+          </p>
           
-          <div className="grid gap-6 grid-cols-2 sm:grid-cols-4">
-            {[
-              ['Турист', '/hub/tourist'],
-              ['Туроператор', '/hub/operator'],
-              ['Гид', '/hub/guide'],
-              ['Трансфер', '/hub/transfer'],
-              ['Размещение', '/hub/stay'],
-              ['Сувениры', '/hub/souvenirs'],
-              ['Прокат снаряжения', '/hub/gear'],
-              ['Прокат авто', '/hub/cars'],
-            ].map(([title, href]) => (
-              <a 
-                key={title} 
-                href={href} 
-                className="group rounded-2xl bg-white/5 border border-white/10 p-6 hover:bg-white/10 hover:border-premium-gold/50 transition-all transform hover:scale-105 hover:shadow-xl hover:shadow-premium-gold/20"
-              >
-                <div className="text-5xl mb-3 transform group-hover:scale-110 transition-transform">
-                  {ROLE_ICONS[title] || '🎯'}
+          {/* Поиск - Touch Friendly */}
+          <div className="hero-search-container">
+            <div className="search-wrapper">
+              <input 
+                placeholder="Найти тур..." 
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="search-input"
+                name="q" 
+              />
+              {showSearchResults && searchResults.length > 0 && (
+                <div className="search-results">
+                  {searchResults.slice(0, 5).map((tour: any) => (
+                    <a
+                      key={tour.id}
+                      href={`/tours/${tour.id}`}
+                      className="search-result-item"
+                    >
+                      <div className="result-title">{tour.title}</div>
+                      <div className="result-price">от {tour.priceFrom?.toLocaleString()} ₽</div>
+                    </a>
+                  ))}
                 </div>
-                <div className="text-lg font-extrabold mb-1">{title}</div>
-                <div className="text-sm text-white/70">Персональные инструменты</div>
-              </a>
-            ))}
+              )}
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Популярные туры */}
-      <section className="px-6 py-12 bg-gradient-to-b from-transparent via-white/5 to-transparent">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-4xl font-black bg-gradient-to-r from-premium-gold to-yellow-300 bg-clip-text text-transparent">
-              Популярные туры
-            </h2>
-            <a href="/tours" className="text-premium-gold hover:text-yellow-300 font-bold transition-colors">
-              Все туры →
+          {/* CTA кнопки - Touch Friendly (56px height) */}
+          <div className="cta-buttons">
+            <a href="/tours" className="cta-primary">
+              🏔️ Смотреть туры
+            </a>
+            <a href="/auth/login" className="cta-secondary">
+              Стать партнёром
             </a>
           </div>
-          
-          {loading ? (
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="bg-white/5 rounded-2xl h-80 animate-pulse"></div>
-              ))}
-            </div>
-          ) : tours.length > 0 ? (
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {tours.map((tour) => (
-                <TourCard
-                  key={tour.id}
-                  tour={tour}
-                  onClick={() => {
-                    window.location.href = `/tours/${tour.id}`;
-                  }}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-white/70 py-20">
-              <div className="text-6xl mb-4">🏔️</div>
-              <p className="text-xl">Туры скоро появятся</p>
-            </div>
-          )}
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="scroll-indicator">
+          <div className="scroll-arrow">↓</div>
         </div>
       </section>
 
-      {/* НОВАЯ СЕКЦИЯ: Партнёры */}
+      {/* Статистика - GLASSMORPHISM */}
+      <section className="stats-section fade-in-element">
+        <div className="stats-grid">
+          <div className="stat-card glass-card">
+            <div className="stat-number">{tours.length || 5}</div>
+            <div className="stat-label">Туров</div>
+          </div>
+          <div className="stat-card glass-card">
+            <div className="stat-number">{partners.length || 10}</div>
+            <div className="stat-label">Партнёров</div>
+          </div>
+          <div className="stat-card glass-card">
+            <div className="stat-number">150+</div>
+            <div className="stat-label">Туристов</div>
+          </div>
+          <div className="stat-card glass-card">
+            <div className="stat-number">4.9</div>
+            <div className="stat-label">⭐ Рейтинг</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Роли - Mobile optimized */}
+      <section className="roles-section fade-in-element">
+        <h2 className="section-title">Для кого?</h2>
+        <div className="roles-grid">
+          {[
+            ['Турист', '/hub/tourist'],
+            ['Туроператор', '/hub/operator'],
+            ['Гид', '/hub/guide'],
+            ['Трансфер', '/hub/transfer'],
+            ['Размещение', '/hub/stay'],
+            ['Сувениры', '/hub/souvenirs'],
+            ['Снаряжение', '/hub/gear'],
+            ['Авто', '/hub/cars'],
+          ].map(([title, href]) => (
+            <a 
+              key={title} 
+              href={href} 
+              className="role-card glass-card"
+            >
+              <div className="role-icon">
+                {ROLE_ICONS[title] || '🎯'}
+              </div>
+              <div className="role-title">{title}</div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* Популярные туры - Вертикальный на мобильном */}
+      <section className="tours-section fade-in-element">
+        <div className="section-header">
+          <h2 className="section-title">Популярные туры</h2>
+          <a href="/tours" className="section-link">Все →</a>
+        </div>
+        
+        {loading ? (
+          <div className="tours-grid">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="tour-skeleton"></div>
+            ))}
+          </div>
+        ) : tours.length > 0 ? (
+          <div className="tours-grid">
+            {tours.slice(0, 3).map((tour) => (
+              <TourCard
+                key={tour.id}
+                tour={tour}
+                onClick={() => {
+                  window.location.href = `/tours/${tour.id}`;
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="empty-state">
+            <div className="empty-icon">🏔️</div>
+            <p>Туры скоро появятся</p>
+          </div>
+        )}
+      </section>
+
+      {/* Партнёры */}
       {partners.length > 0 && (
-        <section className="px-6 py-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-4xl font-black bg-gradient-to-r from-premium-gold to-yellow-300 bg-clip-text text-transparent">
-                Наши партнёры
-              </h2>
-              <a href="/partners" className="text-premium-gold hover:text-yellow-300 font-bold transition-colors">
-                Все партнёры →
-              </a>
-            </div>
-            
-            <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
-              {partners.map((partner) => (
-                <div
-                  key={partner.id}
-                  className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-premium-gold/50 transition-all transform hover:scale-105 group"
-                >
-                  <div className="aspect-square bg-white/10 rounded-xl flex items-center justify-center mb-3 group-hover:bg-white/20 transition-colors">
-                    <span className="text-4xl">🏢</span>
-                  </div>
-                  <div className="text-sm font-bold text-white/90 text-center line-clamp-2">
-                    {partner.name}
-                  </div>
-                  <div className="text-xs text-white/60 text-center mt-1">
-                    ⭐ {partner.rating || '4.5'}
-                  </div>
-                </div>
-              ))}
-            </div>
+        <section className="partners-section fade-in-element">
+          <div className="section-header">
+            <h2 className="section-title">Партнёры</h2>
+            <a href="/partners" className="section-link">Все →</a>
+          </div>
+          
+          <div className="partners-grid">
+            {partners.slice(0, 6).map((partner) => (
+              <div key={partner.id} className="partner-card glass-card">
+                <div className="partner-icon">🏢</div>
+                <div className="partner-name">{partner.name}</div>
+                <div className="partner-rating">⭐ {partner.rating || '4.5'}</div>
+              </div>
+            ))}
           </div>
         </section>
       )}
 
       {/* Отзывы */}
-      <section className="px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-black mb-4 bg-gradient-to-r from-premium-gold to-yellow-300 bg-clip-text text-transparent">
-              Отзывы туристов
-            </h2>
-            <p className="text-xl text-white/70">Что говорят о Камчатке</p>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                name: 'Анна К.',
-                avatar: '👩',
-                rating: 5,
-                text: 'Невероятные впечатления! Восхождение на Авачинский вулкан - это что-то космическое. Гиды профессионалы, всё организовано на высшем уровне.',
-                tour: 'Восхождение на вулкан',
-              },
-              {
-                name: 'Дмитрий М.',
-                avatar: '👨',
-                rating: 5,
-                text: 'Долина гейзеров превзошла все ожидания. Это нужно видеть своими глазами! Спасибо команде за незабываемый опыт.',
-                tour: 'Долина гейзеров',
-              },
-              {
-                name: 'Елена С.',
-                avatar: '👩',
-                rating: 5,
-                text: 'Рыбалка на Камчатке - мечта! Поймали огромных лососей, увидели медведей в дикой природе. Вернёмся ещё!',
-                tour: 'Рыболовный тур',
-              },
-            ].map((review, index) => (
-              <div
-                key={index}
-                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="text-4xl">{review.avatar}</div>
-                  <div className="flex-1">
-                    <div className="font-bold text-white">{review.name}</div>
-                    <div className="text-sm text-premium-gold">
-                      {'⭐'.repeat(review.rating)}
-                    </div>
+      <section className="reviews-section fade-in-element">
+        <h2 className="section-title">Отзывы</h2>
+        <div className="reviews-grid">
+          {[
+            {
+              name: 'Анна К.',
+              avatar: '👩',
+              rating: 5,
+              text: 'Невероятные впечатления! Восхождение на вулкан - это космос.',
+              tour: 'Авачинский вулкан',
+            },
+            {
+              name: 'Дмитрий М.',
+              avatar: '👨',
+              rating: 5,
+              text: 'Долина гейзеров превзошла все ожидания!',
+              tour: 'Долина гейзеров',
+            },
+            {
+              name: 'Елена С.',
+              avatar: '👩',
+              rating: 5,
+              text: 'Рыбалка на Камчатке - мечта!',
+              tour: 'Рыболовный тур',
+            },
+          ].map((review, index) => (
+            <div key={index} className="review-card glass-card">
+              <div className="review-header">
+                <div className="review-avatar">{review.avatar}</div>
+                <div className="review-info">
+                  <div className="review-name">{review.name}</div>
+                  <div className="review-rating">
+                    {'⭐'.repeat(review.rating)}
                   </div>
                 </div>
-                <p className="text-white/80 mb-3 text-sm leading-relaxed">&ldquo;{review.text}&rdquo;</p>
-                <div className="text-xs text-white/50">Тур: {review.tour}</div>
               </div>
-            ))}
-          </div>
+              <p className="review-text">&ldquo;{review.text}&rdquo;</p>
+              <div className="review-tour">{review.tour}</div>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* Weather and Eco-points Widgets */}
-      {userLocation && (
-        <section className="px-6 py-6">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-6">
-            <WeatherWidget
-              lat={userLocation.lat}
-              lng={userLocation.lng}
-              location="Петропавловск-Камчатский"
-              className="h-80"
-            />
-            <EcoPointsWidget
-              userId="demo-user"
-              className="h-80"
-            />
-          </div>
-        </section>
-      )}
+      {/* AI Chat - Компактный на мобильном */}
+      <section className="ai-section fade-in-element">
+        <h2 className="section-title">AI-гид</h2>
+        <AIChatWidget userId="demo-user" className="ai-widget" />
+      </section>
 
-      {/* SOS и Камчатка */}
-      <section className="px-6 py-6">
-        <div className="max-w-6xl mx-auto grid gap-4 sm:grid-cols-3">
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-4 sm:grid-cols-2 sm:items-start">
-            <div className="grid gap-4">
-              <div className="text-sm text-white/70">SOS и безопасность</div>
-              <div className="grid gap-3">
-                <a href="#" className="rounded-xl bg-premium-gold text-premium-black text-center py-3 font-bold hover:bg-yellow-600 transition-colors">
-                  SOS
-                </a>
-                <a href="#" className="rounded-xl bg-white/10 text-center py-3 font-bold hover:bg-white/20 transition-colors">
-                  МЧС
-                </a>
-                <a href="#" className="rounded-xl bg-white/10 text-center py-3 font-bold hover:bg-white/20 transition-colors">
-                  Сейсмика
-                </a>
-              </div>
-              <div className="text-white/70 text-xs">Тестовый режим</div>
-            </div>
-            <div className="w-full h-72 grid place-items-center cursor-pointer">
-              <a href="/hub/safety" target="_blank" rel="noopener noreferrer" className="inline-block w-[70%] sm:w-[80%] max-w-[520px]">
-                <img 
-                  src="/graphics/kamchatka-button.svg" 
-                  alt="Камчатка" 
-                  className="w-full h-auto filter drop-shadow-[0_0_30px_rgba(230,193,73,0.6)] hover:drop-shadow-[0_0_50px_rgba(230,193,73,0.8)] transition-all duration-300" 
-                />
-              </a>
-            </div>
+      {/* Footer - Мобильный */}
+      <footer className="footer">
+        <div className="footer-content">
+          <div className="footer-brand">
+            <div className="footer-logo">🏔️</div>
+            <span className="footer-brand-name">Kamchatour Hub</span>
           </div>
           
-          <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-2">
-            <div className="text-sm text-white/70">Экология</div>
-            <div className="text-2xl font-black text-premium-gold">Eco‑points: 0</div>
-            <div className="text-white/70 text-sm">Собирайте баллы за бережное поведение</div>
+          <div className="footer-links">
+            <a href="/tours">Туры</a>
+            <a href="/partners">Партнёры</a>
+            <a href="/auth/login">Войти</a>
+            <a href="/hub/safety">Безопасность</a>
           </div>
-        </div>
-      </section>
-
-      {/* AI Chat Widget */}
-      <section className="px-6 py-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-extrabold mb-4 bg-gradient-to-r from-premium-gold to-yellow-300 bg-clip-text text-transparent">
-            AI-Гид по Камчатке
-          </h2>
-          <AIChatWidget
-            userId="demo-user"
-            className="w-full h-96"
-          />
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer className="mt-20 border-t border-white/10 bg-gradient-to-b from-transparent to-black/50">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            {/* Колонка 1: О проекте */}
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gold-gradient"></div>
-                <span className="font-bold text-xl text-premium-gold">Kamchatour Hub</span>
-              </div>
-              <p className="text-white/70 text-sm mb-4">
-                Экосистема туризма Камчатки. Туры, партнёры, бронирование.
-              </p>
-              <div className="flex gap-3">
-                <a href="#" className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors">
-                  <span className="text-xl">📱</span>
-                </a>
-                <a href="#" className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors">
-                  <span className="text-xl">✈️</span>
-                </a>
-                <a href="#" className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors">
-                  <span className="text-xl">📧</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Колонка 2: Для туристов */}
-            <div>
-              <h3 className="font-bold text-white mb-4">Для туристов</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><a href="/tours" className="hover:text-premium-gold transition-colors">Все туры</a></li>
-                <li><a href="/partners" className="hover:text-premium-gold transition-colors">Партнёры</a></li>
-                <li><a href="/hub/safety" className="hover:text-premium-gold transition-colors">Безопасность</a></li>
-                <li><a href="/demo" className="hover:text-premium-gold transition-colors">Демо-режим</a></li>
-              </ul>
-            </div>
-
-            {/* Колонка 3: Для бизнеса */}
-            <div>
-              <h3 className="font-bold text-white mb-4">Для бизнеса</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><a href="/auth/login" className="hover:text-premium-gold transition-colors">Стать партнёром</a></li>
-                <li><a href="/hub/operator" className="hover:text-premium-gold transition-colors">CRM-система</a></li>
-                <li><a href="/hub/operator" className="hover:text-premium-gold transition-colors">Аналитика</a></li>
-                <li><a href="/partner/dashboard" className="hover:text-premium-gold transition-colors">Личный кабинет</a></li>
-              </ul>
-            </div>
-
-            {/* Колонка 4: Контакты */}
-            <div>
-              <h3 className="font-bold text-white mb-4">Контакты</h3>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li>📍 Петропавловск-Камчатский</li>
-                <li>📞 +7 (999) 123-45-67</li>
-                <li>📧 info@kamchatour.ru</li>
-                <li>🕐 Пн-Вс: 9:00-21:00</li>
-              </ul>
-            </div>
+          
+          <div className="footer-contacts">
+            <div>📍 Петропавловск-Камчатский</div>
+            <div>📧 info@kamchatour.ru</div>
           </div>
-
-          {/* Нижняя часть футера */}
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-white/50">
-              © 2025 Kamchatour Hub. Все права защищены.
-            </div>
-            <div className="flex gap-6 text-sm text-white/50">
-              <a href="#" className="hover:text-premium-gold transition-colors">Политика конфиденциальности</a>
-              <a href="#" className="hover:text-premium-gold transition-colors">Условия использования</a>
-            </div>
+          
+          <div className="footer-copy">
+            © 2025 Kamchatour Hub
           </div>
         </div>
       </footer>
