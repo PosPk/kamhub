@@ -8,8 +8,8 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Disable standalone - use regular Next.js server
-  // output: 'standalone',
+  // Enable standalone for Docker build
+  output: 'standalone',
   // Optimize images
   images: {
     unoptimized: true,
