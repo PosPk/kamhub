@@ -20,7 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <header className="sticky top-0 z-50 border-b border-white/10 bg-premium-black/80 backdrop-blur">
                 <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
                   <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
-                    <img src="/icons/1758960070.png" alt="Tourhub" className="h-10 object-contain" />
+                    <img src="/logo-kamchatka.svg" alt="Kamchatka Tour Hub" className="h-10 object-contain" />
                   </Link>
                   <div className="flex items-center gap-4">
                     <Link href="/tours" className="text-gold hover:text-gold/80 transition-colors hidden md:inline">Туры</Link>

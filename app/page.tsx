@@ -455,7 +455,7 @@ export default function Home() {
               transform: `translateY(${Math.sin(Date.now() / 1000) * 10}px)`
             }}
           >
-            <img src="/icons/1758960070.png" alt="Tourhub" className="hero-logo" />
+            <img src="/logo-kamchatka.svg" alt="Kamchatka Tour Hub" className="hero-logo" />
           </div>
           
           <h1 className="hero-title-modern">
@@ -718,7 +718,7 @@ export default function Home() {
       <footer className="footer-modern">
         <div className="footer-content-modern">
           <div className="footer-brand-modern">
-            <img src="/icons/1758960070.png" alt="Tourhub" className="footer-logo-modern" />
+            <img src="/logo-kamchatka.svg" alt="Kamchatka Tour Hub" className="footer-logo-modern" />
             <span className="footer-tagline">Экосистема туризма Камчатки</span>
           </div>
           
