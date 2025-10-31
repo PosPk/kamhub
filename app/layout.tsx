@@ -18,13 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <OrdersProvider>
               <header className="sticky top-0 z-50 border-b border-white/10 bg-premium-black/80 backdrop-blur">
                 <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-lg bg-gold-gradient" />
-                    <b className="text-premium-gold">Kamchatour Hub</b>
-                  </div>
+                  <a href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
+                    <img src="/logo-tourhub.svg" alt="Tourhub" className="h-8" />
+                  </a>
                   <div className="flex items-center gap-4">
+                    <a href="/tours" className="text-gold hover:text-gold/80 transition-colors hidden md:inline">Туры</a>
                     <a href="/auth/login" className="text-gold hover:text-gold/80 transition-colors">Войти</a>
-                    <a href="/operator" className="text-gold hover:text-gold/80 transition-colors">CRM</a>
+                    <a href="/operator" className="text-gold hover:text-gold/80 transition-colors hidden md:inline">CRM</a>
                     <a href="/tg" className="button-gold">Витрина</a>
                   </div>
                 </div>

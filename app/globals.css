@@ -5,6 +5,9 @@
 /* Import UI improvements */
 @import './ui-improvements.css';
 
+/* Import Modern Homepage */
+@import './modern-homepage.css';
+
 /* Premium Black & Gold Theme */
 :root {
   --premium-black: #0a0a0a;
