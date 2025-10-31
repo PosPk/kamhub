@@ -245,14 +245,14 @@ export default function Home() {
             </div>
             <div className="text-white/70 text-xs">Тестовый режим: интеграции в процессе</div>
           </div>
-          <div className="w-full h-72 rounded-2xl overflow-hidden border border-white/10 bg-black grid place-items-center cursor-pointer group">
-            <div className="w-[70%] sm:w-[80%]">
-              <a href="/hub/safety" target="_blank" rel="noopener noreferrer" className="group inline-block w-full max-w-[520px]">
-                <div className="rounded-2xl border border-white/10 bg-black grid place-items-center map-button-glow w-full">
-                  <img src="/graphics/kamchatka-button.svg" alt="Камчатка" className="kamchatka-button w-full h-auto" />
-                </div>
-              </a>
-            </div>
+          <div className="w-full h-72 grid place-items-center cursor-pointer">
+            <a href="/hub/safety" target="_blank" rel="noopener noreferrer" className="inline-block w-[70%] sm:w-[80%] max-w-[520px]">
+              <img 
+                src="/graphics/kamchatka-button.svg" 
+                alt="Камчатка" 
+                className="w-full h-auto filter drop-shadow-[0_0_30px_rgba(230,193,73,0.6)] hover:drop-shadow-[0_0_50px_rgba(230,193,73,0.8)] transition-all duration-300" 
+              />
+            </a>
           </div>
         </div>
         
