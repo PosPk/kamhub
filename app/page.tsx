@@ -114,7 +114,7 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [currentMood, setCurrentMood] = useState<WeatherMood>(WEATHER_MOODS.snow);
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Белая по умолчанию
   const snowContainerRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
 
@@ -155,6 +155,9 @@ export default function Home() {
     if (savedTheme) {
       setTheme(savedTheme);
       document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+      // По умолчанию белая тема
+      document.documentElement.setAttribute('data-theme', 'light');
     }
   };
 
@@ -429,33 +432,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Роли - Mobile optimized */}
-      <section className="roles-section fade-in-element">
-        <h2 className="section-title">Для кого?</h2>
-        <div className="roles-grid">
-          {[
-            ['Турист', '/hub/tourist'],
-            ['Туроператор', '/hub/operator'],
-            ['Гид', '/hub/guide'],
-            ['Трансфер', '/hub/transfer'],
-            ['Размещение', '/hub/stay'],
-            ['Сувениры', '/hub/souvenirs'],
-            ['Снаряжение', '/hub/gear'],
-            ['Авто', '/hub/cars'],
-          ].map(([title, href]) => (
-            <a 
-              key={title} 
-              href={href} 
-              className="role-card glass-card"
-            >
-              <div className="role-icon">
-                {ROLE_ICONS[title] || '🎯'}
-              </div>
-              <div className="role-title">{title}</div>
-            </a>
-          ))}
-        </div>
-      </section>
+      {/* Роли убраны - теперь в форме регистрации */}
 
       {/* Погода - Встроенный виджет */}
       {userLocation && (

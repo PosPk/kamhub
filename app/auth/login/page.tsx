@@ -3,11 +3,56 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+// Модные SVG иконки вместо emoji
 const ROLES = [
-  { id: 'operator', name: 'Туры', icon: '🎣', description: 'Рыболовные туры', gradient: 'from-blue-500 to-cyan-500' },
-  { id: 'transfer', name: 'Трансфер', icon: '🚗', description: 'Доставка к местам рыбалки', gradient: 'from-green-500 to-emerald-500' },
-  { id: 'stay', name: 'Размещение', icon: '🏠', description: 'Базы и домики', gradient: 'from-purple-500 to-pink-500' },
-  { id: 'gear', name: 'Снаряжение', icon: '🎣', description: 'Прокат оборудования', gradient: 'from-orange-500 to-red-500' },
+  { 
+    id: 'operator', 
+    name: 'Туры', 
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    ),
+    description: 'Организация туров', 
+    gradient: 'from-blue-500 to-cyan-500' 
+  },
+  { 
+    id: 'transfer', 
+    name: 'Трансфер', 
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+        <circle cx="7" cy="17" r="2"/>
+        <circle cx="17" cy="17" r="2"/>
+      </svg>
+    ),
+    description: 'Трансфер и доставка', 
+    gradient: 'from-green-500 to-emerald-500' 
+  },
+  { 
+    id: 'stay', 
+    name: 'Размещение', 
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    ),
+    description: 'Базы и гостиницы', 
+    gradient: 'from-purple-500 to-pink-500' 
+  },
+  { 
+    id: 'gear', 
+    name: 'Снаряжение', 
+    icon: (
+      <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v6m0 6v6M6 12H1m6 0h6m5.3-5.3l-4.2 4.2m0 0L9.7 6.7m8.5 10.6l-4.2-4.2m0 0l-4.2 4.2"/>
+      </svg>
+    ),
+    description: 'Прокат снаряжения', 
+    gradient: 'from-orange-500 to-red-500' 
+  },
 ];
 
 export default function AuthPage() {
