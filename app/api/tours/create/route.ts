@@ -13,7 +13,7 @@ const tourSchema = z.object({
   name: z.string().min(3, 'Название тура должно быть минимум 3 символа'),
   description: z.string().min(10, 'Описание должно быть минимум 10 символов'),
   shortDescription: z.string().optional(),
-  difficulty: z.enum(['easy', 'medium', 'hard'], { errorMap: () => ({ message: 'Выберите сложность' }) }),
+  difficulty: z.enum(['easy', 'medium', 'hard'], { message: 'Выберите сложность' }),
   duration: z.number().min(1, 'Длительность должна быть минимум 1 час'),
   price: z.number().min(0, 'Цена не может быть отрицательной'),
   currency: z.string().default('RUB'),

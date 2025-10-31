@@ -14,7 +14,7 @@ const accommodationSchema = z.object({
   description: z.string().min(10, 'Описание должно быть минимум 10 символов'),
   shortDescription: z.string().optional(),
   type: z.enum(['hotel', 'hostel', 'apartment', 'guesthouse', 'resort', 'camping', 'glamping', 'cottage'], {
-    errorMap: () => ({ message: 'Выберите тип размещения' })
+    message: 'Выберите тип размещения'
   }),
   address: z.string().min(5, 'Укажите адрес'),
   coordinates: z.object({
