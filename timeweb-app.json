@@ -4,7 +4,7 @@
   "framework": "nextjs",
   "runtime": "nodejs20",
   "buildCommand": "npm run build",
-  "startCommand": "node .next/standalone/server.js",
+  "startCommand": "npm start",
   "port": 8080,
   "environment": "production",
   "autoDeploy": true,
