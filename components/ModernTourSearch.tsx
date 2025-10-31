@@ -39,7 +39,41 @@ export function ModernTourSearch() {
   const [aiQuery, setAiQuery] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResponse, setAiResponse] = useState('');
+  const [isListening, setIsListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
   const searchTimeout = useRef<NodeJS.Timeout>();
+  const recognitionRef = useRef<any>(null);
+
+  // Проверка поддержки голосового ввода
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setVoiceSupported(true);
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'ru-RU';
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setFilters(prev => ({ ...prev, query: transcript }));
+          setIsListening(false);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+        };
+
+        recognition.onend = () => {
+          setIsListening(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
 
   // Живой поиск с debounce
   useEffect(() => {
@@ -121,6 +155,22 @@ export function ModernTourSearch() {
     const keywords = ['вулкан', 'рыбалка', 'медвед', 'гейзер', 'восхождение', 'треккинг', 'термальн', 'океан'];
     const found = keywords.filter(k => text.toLowerCase().includes(k));
     return found[0] || text.split(' ').slice(0, 3).join(' ');
+  };
+
+  const toggleVoiceInput = () => {
+    if (!voiceSupported || !recognitionRef.current) return;
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (error) {
+        console.error('Error starting recognition:', error);
+      }
+    }
   };
 
   const activities = [
@@ -225,6 +275,28 @@ export function ModernTourSearch() {
             placeholder="Куда хотите отправиться? (вулкан, рыбалка, медведи...)"
             className="search-input-main"
           />
+          {voiceSupported && (
+            <button 
+              onClick={toggleVoiceInput}
+              className={`voice-input-btn ${isListening ? 'listening' : ''}`}
+              title="Голосовой ввод"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                {isListening ? (
+                  <>
+                    <rect x="9" y="2" width="6" height="20" rx="3"/>
+                    <circle cx="12" cy="12" r="8" opacity="0.3" className="pulse-ring"/>
+                  </>
+                ) : (
+                  <>
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" x2="12" y1="19" y2="22"/>
+                  </>
+                )}
+              </svg>
+            </button>
+          )}
           <button 
             onClick={() => setShowAI(true)}
             className="ai-assistant-btn"
