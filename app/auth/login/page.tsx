@@ -223,9 +223,11 @@ export default function AuthPage() {
       <div className="relative max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-12 mt-8">
-          <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-premium-gold to-yellow-600 mx-auto mb-6 shadow-2xl shadow-premium-gold/50 transform hover:scale-110 transition-transform"></div>
+          <div className="mx-auto mb-6 flex justify-center">
+            <img src="/logo-tourhub.svg" alt="Tourhub" className="h-16 md:h-20 transform hover:scale-110 transition-transform" />
+          </div>
           <h1 className="text-5xl md:text-6xl font-black mb-3 bg-gradient-to-r from-premium-gold via-yellow-300 to-premium-gold bg-clip-text text-transparent">
-            Kamchatour Hub
+            Tourhub
           </h1>
           <p className="text-xl text-white/70">
             Экосистема туризма Камчатки
