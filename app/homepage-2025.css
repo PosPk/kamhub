@@ -16,6 +16,47 @@ html {
 }
 
 /* ================================================
+   THEME TOGGLE 2025
+   ================================================ */
+
+.theme-toggle-2025 {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle-2025:hover {
+  transform: scale(1.1) rotate(15deg);
+  border-color: var(--accent-primary);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+}
+
+.theme-toggle-2025 svg {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle-2025:hover svg {
+  transform: rotate(-15deg);
+}
+
+/* ================================================
    HERO SECTION 2025
    ================================================ */
 
@@ -109,8 +150,14 @@ html {
 }
 
 .logo-2025 {
-  height: 120px;
+  height: 80px;
   animation: logoFloat 4s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .logo-2025 {
+    height: 60px;
+  }
 }
 
 @keyframes logoFloat {
@@ -120,19 +167,19 @@ html {
 
 /* Title with 3D Effect */
 .title-2025 {
-  font-size: clamp(56px, 12vw, 120px);
+  font-size: clamp(40px, 8vw, 72px);
   font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  margin-bottom: 24px;
-  background: linear-gradient(135deg, #ffffff 0%, #e6c149 50%, #ffffff 100%);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-secondary) 50%, var(--text-primary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: titleReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+  animation: titleReveal 1s cubic-bezier(0.4, 0, 0.2, 1) backwards;
   text-shadow: 
-    0 10px 30px rgba(230, 193, 73, 0.3),
-    0 20px 60px rgba(230, 193, 73, 0.2);
+    0 8px 24px rgba(230, 193, 73, 0.2),
+    0 16px 48px rgba(230, 193, 73, 0.1);
   transform-style: preserve-3d;
 }
 
@@ -161,12 +208,12 @@ html {
 }
 
 .subtitle-2025 {
-  font-size: clamp(18px, 3vw, 28px);
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 60px;
-  font-weight: 300;
-  letter-spacing: 0.05em;
-  animation: titleReveal 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
+  font-size: clamp(16px, 2.5vw, 22px);
+  color: var(--text-secondary);
+  margin-bottom: 48px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  animation: titleReveal 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards;
 }
 
 /* Search 2025 - Bento Style */
@@ -460,10 +507,17 @@ html {
 }
 
 .stat-icon-2025 {
-  font-size: 56px;
-  margin-bottom: 20px;
-  display: inline-block;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   animation: iconBounce 2s ease-in-out infinite;
+}
+
+.stat-icon-2025 img {
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 4px 12px currentColor);
 }
 
 @keyframes iconBounce {
@@ -472,12 +526,12 @@ html {
 }
 
 .stat-number-2025 {
-  font-size: 64px;
+  font-size: 48px;
   font-weight: 900;
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   line-height: 1;
 }
 
@@ -812,13 +866,13 @@ html {
 }
 
 .section-title-2025 {
-  font-size: clamp(36px, 6vw, 72px);
+  font-size: clamp(32px, 5vw, 56px);
   font-weight: 900;
-  margin-bottom: 20px;
-  background: linear-gradient(135deg, #ffffff, #e6c149);
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .section-description-2025 {

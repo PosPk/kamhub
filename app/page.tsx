@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Tour, Partner, Weather } from '@/types';
 import { FloatingNav } from '@/components/FloatingNav';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HomePage2025() {
   const [stats, setStats] = useState({ tours: 0, partners: 0, tourists: 0, rating: 0 });
@@ -13,11 +14,19 @@ export default function HomePage2025() {
   const [loading, setLoading] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   
   const statsRef = useRef<HTMLDivElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+    
     fetchData();
     setupScrollReveal();
     setupCursorFollower();
@@ -29,6 +38,13 @@ export default function HomePage2025() {
     
     return () => clearInterval(interval);
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   const fetchData = async () => {
     try {
@@ -136,7 +152,7 @@ export default function HomePage2025() {
       text: 'Невероятные впечатления! Восхождение на Авачинский вулкан - это что-то космическое. Вид сверху просто захватывает дух!',
       rating: 5,
       tour: 'Авачинский вулкан',
-      avatar: '👩‍🦰'
+      avatar: 'АИ'
     },
     {
       name: 'Дмитрий Смирнов',
@@ -144,7 +160,7 @@ export default function HomePage2025() {
       text: 'Долина гейзеров превзошла все ожидания. Такой природы больше нет нигде в мире. Потрясающие кадры и эмоции!',
       rating: 5,
       tour: 'Долина гейзеров',
-      avatar: '👨‍💼'
+      avatar: 'ДС'
     },
     {
       name: 'Елена Петрова',
@@ -152,12 +168,37 @@ export default function HomePage2025() {
       text: 'Рыбалка на Камчатке - это мечта! Поймала кижуча на 12 кг. Организация на высшем уровне, гиды супер профессиональные.',
       rating: 5,
       tour: 'Рыболовный тур',
-      avatar: '👩‍🎓'
+      avatar: 'ЕП'
     }
   ];
 
   return (
     <main className="homepage-2025">
+      {/* Theme Toggle */}
+      <button 
+        onClick={toggleTheme}
+        className="theme-toggle-2025"
+        title={theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          {theme === 'light' ? (
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          ) : (
+            <>
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </>
+          )}
+        </svg>
+      </button>
+      
       {/* Cursor Follower */}
       <div ref={cursorRef} className="cursor-follower" />
       
@@ -195,7 +236,7 @@ export default function HomePage2025() {
           </h1>
 
           <p className="subtitle-2025">
-            Вулканы • Океан • Медведи • Незабываемые приключения
+            Вулканы • Океан • Медведи • Приключения
           </p>
 
           <div className="search-2025">
@@ -235,10 +276,10 @@ export default function HomePage2025() {
       <section ref={statsRef} className="section-2025 reveal-element">
         <div className="stats-2025">
           {[
-            { icon: '🏔️', value: stats.tours, label: 'Туров', color: '#3b82f6' },
-            { icon: '🤝', value: stats.partners, label: 'Партнёров', color: '#8b5cf6' },
-            { icon: '👥', value: stats.tourists, label: 'Туристов', color: '#e6c149' },
-            { icon: '⭐', value: stats.rating, label: 'Рейтинг', color: '#f59e0b' }
+            { icon: '/icons/tours.svg', value: stats.tours, label: 'Туров', color: '#3b82f6' },
+            { icon: '/icons/partners.svg', value: stats.partners, label: 'Партнёров', color: '#8b5cf6' },
+            { icon: '/icons/tourists.svg', value: stats.tourists, label: 'Туристов', color: '#e6c149' },
+            { icon: '/icons/star.svg', value: stats.rating, label: 'Рейтинг', color: '#f59e0b' }
           ].map((stat, i) => (
             <div 
               key={i}
@@ -249,7 +290,12 @@ export default function HomePage2025() {
             >
               <div className="card-3d-bg" />
               <div className="card-3d-content">
-                <div className="stat-icon-2025">{stat.icon}</div>
+                <div className="stat-icon-2025">
+                  <svg width="48" height="48" style={{ color: stat.color }}>
+                    <use href={`${stat.icon}#root`} />
+                  </svg>
+                  <img src={stat.icon} alt={stat.label} width="48" height="48" style={{ color: stat.color }} />
+                </div>
                 <div className="stat-number-2025">{stat.value}+</div>
                 <div className="stat-label-2025">{stat.label}</div>
               </div>
@@ -292,7 +338,7 @@ export default function HomePage2025() {
           <div className="bento-item bento-medium card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
             <div className="card-3d-bg" />
             <div className="card-3d-content">
-              <div style={{ fontSize: 48, marginBottom: 16 }}>🎣</div>
+              <img src="/icons/fishing.svg" alt="Рыбалка" width="48" height="48" style={{ marginBottom: 16, color: 'var(--accent-primary)' }} />
               <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Рыбалка</h3>
               <p style={{ color: 'var(--text-secondary)' }}>Лучшие места для трофейной рыбалки</p>
             </div>
@@ -300,20 +346,20 @@ export default function HomePage2025() {
 
           <div className="bento-item bento-small card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
             <div className="card-3d-bg" />
-            <div style={{ fontSize: 40, marginBottom: 12 }}>💨</div>
+            <img src="/icons/geyser.svg" alt="Гейзеры" width="40" height="40" style={{ marginBottom: 12, color: 'var(--accent-primary)' }} />
             <h4 style={{ fontSize: 18, fontWeight: 700 }}>Гейзеры</h4>
           </div>
 
           <div className="bento-item bento-small card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
             <div className="card-3d-bg" />
-            <div style={{ fontSize: 40, marginBottom: 12 }}>♨️</div>
+            <img src="/icons/hot-spring.svg" alt="Термы" width="40" height="40" style={{ marginBottom: 12, color: 'var(--accent-primary)' }} />
             <h4 style={{ fontSize: 18, fontWeight: 700 }}>Термы</h4>
           </div>
 
           <div className="bento-item bento-tall card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
             <div className="card-3d-bg" />
             <div className="card-3d-content">
-              <div style={{ fontSize: 56, marginBottom: 20 }}>🐻</div>
+              <img src="/icons/bear.svg" alt="Медведи" width="56" height="56" style={{ marginBottom: 20, color: 'var(--accent-primary)' }} />
               <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Наблюдение за медведями</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
                 Курильское озеро - уникальное место встречи с бурыми медведями
@@ -324,7 +370,7 @@ export default function HomePage2025() {
           <div className="bento-item bento-medium card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
             <div className="card-3d-bg" />
             <div className="card-3d-content">
-              <div style={{ fontSize: 48, marginBottom: 16 }}>🥾</div>
+              <img src="/icons/hiking.svg" alt="Треккинг" width="48" height="48" style={{ marginBottom: 16, color: 'var(--accent-primary)' }} />
               <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Треккинг</h3>
               <p style={{ color: 'var(--text-secondary)' }}>Пешие походы по живописным маршрутам</p>
             </div>
@@ -350,7 +396,11 @@ export default function HomePage2025() {
                   display: index < 3 ? 'block' : 'none'
                 }}
               >
-                <div style={{ fontSize: 48, marginBottom: 24, opacity: 0.3 }}>⭐⭐⭐⭐⭐</div>
+                <div style={{ display: 'flex', gap: 4, marginBottom: 24, opacity: 0.8 }}>
+                  {[...Array(5)].map((_, i) => (
+                    <img key={i} src="/icons/star.svg" alt="star" width="24" height="24" style={{ color: 'var(--accent-secondary)' }} />
+                  ))}
+                </div>
                 <p style={{ fontSize: 20, lineHeight: 1.6, marginBottom: 32, color: 'var(--text-primary)' }}>
                   &ldquo;{testimonial.text}&rdquo;
                 </p>
@@ -359,11 +409,13 @@ export default function HomePage2025() {
                     width: 56, 
                     height: 56, 
                     borderRadius: '50%', 
-                    background: 'rgba(59, 130, 246, 0.2)',
+                    background: 'linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: 28
+                    fontSize: 18,
+                    fontWeight: 700,
+                    color: 'white'
                   }}>
                     {testimonial.avatar}
                   </div>
