@@ -8,18 +8,6 @@ import { WeatherWidget } from '@/components/WeatherWidget';
 import { EcoPointsWidget } from '@/components/EcoPointsWidget';
 import { AIChatWidget } from '@/components/AIChatWidget';
 
-// Иконки для ролей
-const ROLE_ICONS: Record<string, string> = {
-  'Турист': '🏃',
-  'Туроператор': '🎯',
-  'Гид': '🗺️',
-  'Трансфер': '🚗',
-  'Размещение': '🏠',
-  'Сувениры': '🎁',
-  'Прокат снаряжения': '🎣',
-  'Прокат авто': '🚙',
-};
-
 // Погодные настроения
 interface WeatherMood {
   particles: string;
@@ -114,14 +102,30 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [currentMood, setCurrentMood] = useState<WeatherMood>(WEATHER_MOODS.snow);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light'); // Белая по умолчанию
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [scrollY, setScrollY] = useState(0);
+  const [currentReview, setCurrentReview] = useState(0);
+  const [stats, setStats] = useState({ tours: 0, partners: 0, tourists: 0, rating: 0 });
+  const [statsAnimated, setStatsAnimated] = useState(false);
+  
   const snowContainerRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const searchTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     fetchData();
     getUserLocation();
     loadThemePreference();
+    
+    // Parallax effect
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -147,6 +151,14 @@ export default function Home() {
     setupScrollAnimations();
   }, []);
 
+  // Auto-rotate reviews
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentReview((prev) => (prev + 1) % 3);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Загружаем тему из localStorage
   const loadThemePreference = () => {
     if (typeof window === 'undefined') return;
@@ -156,7 +168,6 @@ export default function Home() {
       setTheme(savedTheme);
       document.documentElement.setAttribute('data-theme', savedTheme);
     } else {
-      // По умолчанию белая тема
       document.documentElement.setAttribute('data-theme', 'light');
     }
   };
@@ -209,7 +220,6 @@ export default function Home() {
         },
         (error) => {
           console.error('Error getting location:', error);
-          // Камчатка по умолчанию
           setUserLocation({
             lat: 53.0195,
             lng: 158.6505,
@@ -238,13 +248,10 @@ export default function Home() {
     }
   };
 
-  // Обновляем настроение сайта по погоде
   const updateMoodByWeather = (weatherData: Weather) => {
     let moodKey = weatherData.condition;
     
-    // Проверяем особые условия для Камчатки
     if (userLocation && Math.abs(userLocation.lat - 53.0195) < 5) {
-      // Если температура низкая и ветрено - возможно пепел от вулкана
       if (weatherData.temperature < 0 && weatherData.windSpeed > 20) {
         moodKey = 'volcanic_ash';
       }
@@ -254,14 +261,12 @@ export default function Home() {
     setCurrentMood(mood);
   };
 
-  // Создаём атмосферные частицы (снег/дождь/пепел)
   const createAtmosphericParticles = () => {
     if (typeof window === 'undefined') return;
     
     const container = snowContainerRef.current;
     if (!container) return;
 
-    // Очищаем старые частицы
     container.innerHTML = '';
 
     const isMobile = window.innerWidth < 768;
@@ -280,7 +285,6 @@ export default function Home() {
     }
   };
 
-  // Обновляем градиент фона
   const updateBackgroundGradient = () => {
     if (typeof window === 'undefined') return;
     
@@ -291,7 +295,6 @@ export default function Home() {
     main.style.background = gradient;
   };
 
-  // Fade-in анимации при скролле
   const setupScrollAnimations = () => {
     if (typeof window === 'undefined') return;
     
@@ -299,6 +302,12 @@ export default function Home() {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('fade-in-visible');
+          
+          // Animate stats
+          if (entry.target === statsRef.current && !statsAnimated) {
+            animateStats();
+            setStatsAnimated(true);
+          }
         }
       });
     }, { threshold: 0.1 });
@@ -307,38 +316,110 @@ export default function Home() {
       document.querySelectorAll('.fade-in-element').forEach(el => {
         observer.observe(el);
       });
+      
+      if (statsRef.current) {
+        observer.observe(statsRef.current);
+      }
     }, 100);
   };
 
-  // Поиск
+  // Анимация счетчиков
+  const animateStats = () => {
+    const duration = 2000;
+    const frameDuration = 1000 / 60;
+    const totalFrames = Math.round(duration / frameDuration);
+    
+    const targetStats = {
+      tours: tours.length || 15,
+      partners: partners.length || 42,
+      tourists: 150,
+      rating: 4.9
+    };
+    
+    let frame = 0;
+    const counter = setInterval(() => {
+      frame++;
+      const progress = frame / totalFrames;
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      
+      setStats({
+        tours: Math.round(targetStats.tours * easeOutQuart),
+        partners: Math.round(targetStats.partners * easeOutQuart),
+        tourists: Math.round(targetStats.tourists * easeOutQuart),
+        rating: parseFloat((targetStats.rating * easeOutQuart).toFixed(1))
+      });
+      
+      if (frame === totalFrames) {
+        clearInterval(counter);
+        setStats(targetStats);
+      }
+    }, frameDuration);
+  };
+
+  // Debounced search
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
+    
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
     if (query.length < 2) {
       setShowSearchResults(false);
       return;
     }
 
-    try {
-      const response = await fetch(`/api/tours?search=${encodeURIComponent(query)}`);
-      const data = await response.json();
-      if (data.success && data.data?.tours) {
-        setSearchResults(data.data.tours);
-        setShowSearchResults(true);
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/tours?search=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        if (data.success && data.data?.tours) {
+          setSearchResults(data.data.tours);
+          setShowSearchResults(true);
+        }
+      } catch (error) {
+        console.error('Search error:', error);
       }
-    } catch (error) {
-      console.error('Search error:', error);
-    }
+    }, 300);
   };
+
+  // Reviews data
+  const reviews = [
+    {
+      name: 'Анна К.',
+      avatar: '👩',
+      rating: 5,
+      text: 'Невероятные впечатления! Восхождение на вулкан - это космос.',
+      tour: 'Авачинский вулкан',
+      image: '🌋'
+    },
+    {
+      name: 'Дмитрий М.',
+      avatar: '👨',
+      rating: 5,
+      text: 'Долина гейзеров превзошла все ожидания!',
+      tour: 'Долина гейзеров',
+      image: '💨'
+    },
+    {
+      name: 'Елена С.',
+      avatar: '👩',
+      rating: 5,
+      text: 'Рыбалка на Камчатке - мечта!',
+      tour: 'Рыболовный тур',
+      image: '🎣'
+    },
+  ];
 
   return (
     <main ref={mainRef} className="min-h-screen text-white overflow-x-hidden weather-animated-bg">
-      {/* Атмосферные частицы (снег/дождь/пепел) */}
+      {/* Атмосферные частицы */}
       <div ref={snowContainerRef} className="weather-particles-container" />
       
       {/* Переключатель темы */}
       <button
         onClick={toggleTheme}
-        className="theme-toggle"
+        className="theme-toggle magnetic-button"
         aria-label="Переключить тему"
       >
         <span className="theme-toggle-icon">
@@ -356,36 +437,68 @@ export default function Home() {
         </div>
       )}
 
-      {/* Hero Section - MOBILE FIRST, SAMSUNG STYLE */}
-      <section className="hero-section fade-in-element">
-        <div className="hero-content">
-          <h1 className="hero-title">
-            Камчатка
+      {/* HERO SECTION - С ПАРАЛЛАКСОМ */}
+      <section 
+        ref={heroRef}
+        className="hero-section-modern fade-in-element"
+        style={{
+          transform: `translateY(${scrollY * 0.5}px)`,
+          opacity: 1 - scrollY / 500
+        }}
+      >
+        <div className="hero-content-modern">
+          {/* Floating Logo */}
+          <div 
+            className="floating-logo"
+            style={{
+              transform: `translateY(${Math.sin(Date.now() / 1000) * 10}px)`
+            }}
+          >
+            <img src="/logo-tourhub.svg" alt="Tourhub" className="hero-logo" />
+          </div>
+          
+          <h1 className="hero-title-modern">
+            <span className="title-line">Откройте</span>
+            <span className="title-line gradient-text">Камчатку</span>
           </h1>
-          <p className="hero-subtitle">
-            Вулканы • Океан • Медведи
+          
+          <p className="hero-subtitle-modern">
+            Вулканы • Океан • Медведи • Приключения
           </p>
           
-          {/* Поиск - Touch Friendly */}
-          <div className="hero-search-container">
-            <div className="search-wrapper">
+          {/* Интерактивный поиск с live preview */}
+          <div className="hero-search-modern">
+            <div className="search-wrapper-modern">
+              <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
               <input 
-                placeholder="Найти тур..." 
+                placeholder="Найти тур мечты..." 
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                className="search-input"
+                className="search-input-modern"
                 name="q" 
               />
               {showSearchResults && searchResults.length > 0 && (
-                <div className="search-results">
+                <div className="search-results-modern">
                   {searchResults.slice(0, 5).map((tour: any) => (
                     <a
                       key={tour.id}
                       href={`/tours/${tour.id}`}
-                      className="search-result-item"
+                      className="search-result-modern"
                     >
-                      <div className="result-title">{tour.title}</div>
-                      <div className="result-price">от {tour.priceFrom?.toLocaleString()} ₽</div>
+                      <div className="result-emoji">{tour.emoji || '🏔️'}</div>
+                      <div className="result-content">
+                        <div className="result-title-modern">{tour.title}</div>
+                        <div className="result-meta">
+                          <span className="result-price-modern">от {tour.priceFrom?.toLocaleString()} ₽</span>
+                          <span className="result-duration">{tour.duration || '1 день'}</span>
+                        </div>
+                      </div>
+                      <svg className="result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                      </svg>
                     </a>
                   ))}
                 </div>
@@ -393,184 +506,263 @@ export default function Home() {
             </div>
           </div>
 
-          {/* CTA кнопки - Touch Friendly (56px height) */}
-          <div className="cta-buttons">
-            <a href="/tours" className="cta-primary">
-              🏔️ Смотреть туры
+          {/* CTA кнопки с магнитным эффектом */}
+          <div className="cta-buttons-modern">
+            <a href="/tours" className="cta-primary-modern magnetic-button ripple-button">
+              <span className="btn-icon">🏔️</span>
+              <span className="btn-text">Смотреть туры</span>
+              <svg className="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
             </a>
-            <a href="/auth/login" className="cta-secondary">
-              Стать партнёром
+            <a href="/auth/login" className="cta-secondary-modern magnetic-button ripple-button">
+              <span className="btn-text">Стать партнёром</span>
             </a>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="scroll-indicator">
-          <div className="scroll-arrow">↓</div>
+        {/* Animated scroll indicator */}
+        <div className="scroll-indicator-modern">
+          <div className="scroll-mouse">
+            <div className="scroll-wheel"></div>
+          </div>
+          <span className="scroll-text">Листайте вниз</span>
         </div>
       </section>
 
-      {/* Статистика - GLASSMORPHISM */}
-      <section className="stats-section fade-in-element">
-        <div className="stats-grid">
-          <div className="stat-card glass-card">
-            <div className="stat-number">{tours.length || 5}</div>
-            <div className="stat-label">Туров</div>
+      {/* СТАТИСТИКА С АНИМАЦИЕЙ */}
+      <section ref={statsRef} className="stats-section-modern fade-in-element">
+        <div className="stats-grid-modern">
+          <div className="stat-card-modern glass-card-modern">
+            <div className="stat-icon">🏔️</div>
+            <div className="stat-number-modern">{stats.tours}+</div>
+            <div className="stat-label-modern">Туров</div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${(stats.tours / 15) * 100}%` }}></div>
+            </div>
           </div>
-          <div className="stat-card glass-card">
-            <div className="stat-number">{partners.length || 10}</div>
-            <div className="stat-label">Партнёров</div>
+          <div className="stat-card-modern glass-card-modern">
+            <div className="stat-icon">🤝</div>
+            <div className="stat-number-modern">{stats.partners}+</div>
+            <div className="stat-label-modern">Партнёров</div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${(stats.partners / 42) * 100}%` }}></div>
+            </div>
           </div>
-          <div className="stat-card glass-card">
-            <div className="stat-number">150+</div>
-            <div className="stat-label">Туристов</div>
+          <div className="stat-card-modern glass-card-modern">
+            <div className="stat-icon">👥</div>
+            <div className="stat-number-modern">{stats.tourists}+</div>
+            <div className="stat-label-modern">Туристов</div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${(stats.tourists / 150) * 100}%` }}></div>
+            </div>
           </div>
-          <div className="stat-card glass-card">
-            <div className="stat-number">4.9</div>
-            <div className="stat-label">⭐ Рейтинг</div>
+          <div className="stat-card-modern glass-card-modern">
+            <div className="stat-icon">⭐</div>
+            <div className="stat-number-modern">{stats.rating}</div>
+            <div className="stat-label-modern">Рейтинг</div>
+            <div className="stat-bar">
+              <div className="stat-bar-fill" style={{ width: `${(stats.rating / 5) * 100}%` }}></div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Роли убраны - теперь в форме регистрации */}
-
-      {/* Погода - Встроенный виджет */}
-      {userLocation && (
-        <section className="weather-section fade-in-element">
-          <WeatherWidget
-            lat={userLocation.lat}
-            lng={userLocation.lng}
-            location="Камчатка"
-            className="weather-widget-custom"
-          />
+      {/* ПАРТНЕРЫ С 3D ЭФФЕКТОМ */}
+      {partners.length > 0 && (
+        <section className="partners-section-modern fade-in-element">
+          <div className="section-header-modern">
+            <h2 className="section-title-modern gradient-text">Партнёры</h2>
+            <a href="/partners" className="section-link-modern">
+              Все партнёры
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+          
+          <div className="partners-grid-modern">
+            {partners.slice(0, 6).map((partner, index) => (
+              <div 
+                key={partner.id} 
+                className="partner-card-3d glass-card-modern"
+                style={{ 
+                  animationDelay: `${index * 0.1}s`,
+                }}
+              >
+                <div className="partner-glow"></div>
+                <div className="partner-content-modern">
+                  <div className="partner-icon-modern">🏢</div>
+                  <div className="partner-name-modern">{partner.name}</div>
+                  <div className="partner-meta">
+                    <span className="partner-rating-modern">⭐ {partner.rating || '4.5'}</span>
+                    <span className="partner-badge">Проверен</span>
+                  </div>
+                </div>
+                <div className="partner-hover-overlay">
+                  <button className="partner-view-btn">Подробнее →</button>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
       )}
 
-      {/* Популярные туры */}
-      <section className="tours-section fade-in-element">
-        <div className="section-header">
-          <h2 className="section-title">Популярные туры</h2>
-          <a href="/tours" className="section-link">Все →</a>
+      {/* ТУРЫ */}
+      <section className="tours-section-modern fade-in-element">
+        <div className="section-header-modern">
+          <h2 className="section-title-modern gradient-text">Популярные туры</h2>
+          <a href="/tours" className="section-link-modern">
+            Все туры
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
         </div>
         
         {loading ? (
-          <div className="tours-grid">
+          <div className="tours-grid-modern">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="tour-skeleton"></div>
+              <div key={i} className="tour-skeleton-modern"></div>
             ))}
           </div>
         ) : tours.length > 0 ? (
-          <div className="tours-grid">
-            {tours.slice(0, 3).map((tour) => (
-              <TourCard
+          <div className="tours-grid-modern">
+            {tours.slice(0, 3).map((tour, index) => (
+              <div 
                 key={tour.id}
-                tour={tour}
-                onClick={() => {
-                  window.location.href = `/tours/${tour.id}`;
-                }}
-              />
+                className="tour-card-wrapper"
+                style={{ animationDelay: `${index * 0.15}s` }}
+              >
+                <TourCard
+                  tour={tour}
+                  onClick={() => {
+                    window.location.href = `/tours/${tour.id}`;
+                  }}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="empty-state">
+          <div className="empty-state-modern">
             <div className="empty-icon">🏔️</div>
             <p>Туры скоро появятся</p>
           </div>
         )}
       </section>
 
-      {/* Партнёры */}
-      {partners.length > 0 && (
-        <section className="partners-section fade-in-element">
-          <div className="section-header">
-            <h2 className="section-title">Партнёры</h2>
-            <a href="/partners" className="section-link">Все →</a>
-          </div>
-          
-          <div className="partners-grid">
-            {partners.slice(0, 6).map((partner) => (
-              <div key={partner.id} className="partner-card glass-card">
-                <div className="partner-icon">🏢</div>
-                <div className="partner-name">{partner.name}</div>
-                <div className="partner-rating">⭐ {partner.rating || '4.5'}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Отзывы */}
-      <section className="reviews-section fade-in-element">
-        <h2 className="section-title">Отзывы</h2>
-        <div className="reviews-grid">
-          {[
-            {
-              name: 'Анна К.',
-              avatar: '👩',
-              rating: 5,
-              text: 'Невероятные впечатления! Восхождение на вулкан - это космос.',
-              tour: 'Авачинский вулкан',
-            },
-            {
-              name: 'Дмитрий М.',
-              avatar: '👨',
-              rating: 5,
-              text: 'Долина гейзеров превзошла все ожидания!',
-              tour: 'Долина гейзеров',
-            },
-            {
-              name: 'Елена С.',
-              avatar: '👩',
-              rating: 5,
-              text: 'Рыбалка на Камчатке - мечта!',
-              tour: 'Рыболовный тур',
-            },
-          ].map((review, index) => (
-            <div key={index} className="review-card glass-card">
-              <div className="review-header">
-                <div className="review-avatar">{review.avatar}</div>
-                <div className="review-info">
-                  <div className="review-name">{review.name}</div>
-                  <div className="review-rating">
-                    {'⭐'.repeat(review.rating)}
+      {/* ОТЗЫВЫ С КАРУСЕЛЬЮ */}
+      <section className="reviews-section-modern fade-in-element">
+        <h2 className="section-title-modern gradient-text">Отзывы туристов</h2>
+        
+        <div className="reviews-carousel">
+          <div 
+            className="reviews-track"
+            style={{ transform: `translateX(-${currentReview * 100}%)` }}
+          >
+            {reviews.map((review, index) => (
+              <div key={index} className="review-card-modern glass-card-modern">
+                <div className="review-image-badge">{review.image}</div>
+                <div className="review-rating-modern">
+                  {'⭐'.repeat(review.rating)}
+                </div>
+                <p className="review-text-modern">&ldquo;{review.text}&rdquo;</p>
+                <div className="review-footer-modern">
+                  <div className="review-avatar-modern">{review.avatar}</div>
+                  <div className="review-info-modern">
+                    <div className="review-name-modern">{review.name}</div>
+                    <div className="review-tour-modern">{review.tour}</div>
                   </div>
                 </div>
               </div>
-              <p className="review-text">&ldquo;{review.text}&rdquo;</p>
-              <div className="review-tour">{review.tour}</div>
-            </div>
-          ))}
+            ))}
+          </div>
+          
+          {/* Dots */}
+          <div className="reviews-dots">
+            {reviews.map((_, index) => (
+              <button
+                key={index}
+                className={`review-dot ${index === currentReview ? 'active' : ''}`}
+                onClick={() => setCurrentReview(index)}
+                aria-label={`Отзыв ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* AI Chat - Компактный на мобильном */}
-      <section className="ai-section fade-in-element">
-        <h2 className="section-title">AI-гид</h2>
-        <AIChatWidget userId="demo-user" className="ai-widget" />
+      {/* ПОГОДА */}
+      {userLocation && (
+        <section className="weather-section-modern fade-in-element">
+          <WeatherWidget
+            lat={userLocation.lat}
+            lng={userLocation.lng}
+            location="Камчатка"
+            className="weather-widget-modern"
+          />
+        </section>
+      )}
+
+      {/* AI CHAT */}
+      <section className="ai-section-modern fade-in-element">
+        <h2 className="section-title-modern gradient-text">AI-гид</h2>
+        <AIChatWidget userId="demo-user" className="ai-widget-modern" />
       </section>
 
-      {/* Footer - Мобильный */}
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <div className="footer-logo">🏔️</div>
-            <span className="footer-brand-name">Kamchatour Hub</span>
+      {/* FOOTER */}
+      <footer className="footer-modern">
+        <div className="footer-content-modern">
+          <div className="footer-brand-modern">
+            <img src="/logo-tourhub.svg" alt="Tourhub" className="footer-logo-modern" />
+            <span className="footer-tagline">Экосистема туризма Камчатки</span>
           </div>
           
-          <div className="footer-links">
-            <a href="/tours">Туры</a>
-            <a href="/partners">Партнёры</a>
-            <a href="/auth/login">Войти</a>
-            <a href="/hub/safety">Безопасность</a>
+          <div className="footer-links-modern">
+            <div className="footer-column">
+              <h3>Туризм</h3>
+              <a href="/tours">Туры</a>
+              <a href="/partners">Партнёры</a>
+              <a href="/hub/guide">Гиды</a>
+            </div>
+            <div className="footer-column">
+              <h3>Сервисы</h3>
+              <a href="/hub/transfer">Трансфер</a>
+              <a href="/hub/stay">Размещение</a>
+              <a href="/hub/gear">Снаряжение</a>
+            </div>
+            <div className="footer-column">
+              <h3>Компания</h3>
+              <a href="/auth/login">Войти</a>
+              <a href="/hub/safety">Безопасность</a>
+              <a href="/about">О нас</a>
+            </div>
           </div>
           
-          <div className="footer-contacts">
-            <div>📍 Петропавловск-Камчатский</div>
-            <div>📧 info@kamchatour.ru</div>
+          <div className="footer-contacts-modern">
+            <div className="contact-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span>Петропавловск-Камчатский</span>
+            </div>
+            <div className="contact-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+              </svg>
+              <span>info@kamchatour.ru</span>
+            </div>
           </div>
           
-          <div className="footer-copy">
-            © 2025 Kamchatour Hub
+          <div className="footer-bottom">
+            <div className="footer-copy">© 2025 Tourhub. Все права защищены.</div>
+            <div className="footer-social">
+              <a href="#" className="social-link">VK</a>
+              <a href="#" className="social-link">TG</a>
+              <a href="#" className="social-link">YT</a>
+            </div>
           </div>
         </div>
       </footer>
