@@ -11,6 +11,10 @@
 /* Import Floating Navigation */
 @import './floating-nav.css';
 
+/* Import Modern Search */
+@import './search-modern.css';
+@import './search-page.css';
+
 /* Premium Black & Gold Theme */
 :root {
   --premium-black: #0a0a0a;
