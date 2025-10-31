@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3002",
     "build": "next build",
-    "start": "node .next/standalone/server.js",
+    "start": "bash .next-standalone-wrapper.sh",
     "migrate": "tsx scripts/migrate.ts",
     "migrate:up": "tsx scripts/migrate.ts up",
     "migrate:down": "tsx scripts/migrate.ts down",
