@@ -754,3 +754,260 @@ html, body {
     max-width: 1200px;
   }
 }
+
+/* ================================================
+   THEME SYSTEM - LIGHT & DARK
+   ================================================ */
+
+:root {
+  /* Dark Theme (default) - Черная + Золото */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.5);
+  --accent-primary: #e6c149;
+  --accent-secondary: #d4af37;
+  --accent-gradient: linear-gradient(135deg, #e6c149 0%, #f4d479 100%);
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --shadow-color: rgba(0, 0, 0, 0.37);
+}
+
+[data-theme="light"] {
+  /* Light Theme - Белая + Ультрамарин */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #2563eb;
+  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  --glass-bg: rgba(59, 130, 246, 0.08);
+  --glass-border: rgba(59, 130, 246, 0.2);
+  --shadow-color: rgba(59, 130, 246, 0.15);
+}
+
+/* Применяем переменные ко всем элементам */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px var(--shadow-color);
+}
+
+.theme-toggle-icon {
+  font-size: 20px;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  transform: rotate(20deg);
+}
+
+.theme-toggle-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Weather Indicator - адаптируется под тему */
+.weather-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px var(--shadow-color);
+}
+
+/* Обновляем Weather Particles для светлой темы */
+[data-theme="light"] .weather-particle {
+  filter: brightness(0.6) saturate(1.5);
+}
+
+/* Обновляем Glassmorphism для светлой темы */
+[data-theme="light"] .glass-card {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  box-shadow: 
+    0 8px 32px var(--shadow-color),
+    inset 0 1px 0 rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="light"] .glass-card:hover {
+  box-shadow: 
+    0 12px 48px var(--shadow-color),
+    inset 0 1px 0 rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+/* Hero Title - адаптируется */
+[data-theme="light"] .hero-title {
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 50%, #1e293b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Section Titles - адаптируется */
+[data-theme="light"] .section-title {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Stat Numbers - адаптируется */
+[data-theme="light"] .stat-number {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* CTA Buttons - адаптируется */
+[data-theme="light"] .cta-primary {
+  background: var(--accent-gradient);
+  color: white;
+}
+
+[data-theme="light"] .cta-secondary {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-primary);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Search Input - адаптируется */
+[data-theme="light"] .search-input {
+  background: white;
+  border-color: rgba(59, 130, 246, 0.3);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .search-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+}
+
+/* Review Rating - адаптируется */
+[data-theme="light"] .review-rating {
+  color: var(--accent-primary);
+}
+
+/* Section Links - адаптируется */
+[data-theme="light"] .section-link {
+  color: var(--accent-primary);
+}
+
+/* Role Cards - адаптируется */
+[data-theme="light"] .role-title,
+[data-theme="light"] .partner-name,
+[data-theme="light"] .review-name {
+  color: var(--text-primary);
+}
+
+[data-theme="light"] .stat-label,
+[data-theme="light"] .partner-rating,
+[data-theme="light"] .review-text,
+[data-theme="light"] .review-tour {
+  color: var(--text-secondary);
+}
+
+/* Footer - адаптируется */
+[data-theme="light"] .footer {
+  background: rgba(248, 250, 252, 0.8);
+  border-top-color: rgba(59, 130, 246, 0.1);
+}
+
+[data-theme="light"] .footer-brand-name {
+  color: var(--accent-primary);
+}
+
+[data-theme="light"] .footer-links a:hover {
+  color: var(--accent-primary);
+}
+
+/* Weather Animated Background - адаптируется */
+[data-theme="light"] .weather-animated-bg {
+  background: linear-gradient(180deg, 
+    #dbeafe 0%, 
+    #bfdbfe 30%, 
+    #93c5fd 70%,
+    #ffffff 100%
+  ) !important;
+}
+
+/* Scroll Arrow - адаптируется */
+[data-theme="light"] .scroll-arrow {
+  color: rgba(59, 130, 246, 0.6);
+}
+
+/* Weather Widget Custom - адаптируется */
+.weather-widget-custom {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+}
+
+.weather-section {
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Mobile Optimization */
+@media (max-width: 640px) {
+  .theme-toggle {
+    top: 70px;
+    right: 16px;
+    padding: 6px 12px;
+  }
+  
+  .theme-toggle-text {
+    display: none;
+  }
+  
+  .weather-indicator {
+    top: 16px;
+    right: 16px;
+    font-size: 11px;
+    padding: 8px 12px;
+  }
+}

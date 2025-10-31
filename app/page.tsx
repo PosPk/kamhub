@@ -114,12 +114,14 @@ export default function Home() {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [currentMood, setCurrentMood] = useState<WeatherMood>(WEATHER_MOODS.snow);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const snowContainerRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetchData();
     getUserLocation();
+    loadThemePreference();
   }, []);
 
   useEffect(() => {
@@ -144,6 +146,25 @@ export default function Home() {
   useEffect(() => {
     setupScrollAnimations();
   }, []);
+
+  // Загружаем тему из localStorage
+  const loadThemePreference = () => {
+    if (typeof window === 'undefined') return;
+    
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+  };
+
+  // Переключаем тему
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   const fetchData = async () => {
     try {
@@ -310,6 +331,20 @@ export default function Home() {
     <main ref={mainRef} className="min-h-screen text-white overflow-x-hidden weather-animated-bg">
       {/* Атмосферные частицы (снег/дождь/пепел) */}
       <div ref={snowContainerRef} className="weather-particles-container" />
+      
+      {/* Переключатель темы */}
+      <button
+        onClick={toggleTheme}
+        className="theme-toggle"
+        aria-label="Переключить тему"
+      >
+        <span className="theme-toggle-icon">
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </span>
+        <span className="theme-toggle-text">
+          {theme === 'dark' ? 'Светлая' : 'Темная'}
+        </span>
+      </button>
       
       {/* Индикатор погоды */}
       {weather && (
