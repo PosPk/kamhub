@@ -2,309 +2,54 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Tour, Partner, Weather } from '@/types';
-import { TourCard } from '@/components/TourCard';
-import { PartnerCard } from '@/components/PartnerCard';
-import { WeatherWidget } from '@/components/WeatherWidget';
-import { EcoPointsWidget } from '@/components/EcoPointsWidget';
-import { AIChatWidget } from '@/components/AIChatWidget';
 import { FloatingNav } from '@/components/FloatingNav';
+import Link from 'next/link';
 
-// Погодные настроения
-interface WeatherMood {
-  particles: string;
-  particleCount: number;
-  particleSpeed: number;
-  gradient: string[];
-  name: string;
-}
-
-const WEATHER_MOODS: Record<string, WeatherMood> = {
-  snow: {
-    particles: '❄',
-    particleCount: 40,
-    particleSpeed: 5,
-    gradient: ['#1a2a4e', '#0f1729', '#0a0a0a', '#000000'],
-    name: 'Снег'
-  },
-  rain: {
-    particles: '💧',
-    particleCount: 50,
-    particleSpeed: 2,
-    gradient: ['#2d3748', '#1a202c', '#0a0a0a', '#000000'],
-    name: 'Дождь'
-  },
-  drizzle: {
-    particles: '💧',
-    particleCount: 30,
-    particleSpeed: 3,
-    gradient: ['#374151', '#1f2937', '#111827', '#000000'],
-    name: 'Морось'
-  },
-  fog: {
-    particles: '•',
-    particleCount: 20,
-    particleSpeed: 8,
-    gradient: ['#4a5568', '#2d3748', '#1a202c', '#000000'],
-    name: 'Туман'
-  },
-  clear: {
-    particles: '✨',
-    particleCount: 15,
-    particleSpeed: 6,
-    gradient: ['#e6c149', '#d4af37', '#0f1729', '#000000'],
-    name: 'Ясно'
-  },
-  mostly_clear: {
-    particles: '✨',
-    particleCount: 10,
-    particleSpeed: 7,
-    gradient: ['#d4af37', '#1a2a4e', '#0f1729', '#000000'],
-    name: 'Ясно'
-  },
-  partly_cloudy: {
-    particles: '•',
-    particleCount: 15,
-    particleSpeed: 6,
-    gradient: ['#4a5568', '#1a2a4e', '#0a0a0a', '#000000'],
-    name: 'Облачно'
-  },
-  overcast: {
-    particles: '•',
-    particleCount: 25,
-    particleSpeed: 7,
-    gradient: ['#374151', '#1f2937', '#0a0a0a', '#000000'],
-    name: 'Пасмурно'
-  },
-  thunderstorm: {
-    particles: '⚡',
-    particleCount: 35,
-    particleSpeed: 1.5,
-    gradient: ['#1e3a5f', '#0f1f3a', '#0a0a0a', '#000000'],
-    name: 'Гроза'
-  },
-  volcanic_ash: {
-    particles: '•',
-    particleCount: 60,
-    particleSpeed: 4,
-    gradient: ['#4a1515', '#2d0f0f', '#1a0a0a', '#000000'],
-    name: 'Вулканический пепел'
-  },
-};
-
-export default function Home() {
-  const [tours, setTours] = useState<Tour[]>([]);
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [weather, setWeather] = useState<Weather | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [showChat, setShowChat] = useState(false);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [nearbyEcoPoints, setNearbyEcoPoints] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [currentMood, setCurrentMood] = useState<WeatherMood>(WEATHER_MOODS.snow);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [scrollY, setScrollY] = useState(0);
-  const [currentReview, setCurrentReview] = useState(0);
+export default function HomePage2025() {
   const [stats, setStats] = useState({ tours: 0, partners: 0, tourists: 0, rating: 0 });
   const [statsAnimated, setStatsAnimated] = useState(false);
+  const [tours, setTours] = useState<Tour[]>([]);
+  const [weather, setWeather] = useState<Weather | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
   
-  const snowContainerRef = useRef<HTMLDivElement>(null);
-  const mainRef = useRef<HTMLElement>(null);
-  const heroRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchData();
-    getUserLocation();
-    loadThemePreference();
+    setupScrollReveal();
+    setupCursorFollower();
     
-    // Parallax effect
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (userLocation) {
-      fetchWeather();
-    }
-  }, [userLocation]);
-
-  useEffect(() => {
-    if (weather) {
-      updateMoodByWeather(weather);
-    }
-  }, [weather]);
-
-  useEffect(() => {
-    if (currentMood) {
-      createAtmosphericParticles();
-      updateBackgroundGradient();
-    }
-  }, [currentMood]);
-
-  useEffect(() => {
-    setupScrollAnimations();
-  }, []);
-
-  // Auto-rotate reviews
-  useEffect(() => {
+    // Auto-rotate testimonials
     const interval = setInterval(() => {
-      setCurrentReview((prev) => (prev + 1) % 3);
+      setCurrentTestimonial(prev => (prev + 1) % 3);
     }, 5000);
+    
     return () => clearInterval(interval);
   }, []);
 
-  // Загружаем тему из localStorage
-  const loadThemePreference = () => {
-    if (typeof window === 'undefined') return;
-    
-    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-      document.documentElement.setAttribute('data-theme', 'light');
-    }
-  };
-
-  // Переключаем тему
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-  };
-
   const fetchData = async () => {
     try {
-      setLoading(true);
-      
-      const toursResponse = await fetch('/api/tours?limit=6');
-      const toursData = await toursResponse.json();
-      if (toursData.success && toursData.data?.tours) {
-        setTours(toursData.data.tours);
+      const toursRes = await fetch('/api/tours?limit=6');
+      const toursData = await toursRes.json();
+      if (toursData.success) {
+        setTours(toursData.data?.tours || []);
       }
-
-      const partnersResponse = await fetch('/api/partners?limit=6');
-      const partnersData = await partnersResponse.json();
-      if (partnersData.success && partnersData.data?.data) {
-        setPartners(partnersData.data.data);
-      }
-
-      const ecoPointsResponse = await fetch('/api/eco-points?limit=10');
-      const ecoPointsData = await ecoPointsResponse.json();
-      if (ecoPointsData.success && ecoPointsData.data) {
-        setNearbyEcoPoints(ecoPointsData.data);
-      }
-
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setUserLocation({
-            lat: 53.0195,
-            lng: 158.6505,
-          });
-        }
-      );
-    } else {
-      setUserLocation({
-        lat: 53.0195,
-        lng: 158.6505,
-      });
-    }
-  };
-
-  const fetchWeather = async () => {
-    if (!userLocation) return;
-
-    try {
-      const response = await fetch(`/api/weather?lat=${userLocation.lat}&lng=${userLocation.lng}`);
-      const data = await response.json();
-      if (data.success && data.data) {
-        setWeather(data.data);
-      }
-    } catch (error) {
-      console.error('Weather fetch error:', error);
-    }
-  };
-
-  const updateMoodByWeather = (weatherData: Weather) => {
-    let moodKey = weatherData.condition;
-    
-    if (userLocation && Math.abs(userLocation.lat - 53.0195) < 5) {
-      if (weatherData.temperature < 0 && weatherData.windSpeed > 20) {
-        moodKey = 'volcanic_ash';
-      }
-    }
-    
-    const mood = WEATHER_MOODS[moodKey] || WEATHER_MOODS.snow;
-    setCurrentMood(mood);
-  };
-
-  const createAtmosphericParticles = () => {
-    if (typeof window === 'undefined') return;
-    
-    const container = snowContainerRef.current;
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    const isMobile = window.innerWidth < 768;
-    const count = isMobile ? Math.floor(currentMood.particleCount / 2) : currentMood.particleCount;
-
-    for (let i = 0; i < count; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'weather-particle';
-      particle.innerHTML = currentMood.particles;
-      particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDuration = (Math.random() * 2 + currentMood.particleSpeed - 1) + 's';
-      particle.style.animationDelay = Math.random() * 5 + 's';
-      particle.style.fontSize = (Math.random() * 0.5 + 0.5) + 'em';
-      particle.style.opacity = (Math.random() * 0.4 + 0.3).toString();
-      container.appendChild(particle);
-    }
-  };
-
-  const updateBackgroundGradient = () => {
-    if (typeof window === 'undefined') return;
-    
-    const main = mainRef.current;
-    if (!main) return;
-
-    const gradient = `linear-gradient(180deg, ${currentMood.gradient.join(', ')})`;
-    main.style.background = gradient;
-  };
-
-  const setupScrollAnimations = () => {
-    if (typeof window === 'undefined') return;
-    
+  const setupScrollReveal = () => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('fade-in-visible');
+          entry.target.classList.add('revealed');
           
-          // Animate stats
           if (entry.target === statsRef.current && !statsAnimated) {
             animateStats();
             setStatsAnimated(true);
@@ -312,464 +57,415 @@ export default function Home() {
         }
       });
     }, { threshold: 0.1 });
-    
+
     setTimeout(() => {
-      document.querySelectorAll('.fade-in-element').forEach(el => {
+      document.querySelectorAll('.reveal-element, .reveal-slide-left, .reveal-slide-right, .reveal-scale').forEach(el => {
         observer.observe(el);
       });
       
-      if (statsRef.current) {
-        observer.observe(statsRef.current);
-      }
+      if (statsRef.current) observer.observe(statsRef.current);
     }, 100);
   };
 
-  // Анимация счетчиков
   const animateStats = () => {
+    const targets = { tours: 25, partners: 52, tourists: 350, rating: 4.9 };
     const duration = 2000;
-    const frameDuration = 1000 / 60;
-    const totalFrames = Math.round(duration / frameDuration);
-    
-    const targetStats = {
-      tours: tours.length || 15,
-      partners: partners.length || 42,
-      tourists: 150,
-      rating: 4.9
-    };
-    
+    const frames = 60;
     let frame = 0;
-    const counter = setInterval(() => {
+
+    const interval = setInterval(() => {
       frame++;
-      const progress = frame / totalFrames;
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      
+      const progress = frame / frames;
+      const eased = 1 - Math.pow(1 - progress, 4);
+
       setStats({
-        tours: Math.round(targetStats.tours * easeOutQuart),
-        partners: Math.round(targetStats.partners * easeOutQuart),
-        tourists: Math.round(targetStats.tourists * easeOutQuart),
-        rating: parseFloat((targetStats.rating * easeOutQuart).toFixed(1))
+        tours: Math.round(targets.tours * eased),
+        partners: Math.round(targets.partners * eased),
+        tourists: Math.round(targets.tourists * eased),
+        rating: parseFloat((targets.rating * eased).toFixed(1)),
       });
+
+      if (frame === frames) {
+        clearInterval(interval);
+        setStats(targets);
+      }
+    }, duration / frames);
+  };
+
+  const setupCursorFollower = () => {
+    if (typeof window === 'undefined') return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
       
-      if (frame === totalFrames) {
-        clearInterval(counter);
-        setStats(targetStats);
+      if (cursorRef.current) {
+        cursorRef.current.style.left = `${e.clientX}px`;
+        cursorRef.current.style.top = `${e.clientY}px`;
+        cursorRef.current.classList.add('active');
       }
-    }, frameDuration);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   };
 
-  // Debounced search
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-    
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-    
-    if (query.length < 2) {
-      setShowSearchResults(false);
-      return;
-    }
+  const handleCardHover = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
 
-    searchTimeoutRef.current = setTimeout(async () => {
-      try {
-        const response = await fetch(`/api/tours?search=${encodeURIComponent(query)}`);
-        const data = await response.json();
-        if (data.success && data.data?.tours) {
-          setSearchResults(data.data.tours);
-          setShowSearchResults(true);
-        }
-      } catch (error) {
-        console.error('Search error:', error);
-      }
-    }, 300);
+    card.style.setProperty('--rotate-x', `${rotateX}deg`);
+    card.style.setProperty('--rotate-y', `${rotateY}deg`);
   };
 
-  // Reviews data
-  const reviews = [
+  const handleCardLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    card.style.setProperty('--rotate-x', '0deg');
+    card.style.setProperty('--rotate-y', '0deg');
+  };
+
+  const testimonials = [
     {
-      name: 'Анна К.',
-      avatar: '👩',
+      name: 'Анна Иванова',
+      role: 'Путешественник',
+      text: 'Невероятные впечатления! Восхождение на Авачинский вулкан - это что-то космическое. Вид сверху просто захватывает дух!',
       rating: 5,
-      text: 'Невероятные впечатления! Восхождение на вулкан - это космос.',
       tour: 'Авачинский вулкан',
-      image: '🌋'
+      avatar: '👩‍🦰'
     },
     {
-      name: 'Дмитрий М.',
-      avatar: '👨',
+      name: 'Дмитрий Смирнов',
+      role: 'Фотограф',
+      text: 'Долина гейзеров превзошла все ожидания. Такой природы больше нет нигде в мире. Потрясающие кадры и эмоции!',
       rating: 5,
-      text: 'Долина гейзеров превзошла все ожидания!',
       tour: 'Долина гейзеров',
-      image: '💨'
+      avatar: '👨‍💼'
     },
     {
-      name: 'Елена С.',
-      avatar: '👩',
+      name: 'Елена Петрова',
+      role: 'Рыболов',
+      text: 'Рыбалка на Камчатке - это мечта! Поймала кижуча на 12 кг. Организация на высшем уровне, гиды супер профессиональные.',
       rating: 5,
-      text: 'Рыбалка на Камчатке - мечта!',
       tour: 'Рыболовный тур',
-      image: '🎣'
-    },
+      avatar: '👩‍🎓'
+    }
   ];
 
   return (
-    <main ref={mainRef} className="min-h-screen text-white overflow-x-hidden weather-animated-bg">
-      {/* Атмосферные частицы */}
-      <div ref={snowContainerRef} className="weather-particles-container" />
+    <main className="homepage-2025">
+      {/* Cursor Follower */}
+      <div ref={cursorRef} className="cursor-follower" />
       
-      {/* Переключатель темы */}
-      <button
-        onClick={toggleTheme}
-        className="theme-toggle magnetic-button"
-        aria-label="Переключить тему"
-      >
-        <span className="theme-toggle-icon">
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </span>
-        <span className="theme-toggle-text">
-          {theme === 'dark' ? 'Светлая' : 'Темная'}
-        </span>
-      </button>
-      
-      {/* Индикатор погоды */}
-      {weather && (
-        <div className="weather-indicator">
-          {currentMood.particles} {currentMood.name} • {weather.temperature}°C
-        </div>
-      )}
-
-      {/* HERO SECTION - С ПАРАЛЛАКСОМ */}
-      <section 
-        ref={heroRef}
-        className="hero-section-modern fade-in-element"
-        style={{
-          transform: `translateY(${scrollY * 0.5}px)`,
-          opacity: 1 - scrollY / 500
-        }}
-      >
-        <div className="hero-content-modern">
-          {/* Floating Logo */}
-          <div 
-            className="floating-logo"
+      {/* Particles Background */}
+      <div className="particles-2025">
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            className="particle"
             style={{
-              transform: `translateY(${Math.sin(Date.now() / 1000) * 10}px)`
-            }}
-          >
-            <img src="/logo-kamchatka.svg" alt="Kamchatka Tour Hub" className="hero-logo" />
+              left: `${Math.random() * 100}%`,
+              '--duration': `${Math.random() * 10 + 10}s`,
+              '--x-end': `${Math.random() * 200 - 100}px`,
+              '--opacity': Math.random() * 0.5 + 0.3,
+              animationDelay: `${Math.random() * 10}s`
+            } as React.CSSProperties}
+          />
+        ))}
+      </div>
+
+      {/* HERO SECTION 2025 */}
+      <section className="hero-2025">
+        <div className="gradient-mesh" />
+        <div className="morphing-shape" style={{ top: '10%', left: '5%' } as React.CSSProperties} />
+        <div className="morphing-shape" style={{ top: '20%', right: '10%' } as React.CSSProperties} />
+        <div className="morphing-shape" style={{ bottom: '20%', left: '10%' } as React.CSSProperties} />
+
+        <div className="hero-content-2025">
+          <div className="logo-interactive">
+            <img src="/logo-kamchatka.svg" alt="Kamchatka" className="logo-2025" />
           </div>
-          
-          <h1 className="hero-title-modern">
-            <span className="title-line">Откройте</span>
-            <span className="title-line gradient-text">Камчатку</span>
+
+          <h1 className="title-2025">
+            Откройте Камчатку
           </h1>
-          
-          <p className="hero-subtitle-modern">
-            Вулканы • Океан • Медведи • Приключения
+
+          <p className="subtitle-2025">
+            Вулканы • Океан • Медведи • Незабываемые приключения
           </p>
-          
-          {/* Интерактивный поиск с live preview */}
-          <div className="hero-search-modern">
-            <div className="search-wrapper-modern">
-              <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+
+          <div className="search-2025">
+            <div className="search-container-2025">
+              <Link href="/search" className="btn-2025 btn-primary-2025" style={{ width: '100%', justifyContent: 'center' }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 24, height: 24 }}>
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <span>Найти тур мечты</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 20, height: 20 }}>
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </Link>
+            </div>
+          </div>
+
+          <div className="cta-2025">
+            <Link href="/tours" className="btn-2025 btn-primary-2025 magnetic-element">
+              <span>🏔️ Смотреть туры</span>
+            </Link>
+            <Link href="/auth/login" className="btn-2025 btn-secondary-2025 magnetic-element">
+              <span>Стать партнёром</span>
+            </Link>
+          </div>
+        </div>
+
+        <div className="scroll-indicator-2025">
+          <div className="scroll-wheel-2025">
+            <div className="scroll-wheel-inner" />
+          </div>
+          <span className="scroll-text-2025">Листайте вниз</span>
+        </div>
+      </section>
+
+      {/* STATS 2025 */}
+      <section ref={statsRef} className="section-2025 reveal-element">
+        <div className="stats-2025">
+          {[
+            { icon: '🏔️', value: stats.tours, label: 'Туров', color: '#3b82f6' },
+            { icon: '🤝', value: stats.partners, label: 'Партнёров', color: '#8b5cf6' },
+            { icon: '👥', value: stats.tourists, label: 'Туристов', color: '#e6c149' },
+            { icon: '⭐', value: stats.rating, label: 'Рейтинг', color: '#f59e0b' }
+          ].map((stat, i) => (
+            <div 
+              key={i}
+              className="stat-card-2025 card-3d hover-glow"
+              onMouseMove={handleCardHover}
+              onMouseLeave={handleCardLeave}
+              style={{ animationDelay: `${i * 0.1}s` }}
+            >
+              <div className="card-3d-bg" />
+              <div className="card-3d-content">
+                <div className="stat-icon-2025">{stat.icon}</div>
+                <div className="stat-number-2025">{stat.value}+</div>
+                <div className="stat-label-2025">{stat.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* BENTO GRID - Туры */}
+      <section className="section-2025 reveal-element">
+        <div className="section-header-2025">
+          <span className="section-tag">Популярные</span>
+          <h2 className="section-title-2025">Туры Камчатки</h2>
+          <p className="section-description-2025">
+            Исследуйте вулканы, океан и дикую природу с лучшими гидами
+          </p>
+        </div>
+
+        <div className="bento-grid">
+          {/* Large featured tour */}
+          <div className="bento-item bento-large card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
+            <div className="card-3d-bg" />
+            <div className="card-3d-content">
+              <h3 style={{ fontSize: 32, fontWeight: 900, marginBottom: 16 }}>
+                Авачинский вулкан
+              </h3>
+              <p style={{ fontSize: 16, color: 'var(--text-secondary)', marginBottom: 24 }}>
+                Восхождение на действующий вулкан с потрясающими видами
+              </p>
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+                <span style={{ fontSize: 28, fontWeight: 900, color: 'var(--accent-primary)' }}>
+                  от 8 500 ₽
+                </span>
+                <span style={{ color: 'var(--text-secondary)' }}>1 день</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Medium cards */}
+          <div className="bento-item bento-medium card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
+            <div className="card-3d-bg" />
+            <div className="card-3d-content">
+              <div style={{ fontSize: 48, marginBottom: 16 }}>🎣</div>
+              <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Рыбалка</h3>
+              <p style={{ color: 'var(--text-secondary)' }}>Лучшие места для трофейной рыбалки</p>
+            </div>
+          </div>
+
+          <div className="bento-item bento-small card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
+            <div className="card-3d-bg" />
+            <div style={{ fontSize: 40, marginBottom: 12 }}>💨</div>
+            <h4 style={{ fontSize: 18, fontWeight: 700 }}>Гейзеры</h4>
+          </div>
+
+          <div className="bento-item bento-small card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
+            <div className="card-3d-bg" />
+            <div style={{ fontSize: 40, marginBottom: 12 }}>♨️</div>
+            <h4 style={{ fontSize: 18, fontWeight: 700 }}>Термы</h4>
+          </div>
+
+          <div className="bento-item bento-tall card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
+            <div className="card-3d-bg" />
+            <div className="card-3d-content">
+              <div style={{ fontSize: 56, marginBottom: 20 }}>🐻</div>
+              <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Наблюдение за медведями</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+                Курильское озеро - уникальное место встречи с бурыми медведями
+              </p>
+            </div>
+          </div>
+
+          <div className="bento-item bento-medium card-3d glass-2025" onMouseMove={handleCardHover} onMouseLeave={handleCardLeave}>
+            <div className="card-3d-bg" />
+            <div className="card-3d-content">
+              <div style={{ fontSize: 48, marginBottom: 16 }}>🥾</div>
+              <h3 style={{ fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Треккинг</h3>
+              <p style={{ color: 'var(--text-secondary)' }}>Пешие походы по живописным маршрутам</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS 2025 */}
+      <section className="section-2025 reveal-element">
+        <div className="section-header-2025">
+          <span className="section-tag">Отзывы</span>
+          <h2 className="section-title-2025">Что говорят туристы</h2>
+        </div>
+
+        <div className="testimonials-2025">
+          <div className="testimonial-stack">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className="testimonial-card-2025 glass-2025"
+                style={{
+                  zIndex: 10 - index,
+                  display: index < 3 ? 'block' : 'none'
+                }}
+              >
+                <div style={{ fontSize: 48, marginBottom: 24, opacity: 0.3 }}>⭐⭐⭐⭐⭐</div>
+                <p style={{ fontSize: 20, lineHeight: 1.6, marginBottom: 32, color: 'var(--text-primary)' }}>
+                  "{testimonial.text}"
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div style={{ 
+                    width: 56, 
+                    height: 56, 
+                    borderRadius: '50%', 
+                    background: 'rgba(59, 130, 246, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 28
+                  }}>
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 4 }}>
+                      {testimonial.name}
+                    </div>
+                    <div style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+                      {testimonial.tour}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: 40 }}>
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentTestimonial(i)}
+                style={{
+                  width: i === currentTestimonial ? 40 : 12,
+                  height: 12,
+                  borderRadius: 6,
+                  border: 'none',
+                  background: i === currentTestimonial ? 'var(--accent-primary)' : 'rgba(255, 255, 255, 0.3)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section-2025 reveal-scale" style={{ textAlign: 'center' }}>
+        <div className="glass-2025" style={{ 
+          padding: 80, 
+          borderRadius: 48,
+          maxWidth: 900,
+          margin: '0 auto'
+        }}>
+          <h2 style={{ 
+            fontSize: 'clamp(32px, 5vw, 56px)', 
+            fontWeight: 900, 
+            marginBottom: 24,
+            background: 'linear-gradient(135deg, #ffffff, #e6c149)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Готовы к приключению?
+          </h2>
+          <p style={{ 
+            fontSize: 20, 
+            color: 'var(--text-secondary)', 
+            marginBottom: 40,
+            maxWidth: 600,
+            margin: '0 auto 40px'
+          }}>
+            Начните своё путешествие на Камчатку прямо сейчас
+          </p>
+          <div style={{ display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link href="/search" className="btn-2025 btn-primary-2025 magnetic-element">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 24, height: 24 }}>
                 <circle cx="11" cy="11" r="8"/>
                 <path d="m21 21-4.35-4.35"/>
               </svg>
-              <input 
-                placeholder="Найти тур мечты..." 
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="search-input-modern"
-                name="q" 
-              />
-              {showSearchResults && searchResults.length > 0 && (
-                <div className="search-results-modern">
-                  {searchResults.slice(0, 5).map((tour: any) => (
-                    <a
-                      key={tour.id}
-                      href={`/tours/${tour.id}`}
-                      className="search-result-modern"
-                    >
-                      <div className="result-emoji">{tour.emoji || '🏔️'}</div>
-                      <div className="result-content">
-                        <div className="result-title-modern">{tour.title}</div>
-                        <div className="result-meta">
-                          <span className="result-price-modern">от {tour.priceFrom?.toLocaleString()} ₽</span>
-                          <span className="result-duration">{tour.duration || '1 день'}</span>
-                        </div>
-                      </div>
-                      <svg className="result-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                      </svg>
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* CTA кнопки с магнитным эффектом */}
-          <div className="cta-buttons-modern">
-            <a href="/tours" className="cta-primary-modern magnetic-button ripple-button">
-              <span className="btn-icon">🏔️</span>
-              <span className="btn-text">Смотреть туры</span>
-              <svg className="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </a>
-            <a href="/auth/login" className="cta-secondary-modern magnetic-button ripple-button">
-              <span className="btn-text">Стать партнёром</span>
-            </a>
-          </div>
-        </div>
-
-        {/* Animated scroll indicator */}
-        <div className="scroll-indicator-modern">
-          <div className="scroll-mouse">
-            <div className="scroll-wheel"></div>
-          </div>
-          <span className="scroll-text">Листайте вниз</span>
-        </div>
-      </section>
-
-      {/* СТАТИСТИКА С АНИМАЦИЕЙ */}
-      <section ref={statsRef} className="stats-section-modern fade-in-element">
-        <div className="stats-grid-modern">
-          <div className="stat-card-modern glass-card-modern">
-            <div className="stat-icon">🏔️</div>
-            <div className="stat-number-modern">{stats.tours}+</div>
-            <div className="stat-label-modern">Туров</div>
-            <div className="stat-bar">
-              <div className="stat-bar-fill" style={{ width: `${(stats.tours / 15) * 100}%` }}></div>
-            </div>
-          </div>
-          <div className="stat-card-modern glass-card-modern">
-            <div className="stat-icon">🤝</div>
-            <div className="stat-number-modern">{stats.partners}+</div>
-            <div className="stat-label-modern">Партнёров</div>
-            <div className="stat-bar">
-              <div className="stat-bar-fill" style={{ width: `${(stats.partners / 42) * 100}%` }}></div>
-            </div>
-          </div>
-          <div className="stat-card-modern glass-card-modern">
-            <div className="stat-icon">👥</div>
-            <div className="stat-number-modern">{stats.tourists}+</div>
-            <div className="stat-label-modern">Туристов</div>
-            <div className="stat-bar">
-              <div className="stat-bar-fill" style={{ width: `${(stats.tourists / 150) * 100}%` }}></div>
-            </div>
-          </div>
-          <div className="stat-card-modern glass-card-modern">
-            <div className="stat-icon">⭐</div>
-            <div className="stat-number-modern">{stats.rating}</div>
-            <div className="stat-label-modern">Рейтинг</div>
-            <div className="stat-bar">
-              <div className="stat-bar-fill" style={{ width: `${(stats.rating / 5) * 100}%` }}></div>
-            </div>
+              <span>Найти тур</span>
+            </Link>
+            <Link href="/auth/login" className="btn-2025 btn-secondary-2025 magnetic-element">
+              <span>Стать партнёром</span>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ПАРТНЕРЫ С 3D ЭФФЕКТОМ */}
-      {partners.length > 0 && (
-        <section className="partners-section-modern fade-in-element">
-          <div className="section-header-modern">
-            <h2 className="section-title-modern gradient-text">Партнёры</h2>
-            <a href="/partners" className="section-link-modern">
-              Все партнёры
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </a>
+      {/* Footer 2025 */}
+      <footer style={{ 
+        padding: '80px 20px 120px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+        background: 'rgba(0, 0, 0, 0.3)'
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
+          <img src="/logo-kamchatka.svg" alt="Kamchatka" style={{ height: 60, marginBottom: 24 }} />
+          <p style={{ color: 'var(--text-secondary)', marginBottom: 40 }}>
+            Экосистема туризма Камчатки
+          </p>
+          <div style={{ display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 40 }}>
+            <Link href="/tours" style={{ color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.3s' }}>Туры</Link>
+            <Link href="/partners" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Партнёры</Link>
+            <Link href="/search" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Поиск</Link>
+            <Link href="/auth/login" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Войти</Link>
           </div>
-          
-          <div className="partners-grid-modern">
-            {partners.slice(0, 6).map((partner, index) => (
-              <div 
-                key={partner.id} 
-                className="partner-card-3d glass-card-modern"
-                style={{ 
-                  animationDelay: `${index * 0.1}s`,
-                }}
-              >
-                <div className="partner-glow"></div>
-                <div className="partner-content-modern">
-                  <div className="partner-icon-modern">🏢</div>
-                  <div className="partner-name-modern">{partner.name}</div>
-                  <div className="partner-meta">
-                    <span className="partner-rating-modern">⭐ {partner.rating || '4.5'}</span>
-                    <span className="partner-badge">Проверен</span>
-                  </div>
-                </div>
-                <div className="partner-hover-overlay">
-                  <button className="partner-view-btn">Подробнее →</button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ТУРЫ */}
-      <section className="tours-section-modern fade-in-element">
-        <div className="section-header-modern">
-          <h2 className="section-title-modern gradient-text">Популярные туры</h2>
-          <a href="/tours" className="section-link-modern">
-            Все туры
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
-        </div>
-        
-        {loading ? (
-          <div className="tours-grid-modern">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="tour-skeleton-modern"></div>
-            ))}
-          </div>
-        ) : tours.length > 0 ? (
-          <div className="tours-grid-modern">
-            {tours.slice(0, 3).map((tour, index) => (
-              <div 
-                key={tour.id}
-                className="tour-card-wrapper"
-                style={{ animationDelay: `${index * 0.15}s` }}
-              >
-                <TourCard
-                  tour={tour}
-                  onClick={() => {
-                    window.location.href = `/tours/${tour.id}`;
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="empty-state-modern">
-            <div className="empty-icon">🏔️</div>
-            <p>Туры скоро появятся</p>
-          </div>
-        )}
-      </section>
-
-      {/* ОТЗЫВЫ С КАРУСЕЛЬЮ */}
-      <section className="reviews-section-modern fade-in-element">
-        <h2 className="section-title-modern gradient-text">Отзывы туристов</h2>
-        
-        <div className="reviews-carousel">
-          <div 
-            className="reviews-track"
-            style={{ transform: `translateX(-${currentReview * 100}%)` }}
-          >
-            {reviews.map((review, index) => (
-              <div key={index} className="review-card-modern glass-card-modern">
-                <div className="review-image-badge">{review.image}</div>
-                <div className="review-rating-modern">
-                  {'⭐'.repeat(review.rating)}
-                </div>
-                <p className="review-text-modern">&ldquo;{review.text}&rdquo;</p>
-                <div className="review-footer-modern">
-                  <div className="review-avatar-modern">{review.avatar}</div>
-                  <div className="review-info-modern">
-                    <div className="review-name-modern">{review.name}</div>
-                    <div className="review-tour-modern">{review.tour}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Dots */}
-          <div className="reviews-dots">
-            {reviews.map((_, index) => (
-              <button
-                key={index}
-                className={`review-dot ${index === currentReview ? 'active' : ''}`}
-                onClick={() => setCurrentReview(index)}
-                aria-label={`Отзыв ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ПОГОДА */}
-      {userLocation && (
-        <section className="weather-section-modern fade-in-element">
-          <WeatherWidget
-            lat={userLocation.lat}
-            lng={userLocation.lng}
-            location="Камчатка"
-            className="weather-widget-modern"
-          />
-        </section>
-      )}
-
-      {/* AI CHAT */}
-      <section className="ai-section-modern fade-in-element">
-        <h2 className="section-title-modern gradient-text">AI-гид</h2>
-        <AIChatWidget userId="demo-user" className="ai-widget-modern" />
-      </section>
-
-      {/* ПЛАВАЮЩАЯ НАВИГАЦИЯ */}
-      <FloatingNav />
-
-      {/* FOOTER */}
-      <footer className="footer-modern">
-        <div className="footer-content-modern">
-          <div className="footer-brand-modern">
-            <img src="/logo-kamchatka.svg" alt="Kamchatka Tour Hub" className="footer-logo-modern" />
-            <span className="footer-tagline">Экосистема туризма Камчатки</span>
-          </div>
-          
-          <div className="footer-links-modern">
-            <div className="footer-column">
-              <h3>Туризм</h3>
-              <a href="/tours">Туры</a>
-              <a href="/partners">Партнёры</a>
-              <a href="/hub/guide">Гиды</a>
-            </div>
-            <div className="footer-column">
-              <h3>Сервисы</h3>
-              <a href="/hub/transfer">Трансфер</a>
-              <a href="/hub/stay">Размещение</a>
-              <a href="/hub/gear">Снаряжение</a>
-            </div>
-            <div className="footer-column">
-              <h3>Компания</h3>
-              <a href="/auth/login">Войти</a>
-              <a href="/hub/safety">Безопасность</a>
-              <a href="/about">О нас</a>
-            </div>
-          </div>
-          
-          <div className="footer-contacts-modern">
-            <div className="contact-item">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                <circle cx="12" cy="10" r="3"/>
-              </svg>
-              <span>Петропавловск-Камчатский</span>
-            </div>
-            <div className="contact-item">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-              </svg>
-              <span>info@kamchatour.ru</span>
-            </div>
-          </div>
-          
-          <div className="footer-bottom">
-            <div className="footer-copy">© 2025 Tourhub. Все права защищены.</div>
-            <div className="footer-social">
-              <a href="#" className="social-link">VK</a>
-              <a href="#" className="social-link">TG</a>
-              <a href="#" className="social-link">YT</a>
-            </div>
-          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+            © 2025 Kamchatka Tour Hub. Все права защищены.
+          </p>
         </div>
       </footer>
+
+      <FloatingNav />
     </main>
   );
 }
