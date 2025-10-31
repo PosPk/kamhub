@@ -7,6 +7,7 @@ import { PartnerCard } from '@/components/PartnerCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { EcoPointsWidget } from '@/components/EcoPointsWidget';
 import { AIChatWidget } from '@/components/AIChatWidget';
+import { FloatingNav } from '@/components/FloatingNav';
 
 // Погодные настроения
 interface WeatherMood {
@@ -709,6 +710,9 @@ export default function Home() {
         <h2 className="section-title-modern gradient-text">AI-гид</h2>
         <AIChatWidget userId="demo-user" className="ai-widget-modern" />
       </section>
+
+      {/* ПЛАВАЮЩАЯ НАВИГАЦИЯ */}
+      <FloatingNav />
 
       {/* FOOTER */}
       <footer className="footer-modern">
