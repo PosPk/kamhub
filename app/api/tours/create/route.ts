@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         { 
           success: false, 
           error: 'Ошибка валидации',
-          details: validationResult.error.errors 
+          details: validationResult.error.issues 
         },
         { status: 400 }
       );
