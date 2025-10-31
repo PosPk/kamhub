@@ -502,14 +502,15 @@ export default function AuthPage() {
                     onClick={() => handleRoleToggle(role.id)}
                     className={`group relative p-8 rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden ${
                       formData.roles.includes(role.id)
-                        ? 'border-premium-gold bg-gradient-to-br from-premium-gold/20 to-yellow-600/10 shadow-xl shadow-premium-gold/20 scale-105'
-                        : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
+                        ? `border-transparent bg-gradient-to-br ${role.gradient} shadow-2xl shadow-${role.gradient}/50 scale-105`
+                        : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:scale-102'
                     }`}
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${role.gradient} opacity-0 group-hover:opacity-10 transition-opacity`}></div>
                     <div className="relative">
                       <div className="flex items-center gap-4 mb-3">
-                        <span className="text-4xl">{role.icon}</span>
+                        <div className={formData.roles.includes(role.id) ? 'text-white' : 'text-white/70 group-hover:text-white transition-colors'}>
+                          {role.icon}
+                        </div>
                         <div>
                           <div className="text-2xl font-bold">{role.name}</div>
                           <div className="text-sm text-white/70">{role.description}</div>
