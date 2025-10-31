@@ -20,6 +20,88 @@ const ROLE_ICONS: Record<string, string> = {
   'Прокат авто': '🚙',
 };
 
+// Погодные настроения
+interface WeatherMood {
+  particles: string;
+  particleCount: number;
+  particleSpeed: number;
+  gradient: string[];
+  name: string;
+}
+
+const WEATHER_MOODS: Record<string, WeatherMood> = {
+  snow: {
+    particles: '❄',
+    particleCount: 40,
+    particleSpeed: 5,
+    gradient: ['#1a2a4e', '#0f1729', '#0a0a0a', '#000000'],
+    name: 'Снег'
+  },
+  rain: {
+    particles: '💧',
+    particleCount: 50,
+    particleSpeed: 2,
+    gradient: ['#2d3748', '#1a202c', '#0a0a0a', '#000000'],
+    name: 'Дождь'
+  },
+  drizzle: {
+    particles: '💧',
+    particleCount: 30,
+    particleSpeed: 3,
+    gradient: ['#374151', '#1f2937', '#111827', '#000000'],
+    name: 'Морось'
+  },
+  fog: {
+    particles: '•',
+    particleCount: 20,
+    particleSpeed: 8,
+    gradient: ['#4a5568', '#2d3748', '#1a202c', '#000000'],
+    name: 'Туман'
+  },
+  clear: {
+    particles: '✨',
+    particleCount: 15,
+    particleSpeed: 6,
+    gradient: ['#e6c149', '#d4af37', '#0f1729', '#000000'],
+    name: 'Ясно'
+  },
+  mostly_clear: {
+    particles: '✨',
+    particleCount: 10,
+    particleSpeed: 7,
+    gradient: ['#d4af37', '#1a2a4e', '#0f1729', '#000000'],
+    name: 'Ясно'
+  },
+  partly_cloudy: {
+    particles: '•',
+    particleCount: 15,
+    particleSpeed: 6,
+    gradient: ['#4a5568', '#1a2a4e', '#0a0a0a', '#000000'],
+    name: 'Облачно'
+  },
+  overcast: {
+    particles: '•',
+    particleCount: 25,
+    particleSpeed: 7,
+    gradient: ['#374151', '#1f2937', '#0a0a0a', '#000000'],
+    name: 'Пасмурно'
+  },
+  thunderstorm: {
+    particles: '⚡',
+    particleCount: 35,
+    particleSpeed: 1.5,
+    gradient: ['#1e3a5f', '#0f1f3a', '#0a0a0a', '#000000'],
+    name: 'Гроза'
+  },
+  volcanic_ash: {
+    particles: '•',
+    particleCount: 60,
+    particleSpeed: 4,
+    gradient: ['#4a1515', '#2d0f0f', '#1a0a0a', '#000000'],
+    name: 'Вулканический пепел'
+  },
+};
+
 export default function Home() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -31,12 +113,35 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [currentMood, setCurrentMood] = useState<WeatherMood>(WEATHER_MOODS.snow);
   const snowContainerRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetchData();
     getUserLocation();
-    createSnowflakes();
+  }, []);
+
+  useEffect(() => {
+    if (userLocation) {
+      fetchWeather();
+    }
+  }, [userLocation]);
+
+  useEffect(() => {
+    if (weather) {
+      updateMoodByWeather(weather);
+    }
+  }, [weather]);
+
+  useEffect(() => {
+    if (currentMood) {
+      createAtmosphericParticles();
+      updateBackgroundGradient();
+    }
+  }, [currentMood]);
+
+  useEffect(() => {
     setupScrollAnimations();
   }, []);
 
@@ -80,6 +185,7 @@ export default function Home() {
         },
         (error) => {
           console.error('Error getting location:', error);
+          // Камчатка по умолчанию
           setUserLocation({
             lat: 53.0195,
             lng: 158.6505,
@@ -94,27 +200,71 @@ export default function Home() {
     }
   };
 
-  // Создаём снежинки/пепел
-  const createSnowflakes = () => {
+  const fetchWeather = async () => {
+    if (!userLocation) return;
+
+    try {
+      const response = await fetch(`/api/weather?lat=${userLocation.lat}&lng=${userLocation.lng}`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        setWeather(data.data);
+      }
+    } catch (error) {
+      console.error('Weather fetch error:', error);
+    }
+  };
+
+  // Обновляем настроение сайта по погоде
+  const updateMoodByWeather = (weatherData: Weather) => {
+    let moodKey = weatherData.condition;
+    
+    // Проверяем особые условия для Камчатки
+    if (userLocation && Math.abs(userLocation.lat - 53.0195) < 5) {
+      // Если температура низкая и ветрено - возможно пепел от вулкана
+      if (weatherData.temperature < 0 && weatherData.windSpeed > 20) {
+        moodKey = 'volcanic_ash';
+      }
+    }
+    
+    const mood = WEATHER_MOODS[moodKey] || WEATHER_MOODS.snow;
+    setCurrentMood(mood);
+  };
+
+  // Создаём атмосферные частицы (снег/дождь/пепел)
+  const createAtmosphericParticles = () => {
     if (typeof window === 'undefined') return;
     
-    const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 20 : 40;
     const container = snowContainerRef.current;
-    
     if (!container) return;
 
-    for (let i = 0; i < particleCount; i++) {
+    // Очищаем старые частицы
+    container.innerHTML = '';
+
+    const isMobile = window.innerWidth < 768;
+    const count = isMobile ? Math.floor(currentMood.particleCount / 2) : currentMood.particleCount;
+
+    for (let i = 0; i < count; i++) {
       const particle = document.createElement('div');
-      particle.className = 'snowflake';
-      particle.innerHTML = Math.random() > 0.5 ? '❄' : '•'; // снег или пепел
+      particle.className = 'weather-particle';
+      particle.innerHTML = currentMood.particles;
       particle.style.left = Math.random() * 100 + '%';
-      particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      particle.style.animationDuration = (Math.random() * 2 + currentMood.particleSpeed - 1) + 's';
       particle.style.animationDelay = Math.random() * 5 + 's';
       particle.style.fontSize = (Math.random() * 0.5 + 0.5) + 'em';
-      particle.style.opacity = (Math.random() * 0.3 + 0.3).toString();
+      particle.style.opacity = (Math.random() * 0.4 + 0.3).toString();
       container.appendChild(particle);
     }
+  };
+
+  // Обновляем градиент фона
+  const updateBackgroundGradient = () => {
+    if (typeof window === 'undefined') return;
+    
+    const main = mainRef.current;
+    if (!main) return;
+
+    const gradient = `linear-gradient(180deg, ${currentMood.gradient.join(', ')})`;
+    main.style.background = gradient;
   };
 
   // Fade-in анимации при скролле
@@ -157,10 +307,17 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-kamchatka-gradient text-white overflow-x-hidden">
-      {/* Анимированный фон со снегом/пеплом */}
-      <div ref={snowContainerRef} className="snow-container" />
+    <main ref={mainRef} className="min-h-screen text-white overflow-x-hidden weather-animated-bg">
+      {/* Атмосферные частицы (снег/дождь/пепел) */}
+      <div ref={snowContainerRef} className="weather-particles-container" />
       
+      {/* Индикатор погоды */}
+      {weather && (
+        <div className="weather-indicator">
+          {currentMood.particles} {currentMood.name} • {weather.temperature}°C
+        </div>
+      )}
+
       {/* Hero Section - MOBILE FIRST, SAMSUNG STYLE */}
       <section className="hero-section fade-in-element">
         <div className="hero-content">
@@ -265,7 +422,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Популярные туры - Вертикальный на мобильном */}
+      {/* Погода - Встроенный виджет */}
+      {userLocation && (
+        <section className="weather-section fade-in-element">
+          <WeatherWidget
+            lat={userLocation.lat}
+            lng={userLocation.lng}
+            location="Камчатка"
+            className="weather-widget-custom"
+          />
+        </section>
+      )}
+
+      {/* Популярные туры */}
       <section className="tours-section fade-in-element">
         <div className="section-header">
           <h2 className="section-title">Популярные туры</h2>
