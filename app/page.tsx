@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Tour, Partner } from '@/types';
 import { FloatingNav } from '@/components/FloatingNav';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import Link from 'next/link';
 import './samsung-elegant.css';
 
@@ -176,6 +177,9 @@ export default function ElegantHomePage() {
       </div>
 
       <main style={{ position: 'relative', zIndex: 2 }}>
+        {/* THEME TOGGLE */}
+        <ThemeToggle />
+
         {/* HERO SECTION */}
         <section className="hero-elegant">
           <div className="hero-content-elegant">

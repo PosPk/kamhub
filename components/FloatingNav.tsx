@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import './FloatingNavElegant.css';
+import { MapPanel } from './MapPanel';
 
 interface NavItem {
   id: string;
@@ -15,6 +16,7 @@ interface NavItem {
 export function FloatingNav() {
   const [activeTab, setActiveTab] = useState('home');
   const [showAI, setShowAI] = useState(false);
+  const [showMap, setShowMap] = useState(false);
 
   const navItems: NavItem[] = [
     {
@@ -53,6 +55,17 @@ export function FloatingNav() {
       badge: 1
     },
     {
+      id: 'map',
+      label: 'Карта',
+      href: '#',
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+          <circle cx="12" cy="10" r="3"/>
+        </svg>
+      )
+    },
+    {
       id: 'tours',
       label: 'Туры',
       href: '/tours',
@@ -79,6 +92,8 @@ export function FloatingNav() {
     setActiveTab(item.id);
     if (item.id === 'ai') {
       setShowAI(true);
+    } else if (item.id === 'map') {
+      setShowMap(true);
     }
   };
 
@@ -88,7 +103,7 @@ export function FloatingNav() {
       <nav className="floating-nav-elegant">
         <div className="floating-nav-elegant-container">
           {navItems.map((item) => (
-            item.id === 'ai' ? (
+            (item.id === 'ai' || item.id === 'map') ? (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item)}
@@ -118,6 +133,9 @@ export function FloatingNav() {
           ))}
         </div>
       </nav>
+
+      {/* MAP PANEL */}
+      <MapPanel isOpen={showMap} onClose={() => setShowMap(false)} />
 
       {/* AI MODAL */}
       {showAI && (
