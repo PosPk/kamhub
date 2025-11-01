@@ -51,15 +51,15 @@ export async function GET(request: NextRequest) {
 // Функция для получения данных о погоде
 async function getWeatherData(lat: number, lng: number, location?: string): Promise<Weather> {
   try {
-    // Пробуем получить данные с Open-Meteo (бесплатный API)
-    const openMeteoUrl = `${config.weather.openMeteo.baseUrl}/forecast?latitude=${lat}&longitude=${lng}&current_weather=true&hourly=temperature_2m,relativehumidity_2m,precipitation,windspeed_10m,winddirection_10m,pressure_msl,visibility,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max&timezone=auto`;
+    // Используем НОВЫЙ endpoint с current (более точные данные!)
+    const openMeteoUrl = `${config.weather.openMeteo.baseUrl}/forecast?latitude=${lat}&longitude=${lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,relativehumidity_2m,precipitation,windspeed_10m,winddirection_10m,pressure_msl,visibility,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,weathercode&timezone=auto`;
 
     const response = await fetch(openMeteoUrl, {
       method: 'GET',
       headers: {
         'User-Agent': 'Kamchatour Hub/1.0',
       },
-      next: { revalidate: 1800 }, // Кэшируем на 30 минут
+      next: { revalidate: 600 }, // Кэш на 10 минут (более актуальные данные)
     });
 
     if (!response.ok) {
@@ -68,25 +68,28 @@ async function getWeatherData(lat: number, lng: number, location?: string): Prom
 
     const data = await response.json();
 
-    // Формируем текущую погоду
-    const current = data.current_weather;
+    // Формируем текущую погоду из НОВОГО формата
+    const current = data.current;
     const hourly = data.hourly;
     const daily = data.daily;
 
+    // Текущий час для индекса в hourly
+    const currentHourIndex = 0;
+
     const weather: Weather = {
       location: location || `${lat.toFixed(2)}, ${lng.toFixed(2)}`,
-      temperature: Math.round(current.temperature),
-      condition: getWeatherCondition(current.weathercode),
-      humidity: Math.round(hourly.relativehumidity_2m[0] || 0),
-      windSpeed: Math.round(current.windspeed * 3.6), // Конвертируем м/с в км/ч
-      windDirection: current.winddirection,
-      pressure: Math.round(hourly.pressure_msl[0] || 0),
-      visibility: Math.round(hourly.visibility[0] || 0),
-      uvIndex: Math.round(hourly.uv_index[0] || 0),
+      temperature: Math.round(current.temperature_2m), // ИСПРАВЛЕНО!
+      condition: getWeatherCondition(current.weather_code),
+      humidity: Math.round(current.relative_humidity_2m || 0),
+      windSpeed: Math.round(current.wind_speed_10m), // Уже в км/ч
+      windDirection: current.wind_direction_10m,
+      pressure: Math.round(hourly.pressure_msl[currentHourIndex] || 0),
+      visibility: Math.round((hourly.visibility?.[currentHourIndex] || 10000) / 1000), // Метры -> км
+      uvIndex: Math.round(hourly.uv_index[currentHourIndex] || 0),
       forecast: generateForecast(daily),
       lastUpdated: new Date(),
-      safetyLevel: getSafetyLevel(current.weathercode, current.windspeed, hourly.visibility[0]),
-      recommendations: getWeatherRecommendations(current.weathercode, current.windspeed, hourly.visibility[0]),
+      safetyLevel: getSafetyLevel(current.weather_code, current.wind_speed_10m, (hourly.visibility?.[currentHourIndex] || 10000) / 1000),
+      recommendations: getWeatherRecommendations(current.weather_code, current.wind_speed_10m, (hourly.visibility?.[currentHourIndex] || 10000) / 1000),
     };
 
     return weather;
@@ -301,7 +304,7 @@ function generateForecast(daily: any): any[] {
       },
       condition: getWeatherCondition(daily.weathercode[i]),
       precipitation: daily.precipitation_sum[i] || 0,
-      windSpeed: Math.round(daily.windspeed_10m_max[i] * 3.6),
+      windSpeed: Math.round(daily.windspeed_10m_max[i]), // Уже в км/ч
       humidity: 60, // Open-Meteo не предоставляет дневную влажность
     });
   }

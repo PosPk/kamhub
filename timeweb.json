@@ -1,11 +1,15 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm install --production=false && npm run build",
-  "startCommand": "npm start",
+  "startCommand": "node .next/standalone/server.js",
   "nodeVersion": "20",
-  "port": 3000,
+  "port": 8080,
   "env": {
     "NODE_ENV": "production",
+    "PORT": "8080",
+    "JWT_SECRET": "kamchatour-super-secret-key-2025-production",
+    "NEXTAUTH_URL": "https://pospk-kamhub-70c4.twc1.net",
+    "NEXT_PUBLIC_API_URL": "https://pospk-kamhub-70c4.twc1.net/api",
     "SKIP_SENTRY": "true"
   }
 }
