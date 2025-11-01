@@ -16,7 +16,11 @@ export default function ElegantHomePage() {
     category: 'all',
     priceRange: 'all',
     duration: 'all',
-    difficulty: 'all'
+    difficulty: 'all',
+    season: 'all',
+    groupSize: 'all',
+    transportation: 'all',
+    meals: 'all'
   });
   const [weatherData, setWeatherData] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -182,6 +186,22 @@ export default function ElegantHomePage() {
               Туры, трансферы, размещение — всё для вашего путешествия в одном месте
             </p>
 
+            {/* WEATHER DEBUG */}
+            {weatherData && (
+              <div style={{ 
+                background: 'rgba(0,0,0,0.5)', 
+                padding: '10px', 
+                borderRadius: '10px', 
+                fontSize: '12px',
+                marginBottom: '20px'
+              }}>
+                🌤️ Погода: {weatherData.temperature_2m}°C | 
+                Код: {weatherData.weathercode} | 
+                День: {weatherData.is_day ? 'Да' : 'Нет'} | 
+                Тема: {currentTheme}
+              </div>
+            )}
+
             <div className="search-elegant">
               <div className="search-box-elegant glass-card">
                 <input
@@ -217,10 +237,11 @@ export default function ElegantHomePage() {
                     <label>Категория</label>
                     <select value={filters.category} onChange={(e) => setFilters({...filters, category: e.target.value})}>
                       <option value="all">Все</option>
-                      <option value="volcano">Вулканы</option>
-                      <option value="wildlife">Медведи и природа</option>
-                      <option value="fishing">Рыбалка</option>
-                      <option value="hot-springs">Термальные источники</option>
+                      <option value="volcano">🌋 Вулканы</option>
+                      <option value="wildlife">🐻 Медведи и природа</option>
+                      <option value="fishing">🎣 Рыбалка</option>
+                      <option value="hot-springs">♨️ Термальные источники</option>
+                      <option value="ocean">🌊 Океан и побережье</option>
                     </select>
                   </div>
 
@@ -228,9 +249,9 @@ export default function ElegantHomePage() {
                     <label>Цена</label>
                     <select value={filters.priceRange} onChange={(e) => setFilters({...filters, priceRange: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="budget">До 10 000 ₽</option>
-                      <option value="mid">10 000 - 30 000 ₽</option>
-                      <option value="premium">От 30 000 ₽</option>
+                      <option value="budget">💰 До 10 000 ₽</option>
+                      <option value="mid">💎 10 000 - 30 000 ₽</option>
+                      <option value="premium">👑 От 30 000 ₽</option>
                     </select>
                   </div>
 
@@ -238,9 +259,9 @@ export default function ElegantHomePage() {
                     <label>Длительность</label>
                     <select value={filters.duration} onChange={(e) => setFilters({...filters, duration: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="1">1 день</option>
-                      <option value="2-3">2-3 дня</option>
-                      <option value="week">Неделя+</option>
+                      <option value="1">⏱️ 1 день</option>
+                      <option value="2-3">📅 2-3 дня</option>
+                      <option value="week">📆 Неделя+</option>
                     </select>
                   </div>
 
@@ -248,9 +269,51 @@ export default function ElegantHomePage() {
                     <label>Сложность</label>
                     <select value={filters.difficulty} onChange={(e) => setFilters({...filters, difficulty: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="easy">Легкая</option>
-                      <option value="medium">Средняя</option>
-                      <option value="hard">Сложная</option>
+                      <option value="easy">🟢 Легкая</option>
+                      <option value="medium">🟡 Средняя</option>
+                      <option value="hard">🔴 Сложная</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Сезон</label>
+                    <select value={filters.season} onChange={(e) => setFilters({...filters, season: e.target.value})}>
+                      <option value="all">Любой</option>
+                      <option value="summer">☀️ Лето</option>
+                      <option value="winter">❄️ Зима</option>
+                      <option value="spring">🌸 Весна</option>
+                      <option value="autumn">🍂 Осень</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Группа</label>
+                    <select value={filters.groupSize} onChange={(e) => setFilters({...filters, groupSize: e.target.value})}>
+                      <option value="all">Любая</option>
+                      <option value="solo">👤 Индивидуально</option>
+                      <option value="small">👥 Малая (2-6)</option>
+                      <option value="large">👨‍👩‍👧‍👦 Большая (7+)</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Транспорт</label>
+                    <select value={filters.transportation} onChange={(e) => setFilters({...filters, transportation: e.target.value})}>
+                      <option value="all">Любой</option>
+                      <option value="helicopter">🚁 Вертолет</option>
+                      <option value="car">🚙 Авто</option>
+                      <option value="boat">🚤 Катер</option>
+                      <option value="hiking">🥾 Пеший</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Питание</label>
+                    <select value={filters.meals} onChange={(e) => setFilters({...filters, meals: e.target.value})}>
+                      <option value="all">Любое</option>
+                      <option value="included">🍱 Включено</option>
+                      <option value="partial">🥪 Частично</option>
+                      <option value="none">❌ Не включено</option>
                     </select>
                   </div>
                 </div>
@@ -262,7 +325,7 @@ export default function ElegantHomePage() {
               <div className="photos-carousel-elegant">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div key={i} className="photo-card-elegant glass-card">
-                    <img src={`/photos/kamchatka-${i}.jpg`} alt={`Камчатка ${i}`} />
+                    <img src={`/photos/kamchatka-${i}.svg`} alt={`Камчатка ${i}`} />
                   </div>
                 ))}
               </div>
