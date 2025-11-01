@@ -309,7 +309,7 @@ export default function FinalHomePage() {
         </div>
       </section>
 
-      {/* ПОПУЛЯРНЫЕ ТУРЫ */}
+      {/* ПОПУЛЯРНЫЕ ТУРЫ - КАРУСЕЛЬ */}
       <section className="section-pro fade-in">
         <div className="section-header-pro">
           <h2 className="section-title-pro">Популярные туры</h2>
@@ -318,97 +318,139 @@ export default function FinalHomePage() {
           </p>
         </div>
 
-        <div className="tours-grid">
-          {tours.length > 0 ? (
-            tours.map((tour) => (
-              <div key={tour.id} className="tour-card-pro">
-                <div className="tour-image-pro">
-                  <img 
-                    src={tour.images[0] || '/placeholder-tour.jpg'} 
-                    alt={tour.title}
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder-tour.jpg';
-                    }}
-                  />
-                  <div className="tour-badge-pro">Популярный</div>
-                  <div className="tour-rating-pro">
-                    <img src="/icons/star.svg" alt="rating" width="16" height="16" />
-                    {tour.rating}
+        <div className="tours-carousel-wrapper">
+          <button 
+            className="carousel-btn carousel-prev" 
+            onClick={() => {
+              const carousel = document.querySelector('.tours-carousel');
+              if (carousel) carousel.scrollBy({ left: -320, behavior: 'smooth' });
+            }}
+          >
+            ‹
+          </button>
+          
+          <div className="tours-carousel">
+            {tours.length > 0 ? (
+              tours.map((tour) => (
+                <div key={tour.id} className="tour-card-carousel">
+                  <div className="tour-image-pro">
+                    <img 
+                      src={tour.images[0] || '/placeholder-tour.jpg'} 
+                      alt={tour.title}
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder-tour.jpg';
+                      }}
+                    />
+                    <div className="tour-badge-pro">Популярный</div>
+                    <div className="tour-rating-pro">
+                      <img src="/icons/star.svg" alt="rating" width="16" height="16" />
+                      {tour.rating}
+                    </div>
+                  </div>
+                  <div className="tour-content-pro">
+                    <h3 className="tour-title-pro">{tour.title}</h3>
+                    <p className="tour-description-pro">{tour.description}</p>
+                    <div className="tour-footer-pro">
+                      <div className="tour-price-pro">от {tour.priceFrom.toLocaleString()} ₽</div>
+                      <div className="tour-duration-pro">{tour.duration}</div>
+                    </div>
                   </div>
                 </div>
-                <div className="tour-content-pro">
-                  <h3 className="tour-title-pro">{tour.title}</h3>
-                  <p className="tour-description-pro">{tour.description}</p>
-                  <div className="tour-footer-pro">
-                    <div className="tour-price-pro">от {tour.priceFrom.toLocaleString()} ₽</div>
-                    <div className="tour-duration-pro">{tour.duration}</div>
+              ))
+            ) : (
+              <>
+                <div className="tour-card-carousel">
+                  <div className="tour-image-pro" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                    <div className="tour-badge-pro">Хит</div>
+                    <div className="tour-rating-pro">
+                      <img src="/icons/star.svg" alt="rating" width="16" height="16" />
+                      4.9
+                    </div>
+                  </div>
+                  <div className="tour-content-pro">
+                    <h3 className="tour-title-pro">Восхождение на Авачинский вулкан</h3>
+                    <p className="tour-description-pro">
+                      Незабываемое восхождение на действующий вулкан с потрясающими видами
+                    </p>
+                    <div className="tour-footer-pro">
+                      <div className="tour-price-pro">от 8 500 ₽</div>
+                      <div className="tour-duration-pro">1 день</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <>
-              <div className="tour-card-pro">
-                <div className="tour-image-pro" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-                  <div className="tour-badge-pro">Хит</div>
-                  <div className="tour-rating-pro">
-                    <img src="/icons/star.svg" alt="rating" width="16" height="16" />
-                    4.9
-                  </div>
-                </div>
-                <div className="tour-content-pro">
-                  <h3 className="tour-title-pro">Восхождение на Авачинский вулкан</h3>
-                  <p className="tour-description-pro">
-                    Незабываемое восхождение на действующий вулкан с потрясающими видами
-                  </p>
-                  <div className="tour-footer-pro">
-                    <div className="tour-price-pro">от 8 500 ₽</div>
-                    <div className="tour-duration-pro">1 день</div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="tour-card-pro">
-                <div className="tour-image-pro" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-                  <div className="tour-badge-pro">Популярный</div>
-                  <div className="tour-rating-pro">
-                    <img src="/icons/star.svg" alt="rating" width="16" height="16" />
-                    5.0
+                <div className="tour-card-carousel">
+                  <div className="tour-image-pro" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
+                    <div className="tour-badge-pro">Популярный</div>
+                    <div className="tour-rating-pro">
+                      <img src="/icons/star.svg" alt="rating" width="16" height="16" />
+                      5.0
+                    </div>
+                  </div>
+                  <div className="tour-content-pro">
+                    <h3 className="tour-title-pro">Долина гейзеров</h3>
+                    <p className="tour-description-pro">
+                      Вертолётная экскурсия в одно из чудес России
+                    </p>
+                    <div className="tour-footer-pro">
+                      <div className="tour-price-pro">от 35 000 ₽</div>
+                      <div className="tour-duration-pro">1 день</div>
+                    </div>
                   </div>
                 </div>
-                <div className="tour-content-pro">
-                  <h3 className="tour-title-pro">Долина гейзеров</h3>
-                  <p className="tour-description-pro">
-                    Вертолётная экскурсия в одно из чудес России
-                  </p>
-                  <div className="tour-footer-pro">
-                    <div className="tour-price-pro">от 35 000 ₽</div>
-                    <div className="tour-duration-pro">1 день</div>
-                  </div>
-                </div>
-              </div>
 
-              <div className="tour-card-pro">
-                <div className="tour-image-pro" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-                  <div className="tour-badge-pro">Новый</div>
-                  <div className="tour-rating-pro">
-                    <img src="/icons/star.svg" alt="rating" width="16" height="16" />
-                    4.8
+                <div className="tour-card-carousel">
+                  <div className="tour-image-pro" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
+                    <div className="tour-badge-pro">Новый</div>
+                    <div className="tour-rating-pro">
+                      <img src="/icons/star.svg" alt="rating" width="16" height="16" />
+                      4.8
+                    </div>
+                  </div>
+                  <div className="tour-content-pro">
+                    <h3 className="tour-title-pro">Наблюдение за медведями</h3>
+                    <p className="tour-description-pro">
+                      Курильское озеро - встреча с бурыми медведями в дикой природе
+                    </p>
+                    <div className="tour-footer-pro">
+                      <div className="tour-price-pro">от 45 000 ₽</div>
+                      <div className="tour-duration-pro">2 дня</div>
+                    </div>
                   </div>
                 </div>
-                <div className="tour-content-pro">
-                  <h3 className="tour-title-pro">Наблюдение за медведями</h3>
-                  <p className="tour-description-pro">
-                    Курильское озеро - встреча с бурыми медведями в дикой природе
-                  </p>
-                  <div className="tour-footer-pro">
-                    <div className="tour-price-pro">от 45 000 ₽</div>
-                    <div className="tour-duration-pro">2 дня</div>
+
+                <div className="tour-card-carousel">
+                  <div className="tour-image-pro" style={{ background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }}>
+                    <div className="tour-badge-pro">Эксклюзив</div>
+                    <div className="tour-rating-pro">
+                      <img src="/icons/star.svg" alt="rating" width="16" height="16" />
+                      5.0
+                    </div>
+                  </div>
+                  <div className="tour-content-pro">
+                    <h3 className="tour-title-pro">Камчатка с вертолёта</h3>
+                    <p className="tour-description-pro">
+                      Воздушное путешествие над вулканами и озёрами
+                    </p>
+                    <div className="tour-footer-pro">
+                      <div className="tour-price-pro">от 65 000 ₽</div>
+                      <div className="tour-duration-pro">1 день</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
+
+          <button 
+            className="carousel-btn carousel-next" 
+            onClick={() => {
+              const carousel = document.querySelector('.tours-carousel');
+              if (carousel) carousel.scrollBy({ left: 320, behavior: 'smooth' });
+            }}
+          >
+            ›
+          </button>
         </div>
       </section>
 

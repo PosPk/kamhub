@@ -22,8 +22,8 @@
 
 .innovations-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -31,8 +31,8 @@
 .innovation-card {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 32px;
+  border-radius: 12px;
+  padding: 18px;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -44,15 +44,15 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
 
 .innovation-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
   border-color: var(--accent-primary);
 }
 
@@ -61,51 +61,132 @@
 }
 
 .innovation-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-  border-radius: 16px;
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .innovation-icon img {
+  width: 22px;
+  height: 22px;
   color: var(--accent-primary);
   filter: brightness(0) saturate(100%) invert(50%) sepia(98%) saturate(2476%) hue-rotate(200deg);
 }
 
 .innovation-title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
 }
 
 .innovation-description {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 11.5px;
+  line-height: 1.5;
   color: var(--text-secondary);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .innovation-meta {
   display: flex;
-  gap: 8px;
+  gap: 5px;
   flex-wrap: wrap;
 }
 
 .meta-badge {
-  padding: 4px 12px;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
+  padding: 3px 7px;
+  background: rgba(59, 130, 246, 0.07);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 5px;
+  font-size: 9.5px;
+  font-weight: 500;
   color: var(--accent-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.01em;
+}
+
+/* ================================================
+   ПОПУЛЯРНЫЕ ТУРЫ - КАРУСЕЛЬ
+   ================================================ */
+
+.tours-carousel-wrapper {
+  position: relative;
+  max-width: 1400px;
+  margin: 40px auto 0;
+  padding: 0 50px;
+}
+
+.tours-carousel {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 8px 0;
+}
+
+.tours-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.tour-card-carousel {
+  min-width: 280px;
+  max-width: 280px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.tour-card-carousel:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-primary);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  color: var(--text-primary);
+  font-size: 28px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.carousel-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+}
+
+.carousel-prev {
+  left: 0;
+}
+
+.carousel-next {
+  right: 0;
 }
 
 /* ================================================
