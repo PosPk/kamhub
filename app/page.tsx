@@ -11,12 +11,29 @@ export default function ElegantHomePage() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [particles, setParticles] = useState<Array<{id: number; left: number; delay: number; duration: number; size: number}>>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    category: 'all',
+    priceRange: 'all',
+    duration: 'all',
+    difficulty: 'all'
+  });
+  const [weatherData, setWeatherData] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchData();
+    fetchWeather();
     createParticles();
     setTimeout(() => animateStats(), 500);
+    
+    // Update time every minute
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    
+    return () => clearInterval(timeInterval);
   }, []);
 
   const fetchData = async () => {
@@ -30,6 +47,59 @@ export default function ElegantHomePage() {
       console.error('Error:', error);
     }
   };
+
+  const fetchWeather = async () => {
+    try {
+      // Petropavlovsk-Kamchatsky coordinates
+      const lat = 53.0241;
+      const lon = 158.6445;
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,is_day&timezone=auto`);
+      const data = await res.json();
+      setWeatherData(data.current);
+    } catch (error) {
+      console.error('Weather error:', error);
+    }
+  };
+
+  const getThemeFromWeatherAndTime = () => {
+    if (!weatherData) return 'default';
+    
+    const isDay = weatherData.is_day === 1;
+    const code = weatherData.weathercode;
+    
+    // 0 - Clear
+    // 1-3 - Partly cloudy
+    // 45,48 - Fog
+    // 51-67 - Rain/Drizzle
+    // 71-77 - Snow
+    // 80-99 - Rain showers/Thunderstorm
+    
+    if (code >= 71 && code <= 77) {
+      return 'snow';
+    } else if (code >= 51 && code <= 67) {
+      return 'rain';
+    } else if (code >= 80) {
+      return 'storm';
+    } else if (!isDay) {
+      return 'night';
+    } else if (code === 0) {
+      return 'clear-day';
+    } else {
+      return 'cloudy-day';
+    }
+  };
+
+  const themeGradients: Record<string, string> = {
+    'default': 'linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #334155 40%, #1e293b 60%, #0f172a 100%)',
+    'clear-day': 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 20%, #0369a1 40%, #0284c7 60%, #0ea5e9 100%)',
+    'cloudy-day': 'linear-gradient(135deg, #475569 0%, #64748b 20%, #94a3b8 40%, #64748b 60%, #475569 100%)',
+    'night': 'linear-gradient(135deg, #0c4a6e 0%, #075985 20%, #0e7490 40%, #075985 60%, #0c4a6e 100%)',
+    'rain': 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 20%, #3b82f6 40%, #1e40af 60%, #1e3a8a 100%)',
+    'snow': 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 20%, #64748b 40%, #94a3b8 60%, #cbd5e1 100%)',
+    'storm': 'linear-gradient(135deg, #1e1b4b 0%, #312e81 20%, #4338ca 40%, #312e81 60%, #1e1b4b 100%)'
+  };
+
+  const currentTheme = getThemeFromWeatherAndTime();
 
   const createParticles = () => {
     const particlesArray = [];
@@ -79,7 +149,10 @@ export default function ElegantHomePage() {
   return (
     <>
       {/* ANIMATED BACKGROUND */}
-      <div className="weather-background"></div>
+      <div 
+        className="weather-background" 
+        style={{ background: themeGradients[currentTheme] || themeGradients.default }}
+      ></div>
       
       {/* WEATHER PARTICLES */}
       <div className="weather-particles">
@@ -119,6 +192,79 @@ export default function ElegantHomePage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
+                <button 
+                  className="filter-btn-elegant"
+                  onClick={() => setShowFilters(!showFilters)}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="4" y1="21" x2="4" y2="14"/>
+                    <line x1="4" y1="10" x2="4" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12" y2="3"/>
+                    <line x1="20" y1="21" x2="20" y2="16"/>
+                    <line x1="20" y1="12" x2="20" y2="3"/>
+                    <line x1="1" y1="14" x2="7" y2="14"/>
+                    <line x1="9" y1="8" x2="15" y2="8"/>
+                    <line x1="17" y1="16" x2="23" y2="16"/>
+                  </svg>
+                  Фильтры
+                </button>
+              </div>
+
+              {showFilters && (
+                <div className="filters-panel-elegant glass-card">
+                  <div className="filter-group">
+                    <label>Категория</label>
+                    <select value={filters.category} onChange={(e) => setFilters({...filters, category: e.target.value})}>
+                      <option value="all">Все</option>
+                      <option value="volcano">Вулканы</option>
+                      <option value="wildlife">Медведи и природа</option>
+                      <option value="fishing">Рыбалка</option>
+                      <option value="hot-springs">Термальные источники</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Цена</label>
+                    <select value={filters.priceRange} onChange={(e) => setFilters({...filters, priceRange: e.target.value})}>
+                      <option value="all">Любая</option>
+                      <option value="budget">До 10 000 ₽</option>
+                      <option value="mid">10 000 - 30 000 ₽</option>
+                      <option value="premium">От 30 000 ₽</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Длительность</label>
+                    <select value={filters.duration} onChange={(e) => setFilters({...filters, duration: e.target.value})}>
+                      <option value="all">Любая</option>
+                      <option value="1">1 день</option>
+                      <option value="2-3">2-3 дня</option>
+                      <option value="week">Неделя+</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>Сложность</label>
+                    <select value={filters.difficulty} onChange={(e) => setFilters({...filters, difficulty: e.target.value})}>
+                      <option value="all">Любая</option>
+                      <option value="easy">Легкая</option>
+                      <option value="medium">Средняя</option>
+                      <option value="hard">Сложная</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ГАЛЕРЕЯ ФОТО */}
+            <div className="photos-gallery-elegant">
+              <div className="photos-carousel-elegant">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="photo-card-elegant glass-card">
+                    <img src={`/photos/kamchatka-${i}.jpg`} alt={`Камчатка ${i}`} />
+                  </div>
+                ))}
               </div>
             </div>
 
