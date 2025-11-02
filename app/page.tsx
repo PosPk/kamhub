@@ -82,7 +82,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-premium-black text-white relative overflow-hidden">
+    <div className="min-h-screen bg-premium-black text-white relative overflow-hidden">
       {/* Modern animated background */}
       <div className="fixed inset-0 -z-20">
         <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0a0a] to-black"></div>
@@ -361,6 +361,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }
