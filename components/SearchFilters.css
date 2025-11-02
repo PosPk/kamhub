@@ -460,9 +460,23 @@
   transform: translateY(-1px);
 }
 
-.chip-emoji {
-  font-size: 16px;
+.chip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(139, 92, 246, 0.9);
   filter: drop-shadow(0 0 6px rgba(139, 92, 246, 0.5));
+  transition: all 0.2s;
+}
+
+.filter-chip.active .chip-icon {
+  color: rgba(167, 139, 250, 1);
+}
+
+.checkbox-icon {
+  display: flex;
+  align-items: center;
+  color: rgba(139, 92, 246, 0.8);
 }
 
 /* ================================================

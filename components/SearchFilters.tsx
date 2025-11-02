@@ -2,6 +2,23 @@
 
 import React, { useState } from 'react';
 import { CloseIcon } from './SearchIcons';
+import { 
+  MoneyIcon, 
+  CalendarIcon, 
+  UsersIcon, 
+  ZapIcon, 
+  ClockIcon, 
+  TagIcon, 
+  StarIcon, 
+  SparklesIcon,
+  UtensilsIcon,
+  CarIcon,
+  TargetIcon,
+  SproutIcon,
+  FlameIcon,
+  MuscleIcon,
+  TrendingUpIcon
+} from './FilterIcons';
 import './SearchFilters.css';
 
 interface FilterValues {
@@ -85,7 +102,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
           {/* Price Range */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">💰</span>
+              <span className="filter-label-icon">
+                <MoneyIcon size={18} />
+              </span>
               <span>Диапазон цен</span>
             </label>
             <div className="filter-row">
@@ -116,7 +135,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
           {/* Dates */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">📅</span>
+              <span className="filter-label-icon">
+                <CalendarIcon size={18} />
+              </span>
               <span>Даты поездки</span>
             </label>
             <div className="filter-row">
@@ -139,7 +160,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
           {/* People */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">👥</span>
+              <span className="filter-label-icon">
+                <UsersIcon size={18} />
+              </span>
               <span>Количество человек</span>
             </label>
             <div className="counter-control">
@@ -174,33 +197,42 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
           {/* Difficulty */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">⚡</span>
+              <span className="filter-label-icon">
+                <ZapIcon size={18} />
+              </span>
               <span>Уровень сложности</span>
             </label>
             <div className="filter-chips">
               {[
-                { value: 'all', label: 'Все', emoji: '🎯' },
-                { value: 'easy', label: 'Легко', emoji: '🌱' },
-                { value: 'medium', label: 'Средне', emoji: '⚡' },
-                { value: 'hard', label: 'Сложно', emoji: '🔥' },
-                { value: 'extreme', label: 'Экстрим', emoji: '💪' }
-              ].map((level) => (
-                <button
-                  key={level.value}
-                  className={`filter-chip ${filters.difficulty === level.value ? 'active' : ''}`}
-                  onClick={() => setFilters({ ...filters, difficulty: level.value })}
-                >
-                  <span className="chip-emoji">{level.emoji}</span>
-                  <span>{level.label}</span>
-                </button>
-              ))}
+                { value: 'all', label: 'Все', icon: TargetIcon },
+                { value: 'easy', label: 'Легко', icon: SproutIcon },
+                { value: 'medium', label: 'Средне', icon: TrendingUpIcon },
+                { value: 'hard', label: 'Сложно', icon: FlameIcon },
+                { value: 'extreme', label: 'Экстрим', icon: MuscleIcon }
+              ].map((level) => {
+                const IconComponent = level.icon;
+                return (
+                  <button
+                    key={level.value}
+                    className={`filter-chip ${filters.difficulty === level.value ? 'active' : ''}`}
+                    onClick={() => setFilters({ ...filters, difficulty: level.value })}
+                  >
+                    <span className="chip-icon">
+                      <IconComponent size={16} />
+                    </span>
+                    <span>{level.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Duration */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">⏱️</span>
+              <span className="filter-label-icon">
+                <ClockIcon size={18} />
+              </span>
               <span>Длительность тура</span>
             </label>
             <div className="select-wrapper">
@@ -226,7 +258,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
           {/* Category */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">🏷️</span>
+              <span className="filter-label-icon">
+                <TagIcon size={18} />
+              </span>
               <span>Категория активности</span>
             </label>
             <div className="select-wrapper">
@@ -236,14 +270,14 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
                 onChange={(e) => setFilters({ ...filters, category: e.target.value })}
               >
                 <option value="all">Все категории</option>
-                <option value="volcano">🌋 Вулканы</option>
-                <option value="wildlife">🐻 Дикая природа</option>
-                <option value="water">🌊 Водные туры</option>
-                <option value="winter">❄️ Зимние виды</option>
-                <option value="extreme">⚡ Экстрим</option>
-                <option value="fishing">🎣 Рыбалка</option>
-                <option value="camping">⛺ Кемпинг</option>
-                <option value="culture">📚 Экскурсии</option>
+                <option value="volcano">Вулканы</option>
+                <option value="wildlife">Дикая природа</option>
+                <option value="water">Водные туры</option>
+                <option value="winter">Зимние виды</option>
+                <option value="extreme">Экстрим</option>
+                <option value="fishing">Рыбалка</option>
+                <option value="camping">Кемпинг</option>
+                <option value="culture">Экскурсии</option>
               </select>
               <svg className="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <polyline points="6 9 12 15 18 9"></polyline>
@@ -254,7 +288,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
           {/* Rating */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">⭐</span>
+              <span className="filter-label-icon">
+                <StarIcon size={18} />
+              </span>
               <span>Минимальный рейтинг</span>
             </label>
             <div className="rating-slider">
@@ -292,7 +328,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
           {/* Checkboxes */}
           <div className="filter-group">
             <label className="filter-label">
-              <span className="filter-label-icon">✨</span>
+              <span className="filter-label-icon">
+                <SparklesIcon size={18} />
+              </span>
               <span>Дополнительные услуги</span>
             </label>
             <div className="filter-checks">
@@ -304,7 +342,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
                 />
                 <span className="checkbox-custom"></span>
                 <span className="checkbox-label">
-                  <span className="checkbox-icon">🍽️</span>
+                  <span className="checkbox-icon">
+                    <UtensilsIcon size={18} />
+                  </span>
                   <span>Питание включено</span>
                 </span>
               </label>
@@ -316,7 +356,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
                 />
                 <span className="checkbox-custom"></span>
                 <span className="checkbox-label">
-                  <span className="checkbox-icon">🚗</span>
+                  <span className="checkbox-icon">
+                    <CarIcon size={18} />
+                  </span>
                   <span>Трансфер включен</span>
                 </span>
               </label>
