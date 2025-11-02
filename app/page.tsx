@@ -82,7 +82,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-premium-black text-white">
+    <div className="min-h-screen bg-premium-black text-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-3xl mx-6 mb-8">
         <div className="absolute inset-0 -z-10">
@@ -297,6 +297,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </main>
+    </div>
   );
 }

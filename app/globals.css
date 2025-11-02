@@ -5,11 +5,14 @@
 /* Import UI improvements */
 @import './ui-improvements.css';
 
-/* Premium Black & Gold Theme */
+/* Premium Black & Gold Theme - 2025 Modern Update */
 :root {
   --premium-black: #0a0a0a;
-  --premium-gold: #d4af37;
-  --gold-gradient: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
+  --premium-gold: #e6c149;
+  --gold-gradient: linear-gradient(135deg, #e6c149 0%, #ffd700 50%, #f4d03f 100%);
+  --ice-blue: #a2d2ff;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 .bg-premium-black {
