@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CloseIcon } from './SearchIcons';
 import { 
   MoneyIcon, 
   CalendarIcon, 
@@ -77,11 +76,9 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="filters-overlay" onClick={onClose}>
-      <div className="filters-panel" onClick={(e) => e.stopPropagation()}>
+    <div className={`filters-collapsible ${isOpen ? 'open' : ''}`}>
+      <div className="filters-panel">
         {/* Header */}
         <div className="filters-header">
           <div className="filters-title-group">
@@ -92,8 +89,10 @@ export function SearchFilters({ isOpen, onClose, onApply }: SearchFiltersProps) 
             </div>
             <h3 className="filters-title">Фильтры поиска</h3>
           </div>
-          <button className="filters-close" onClick={onClose}>
-            <CloseIcon size={20} />
+          <button className="filters-toggle" onClick={onClose} title={isOpen ? 'Свернуть' : 'Развернуть'}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="toggle-icon">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
           </button>
         </div>
 
