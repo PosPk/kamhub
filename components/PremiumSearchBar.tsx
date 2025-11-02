@@ -22,7 +22,22 @@ import {
   CarIcon,
   StarIcon,
   TrendingIcon,
-  TargetIcon
+  TargetIcon,
+  WavesIcon,
+  SnowflakeIcon,
+  BinocularsIcon,
+  WhaleIcon,
+  TentIcon,
+  TreesIcon,
+  CompassIcon,
+  BackpackIcon,
+  SunsetIcon,
+  BikeIcon,
+  SkiIcon,
+  AnchorIcon,
+  ParachuteIcon,
+  BookIcon,
+  GlobeIcon
 } from './SearchIcons';
 
 interface SearchSuggestion {
@@ -47,26 +62,64 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
 
-  // Popular tags
+  // Popular tags - РАСШИРЕННЫЙ СПИСОК
   const quickTags = [
-    { icon: MountainIcon, label: 'Вулканы', value: 'вулканы' },
-    { icon: PawIcon, label: 'Медведи', value: 'медведи' },
-    { icon: FishIcon, label: 'Рыбалка', value: 'рыбалка' },
-    { icon: DropletIcon, label: 'Термальные', value: 'термальные источники' },
+    // Топ активности
+    { icon: MountainIcon, label: 'Вулканы', value: 'восхождение на вулканы' },
+    { icon: PawIcon, label: 'Медведи', value: 'наблюдение за медведями' },
+    { icon: DropletIcon, label: 'Термы', value: 'термальные источники' },
     { icon: HelicopterIcon, label: 'Вертолёт', value: 'вертолётные туры' },
+    { icon: FishIcon, label: 'Рыбалка', value: 'рыбалка камчатка' },
+    
+    // Вода
+    { icon: WavesIcon, label: 'Сёрфинг', value: 'серфинг камчатка' },
+    { icon: AnchorIcon, label: 'Морские туры', value: 'морские прогулки' },
+    { icon: WhaleIcon, label: 'Киты', value: 'наблюдение за китами' },
+    
+    // Зима
+    { icon: SnowflakeIcon, label: 'Сноуборд', value: 'сноуборд горные лыжи' },
+    { icon: SkiIcon, label: 'Хели-ски', value: 'хели-ски фрирайд' },
+    { icon: BikeIcon, label: 'Снегоходы', value: 'снегоходные туры' },
+    
+    // Экстрим
     { icon: ZapIcon, label: 'Экстрим', value: 'экстремальные туры' },
-    { icon: HotelIcon, label: 'Отели', value: 'отели камчатка' },
-    { icon: CarIcon, label: 'Трансфер', value: 'трансфер' },
+    { icon: ParachuteIcon, label: 'Параглайдинг', value: 'параглайдинг' },
+    { icon: CompassIcon, label: 'Треккинг', value: 'треккинг походы' },
+    
+    // Туризм
+    { icon: TentIcon, label: 'Кемпинг', value: 'кемпинг палатки' },
+    { icon: BackpackIcon, label: 'Туры', value: 'многодневные туры' },
+    { icon: BinocularsIcon, label: 'Фотосафари', value: 'фотосафари' },
+    
+    // Культура
+    { icon: BookIcon, label: 'Экскурсии', value: 'экскурсии культура' },
+    { icon: SunsetIcon, label: 'Фотографии', value: 'фототуры' },
+    { icon: TreesIcon, label: 'Природа', value: 'природные парки' },
+    
+    // Сервисы
+    { icon: HotelIcon, label: 'Отели', value: 'отели размещение' },
+    { icon: CarIcon, label: 'Трансфер', value: 'трансфер аренда авто' },
+    { icon: GlobeIcon, label: 'Гиды', value: 'гиды проводники' },
   ];
 
-  // Categories
+  // Categories - РАСШИРЕННЫЕ
   const categories = [
-    { icon: ZapIcon, label: 'Экстрим', count: 45 },
-    { icon: HelicopterIcon, label: 'Вертолёты', count: 23 },
-    { icon: HotelIcon, label: 'Отели', count: 178 },
-    { icon: CarIcon, label: 'Трансфер', count: 89 },
-    { icon: FishIcon, label: 'Рыбалка', count: 67 },
-    { icon: DropletIcon, label: 'Термы', count: 34 },
+    { icon: MountainIcon, label: 'Вулканы и горы', count: 127 },
+    { icon: PawIcon, label: 'Дикая природа', count: 89 },
+    { icon: WavesIcon, label: 'Водные туры', count: 156 },
+    { icon: SnowflakeIcon, label: 'Зимние виды', count: 94 },
+    { icon: ZapIcon, label: 'Экстрим', count: 67 },
+    { icon: HelicopterIcon, label: 'Вертолёты', count: 45 },
+    { icon: DropletIcon, label: 'Термальные', count: 78 },
+    { icon: FishIcon, label: 'Рыбалка', count: 112 },
+    { icon: TentIcon, label: 'Кемпинг', count: 56 },
+    { icon: CompassIcon, label: 'Треккинг', count: 134 },
+    { icon: BinocularsIcon, label: 'Фотосафари', count: 43 },
+    { icon: BookIcon, label: 'Экскурсии', count: 91 },
+    { icon: HotelIcon, label: 'Размещение', count: 234 },
+    { icon: CarIcon, label: 'Трансфер', count: 178 },
+    { icon: BackpackIcon, label: 'Туры', count: 312 },
+    { icon: GlobeIcon, label: 'Гиды', count: 156 },
   ];
 
   // Initialize voice recognition
@@ -174,7 +227,22 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
       fish: FishIcon,
       clock: ClockIcon,
       trending: TrendingIcon,
-      target: TargetIcon
+      target: TargetIcon,
+      waves: WavesIcon,
+      snowflake: SnowflakeIcon,
+      whale: WhaleIcon,
+      tent: TentIcon,
+      trees: TreesIcon,
+      compass: CompassIcon,
+      backpack: BackpackIcon,
+      sunset: SunsetIcon,
+      bike: BikeIcon,
+      ski: SkiIcon,
+      anchor: AnchorIcon,
+      parachute: ParachuteIcon,
+      book: BookIcon,
+      globe: GlobeIcon,
+      binoculars: BinocularsIcon
     };
     return icons[iconName] || TargetIcon;
   };

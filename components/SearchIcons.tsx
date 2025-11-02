@@ -161,3 +161,143 @@ export const TargetIcon = ({ className = '', size = 24 }: IconProps) => (
     <circle cx="12" cy="12" r="2"/>
   </svg>
 );
+
+// Additional Activity Icons
+export const WavesIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+    <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+    <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>
+  </svg>
+);
+
+export const SnowflakeIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="2" x2="12" y2="22"/>
+    <path d="m5 5 14 14"/>
+    <path d="m19 5-14 14"/>
+    <path d="m7.5 3.5 9 9"/>
+    <path d="m20.5 7.5-9 9"/>
+    <path d="m16.5 3.5-9 9"/>
+    <path d="m3.5 7.5 9 9"/>
+  </svg>
+);
+
+export const BinocularsIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 10h4"/>
+    <path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/>
+    <path d="M5 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/>
+    <circle cx="6" cy="14" r="3"/>
+    <circle cx="18" cy="14" r="3"/>
+  </svg>
+);
+
+export const WhaleIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 12c0 3.31-4.5 6-10 6S2 15.31 2 12s4.5-6 10-6 10 2.69 10 6Z"/>
+    <path d="M2 12h20"/>
+    <path d="M12 2v20"/>
+    <path d="m19 5-1.5 1.5"/>
+  </svg>
+);
+
+export const TentIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3.5 21 14 3"/>
+    <path d="M20.5 21 10 3"/>
+    <path d="M15.5 21 12 15l-3.5 6"/>
+    <path d="M2 21h20"/>
+  </svg>
+);
+
+export const TreesIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10 10v.2A3 3 0 0 1 8.9 16v0H5v0h0a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/>
+    <path d="M7 16v6"/>
+    <path d="M13 19v3"/>
+    <path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/>
+  </svg>
+);
+
+export const CompassIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+  </svg>
+);
+
+export const BackpackIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/>
+    <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>
+    <path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/>
+    <path d="M8 10h8"/>
+    <path d="M8 18h8"/>
+  </svg>
+);
+
+export const SunsetIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 10V2"/>
+    <path d="m4.93 10.93 1.41 1.41"/>
+    <path d="M2 18h2"/>
+    <path d="M20 18h2"/>
+    <path d="m19.07 10.93-1.41 1.41"/>
+    <path d="M22 22H2"/>
+    <path d="m16 6-4 4-4-4"/>
+    <path d="M16 18a4 4 0 0 0-8 0"/>
+  </svg>
+);
+
+export const BikeIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="18.5" cy="17.5" r="3.5"/>
+    <circle cx="5.5" cy="17.5" r="3.5"/>
+    <circle cx="15" cy="5" r="1"/>
+    <path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+  </svg>
+);
+
+export const SkiIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2.5 19.5 22 2"/>
+    <path d="m2 22 3-3 3 3"/>
+    <circle cx="7" cy="4" r="2"/>
+    <path d="m15 13-5 5"/>
+    <path d="M12 15 7 9"/>
+  </svg>
+);
+
+export const AnchorIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="5" r="3"/>
+    <line x1="12" y1="22" x2="12" y2="8"/>
+    <path d="M5 12H2a10 10 0 0 0 20 0h-3"/>
+  </svg>
+);
+
+export const ParachuteIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 12c0-5.5-4.5-10-10-10S2 6.5 2 12c0 1.5.5 3 1.4 4.2"/>
+    <path d="M22 12c0 1.5-.5 3-1.4 4.2"/>
+    <path d="M12 2v10"/>
+    <path d="M12 12 8 20"/>
+    <path d="M12 12l4 8"/>
+    <path d="M8 20h8"/>
+  </svg>
+);
+
+export const BookIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+  </svg>
+);
+
+export const GlobeIcon = ({ className = '', size = 24 }: IconProps) => (
+  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="2" y1="12" x2="22" y2="12"/>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+  </svg>
+);
