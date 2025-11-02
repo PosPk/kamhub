@@ -123,16 +123,39 @@ export default function Home() {
             
             {/* Modern search bar */}
             <div className="flex flex-col sm:flex-row gap-3 max-w-2xl">
-              <div className="flex-1 relative">
+              <div className="flex-1 relative flex items-center gap-2">
                 <input 
                   placeholder="Куда поедем? вулканы, океан, медведи…" 
-                  className="w-full h-14 rounded-2xl px-6 text-slate-900 bg-white/95 backdrop-blur-sm border-2 border-transparent focus:border-[#e6c149] transition-all shadow-lg hover:shadow-xl" 
-                  name="q" 
+                  className="flex-1 h-14 rounded-2xl px-6 text-slate-900 bg-white/95 backdrop-blur-sm border-2 border-transparent focus:border-[#e6c149] transition-all shadow-lg hover:shadow-xl" 
+                  name="q"
+                  id="search-input"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const value = (e.target as HTMLInputElement).value;
+                      if (value.trim()) {
+                        window.location.href = `/hub/tours?search=${encodeURIComponent(value)}`;
+                      }
+                    }
+                  }}
                 />
+                <button
+                  onClick={() => {
+                    const input = document.getElementById('search-input') as HTMLInputElement;
+                    const value = input?.value.trim();
+                    if (value) {
+                      window.location.href = `/hub/tours?search=${encodeURIComponent(value)}`;
+                    }
+                  }}
+                  className="h-14 px-6 rounded-2xl font-bold bg-gradient-to-r from-[#e6c149] to-[#ffd700] text-premium-black flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(230,193,73,0.5)] transition-all hover:scale-105 whitespace-nowrap"
+                  aria-label="Найти туры"
+                >
+                  <span>🔍</span>
+                  <span>Найти</span>
+                </button>
               </div>
               <a 
                 href="/demo"
-                className="h-14 rounded-2xl px-8 font-bold bg-gradient-to-r from-[#e6c149] to-[#ffd700] text-premium-black flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(230,193,73,0.5)] transition-all hover:scale-105"
+                className="h-14 rounded-2xl px-8 font-bold bg-gradient-to-r from-[#a2d2ff]/20 to-[#e6c149]/20 backdrop-blur-sm text-white border border-[#a2d2ff]/30 rounded-xl hover:from-[#a2d2ff]/30 hover:to-[#e6c149]/30 transition-all hover:scale-105 flex items-center justify-center gap-2"
               >
                 <span>🚀</span>
                 <span>Демо</span>
