@@ -65,9 +65,13 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [activeTagIndex, setActiveTagIndex] = useState(0);
+  const [isAutoScrollPaused, setIsAutoScrollPaused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const autoScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Popular tags - РАСШИРЕННЫЙ СПИСОК
   const quickTags = [
@@ -161,7 +165,27 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
     if (history) {
       setSearchHistory(JSON.parse(history));
     }
-  }, []);
+
+    // Auto-scroll carousel every 3 seconds
+    const startAutoScroll = () => {
+      autoScrollTimerRef.current = setInterval(() => {
+        if (!isAutoScrollPaused && !isDragging) {
+          setActiveTagIndex((prev) => (prev + 1) % quickTags.length);
+        }
+      }, 3000);
+    };
+
+    startAutoScroll();
+
+    return () => {
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+      }
+      if (pauseTimerRef.current) {
+        clearTimeout(pauseTimerRef.current);
+      }
+    };
+  }, [isAutoScrollPaused, isDragging, quickTags.length]);
 
   // Auto-suggestions
   useEffect(() => {
@@ -267,6 +291,53 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
     const walk = (x - startX) * 2; // Scroll speed multiplier
     carouselRef.current.scrollLeft = scrollLeft - walk;
   };
+
+  // Center and highlight tag on click
+  const handleTagClickWithCenter = (value: string, index: number) => {
+    setActiveTagIndex(index);
+    pauseAutoScroll();
+    centerTag(index);
+    handleTagClick(value);
+  };
+
+  // Center specific tag in carousel
+  const centerTag = (index: number) => {
+    if (!carouselRef.current) return;
+    const carousel = carouselRef.current;
+    const tagElements = carousel.children;
+    if (tagElements[index]) {
+      const tagElement = tagElements[index] as HTMLElement;
+      const tagCenter = tagElement.offsetLeft + tagElement.offsetWidth / 2;
+      const carouselCenter = carousel.offsetWidth / 2;
+      const scrollPosition = tagCenter - carouselCenter;
+      
+      carousel.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Pause auto-scroll on user interaction
+  const pauseAutoScroll = () => {
+    setIsAutoScrollPaused(true);
+    
+    if (pauseTimerRef.current) {
+      clearTimeout(pauseTimerRef.current);
+    }
+    
+    // Resume after 5 seconds
+    pauseTimerRef.current = setTimeout(() => {
+      setIsAutoScrollPaused(false);
+    }, 5000);
+  };
+
+  // Auto-center active tag
+  useEffect(() => {
+    if (!isAutoScrollPaused) {
+      centerTag(activeTagIndex);
+    }
+  }, [activeTagIndex]);
 
   const getIconComponent = (iconName: string) => {
     const icons: { [key: string]: React.ComponentType<any> } = {
@@ -404,14 +475,16 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            onMouseEnter={pauseAutoScroll}
           >
             {quickTags.map((tag, idx) => {
               const IconComponent = tag.icon;
+              const isActive = idx === activeTagIndex;
               return (
                 <button
                   key={idx}
-                  className="quick-tag-compact"
-                  onClick={() => handleTagClick(tag.value)}
+                  className={`quick-tag-compact ${isActive ? 'active' : ''}`}
+                  onClick={() => handleTagClickWithCenter(tag.value, idx)}
                   onMouseDown={(e) => e.stopPropagation()}
                 >
                   <span className="tag-icon-compact">
