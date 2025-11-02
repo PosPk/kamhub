@@ -21,11 +21,11 @@
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(40px);
   border: 2px solid rgba(255, 255, 255, 0.12);
-  border-radius: 24px;
-  padding: 8px 8px 8px 20px;
+  border-radius: 20px;
+  padding: 6px 6px 6px 16px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-  min-height: 64px;
+  min-height: 52px;
 }
 
 .premium-search-bar:hover {
@@ -107,15 +107,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   background: rgba(139, 92, 246, 0.12);
   border: 1px solid rgba(139, 92, 246, 0.25);
-  border-radius: 16px;
+  border-radius: 12px;
   color: white;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 20px;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
@@ -202,6 +202,89 @@
   background: rgba(139, 92, 246, 0.5);
 }
 
+/* Tags Header with Carousel Controls */
+.tags-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.carousel-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.carousel-btn-small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.carousel-btn-small:hover {
+  background: rgba(139, 92, 246, 0.25);
+  transform: scale(1.05);
+}
+
+.carousel-btn-small:active {
+  transform: scale(0.95);
+}
+
+/* Carousel Container */
+.tags-carousel {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.tags-carousel::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tags-carousel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+
+.tags-carousel::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+}
+
+/* Compact Tags */
+.quick-tag-compact {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .quick-tag {
   display: flex;
   align-items: center;
@@ -217,6 +300,17 @@
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
+}
+
+.quick-tag-compact:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+}
+
+.quick-tag-compact:active {
+  transform: translateY(0);
 }
 
 .quick-tag:hover {
@@ -238,8 +332,21 @@
   height: 20px;
 }
 
+.tag-icon-compact {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
 .tag-label {
   font-size: 14px;
+}
+
+.tag-label-compact {
+  font-size: 12px;
+  font-weight: 500;
 }
 
 /* ================================================
@@ -595,28 +702,40 @@
 
 @media (max-width: 768px) {
   .premium-search-bar {
-    min-height: 56px;
-    padding: 6px 6px 6px 16px;
-    border-radius: 20px;
+    min-height: 48px;
+    padding: 5px 5px 5px 14px;
+    border-radius: 16px;
   }
 
   .search-input-premium {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .action-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    border-radius: 10px;
   }
 
-  .quick-tag {
-    padding: 8px 12px;
-    font-size: 13px;
+  .quick-tag-compact {
+    padding: 6px 10px;
+    font-size: 12px;
   }
 
-  .tags-list {
-    gap: 6px;
+  .tag-icon-compact {
+    width: 14px;
+    height: 14px;
+  }
+
+  .carousel-btn-small {
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+  }
+
+  .tags-carousel {
+    gap: 5px;
   }
 
   .categories-grid {
@@ -644,22 +763,27 @@
 
 @media (max-width: 480px) {
   .premium-search-bar {
-    min-height: 52px;
+    min-height: 46px;
   }
 
   .action-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 16px;
-    border-radius: 12px;
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+    border-radius: 10px;
   }
 
   .search-actions {
-    gap: 4px;
+    gap: 3px;
   }
 
   .categories-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .quick-tag-compact {
+    padding: 5px 8px;
+    font-size: 11px;
   }
 }
 

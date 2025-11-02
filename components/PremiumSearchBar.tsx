@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import './PremiumSearchBar.css';
+import { SearchFilters } from './SearchFilters';
 import {
   SearchIcon,
   MicrophoneIcon,
@@ -59,8 +60,11 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
   const [isListening, setIsListening] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [carouselOffset, setCarouselOffset] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   // Popular tags - РАСШИРЕННЫЙ СПИСОК
   const quickTags = [
@@ -218,6 +222,25 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
     alert('Поиск на карте будет доступен в следующей версии!');
   };
 
+  const handleFiltersApply = (filters: any) => {
+    console.log('Applied filters:', filters);
+    onSearch(query, filters);
+  };
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    if (!carouselRef.current) return;
+    const scrollAmount = 300;
+    const newOffset = direction === 'left' 
+      ? Math.max(0, carouselOffset - scrollAmount)
+      : carouselOffset + scrollAmount;
+    
+    setCarouselOffset(newOffset);
+    carouselRef.current.scrollTo({
+      left: newOffset,
+      behavior: 'smooth'
+    });
+  };
+
   const getIconComponent = (iconName: string) => {
     const icons: { [key: string]: React.ComponentType<any> } = {
       mountain: MountainIcon,
@@ -300,35 +323,79 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
           >
             <MapIcon size={20} />
           </button>
+
+          <button 
+            className="action-btn filter-btn-main"
+            onClick={() => setShowFilters(true)}
+            aria-label="Фильтры"
+            title="Фильтры"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14"/>
+              <line x1="4" y1="10" x2="4" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12" y2="3"/>
+              <line x1="20" y1="21" x2="20" y2="16"/>
+              <line x1="20" y1="12" x2="20" y2="3"/>
+              <line x1="1" y1="14" x2="7" y2="14"/>
+              <line x1="9" y1="8" x2="15" y2="8"/>
+              <line x1="17" y1="16" x2="23" y2="16"/>
+            </svg>
+          </button>
         </div>
       </div>
 
-      {/* Quick Tags */}
+      {/* Quick Tags Carousel */}
       {!isFocused && (
         <div className="quick-tags">
-          <div className="tags-label">
-            <FireIcon size={14} className="inline-icon" />
-            <span>ПОПУЛЯРНЫЕ:</span>
+          <div className="tags-header">
+            <div className="tags-label">
+              <FireIcon size={12} className="inline-icon" />
+              <span>ПОПУЛЯРНЫЕ</span>
+            </div>
+            <div className="carousel-controls">
+              <button 
+                className="carousel-btn-small"
+                onClick={() => scrollCarousel('left')}
+                aria-label="Влево"
+              >
+                ‹
+              </button>
+              <button 
+                className="carousel-btn-small"
+                onClick={() => scrollCarousel('right')}
+                aria-label="Вправо"
+              >
+                ›
+              </button>
+            </div>
           </div>
-          <div className="tags-list">
+          <div className="tags-carousel" ref={carouselRef}>
             {quickTags.map((tag, idx) => {
               const IconComponent = tag.icon;
               return (
                 <button
                   key={idx}
-                  className="quick-tag"
+                  className="quick-tag-compact"
                   onClick={() => handleTagClick(tag.value)}
                 >
-                  <span className="tag-icon">
-                    <IconComponent size={18} />
+                  <span className="tag-icon-compact">
+                    <IconComponent size={16} />
                   </span>
-                  <span className="tag-label">{tag.label}</span>
+                  <span className="tag-label-compact">{tag.label}</span>
                 </button>
               );
             })}
           </div>
         </div>
       )}
+
+      {/* Filters Modal */}
+      <SearchFilters 
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleFiltersApply}
+      />
 
       {/* Suggestions Dropdown */}
       {isFocused && (
