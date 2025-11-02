@@ -2,6 +2,28 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import './PremiumSearchBar.css';
+import {
+  SearchIcon,
+  MicrophoneIcon,
+  CameraIcon,
+  MapIcon,
+  CloseIcon,
+  ClockIcon,
+  FireIcon,
+  LightbulbIcon,
+  FolderIcon,
+  MountainIcon,
+  PawIcon,
+  FishIcon,
+  DropletIcon,
+  HelicopterIcon,
+  ZapIcon,
+  HotelIcon,
+  CarIcon,
+  StarIcon,
+  TrendingIcon,
+  TargetIcon
+} from './SearchIcons';
 
 interface SearchSuggestion {
   id: string;
@@ -27,24 +49,24 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
 
   // Popular tags
   const quickTags = [
-    { icon: '🌋', label: 'Вулканы', value: 'вулканы' },
-    { icon: '🐻', label: 'Медведи', value: 'медведи' },
-    { icon: '🎣', label: 'Рыбалка', value: 'рыбалка' },
-    { icon: '♨️', label: 'Термальные', value: 'термальные источники' },
-    { icon: '🚁', label: 'Вертолёт', value: 'вертолётные туры' },
-    { icon: '🏔️', label: 'Экстрим', value: 'экстремальные туры' },
-    { icon: '🏨', label: 'Отели', value: 'отели камчатка' },
-    { icon: '🚗', label: 'Трансфер', value: 'трансфер' },
+    { icon: MountainIcon, label: 'Вулканы', value: 'вулканы' },
+    { icon: PawIcon, label: 'Медведи', value: 'медведи' },
+    { icon: FishIcon, label: 'Рыбалка', value: 'рыбалка' },
+    { icon: DropletIcon, label: 'Термальные', value: 'термальные источники' },
+    { icon: HelicopterIcon, label: 'Вертолёт', value: 'вертолётные туры' },
+    { icon: ZapIcon, label: 'Экстрим', value: 'экстремальные туры' },
+    { icon: HotelIcon, label: 'Отели', value: 'отели камчатка' },
+    { icon: CarIcon, label: 'Трансфер', value: 'трансфер' },
   ];
 
   // Categories
   const categories = [
-    { icon: '🏔️', label: 'Экстрим', count: 45 },
-    { icon: '🚁', label: 'Вертолёты', count: 23 },
-    { icon: '🏨', label: 'Отели', count: 178 },
-    { icon: '🚗', label: 'Трансфер', count: 89 },
-    { icon: '🎣', label: 'Рыбалка', count: 67 },
-    { icon: '♨️', label: 'Термы', count: 34 },
+    { icon: ZapIcon, label: 'Экстрим', count: 45 },
+    { icon: HelicopterIcon, label: 'Вертолёты', count: 23 },
+    { icon: HotelIcon, label: 'Отели', count: 178 },
+    { icon: CarIcon, label: 'Трансфер', count: 89 },
+    { icon: FishIcon, label: 'Рыбалка', count: 67 },
+    { icon: DropletIcon, label: 'Термы', count: 34 },
   ];
 
   // Initialize voice recognition
@@ -86,11 +108,11 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
     if (query.length > 1) {
       // Simulate API call with mock data
       const mockSuggestions: SearchSuggestion[] = [
-        { id: '1', type: 'suggestion', text: 'Авачинский вулкан', icon: '🌋', meta: '⭐ 4.9 · 8500₽ · 30 км' },
-        { id: '2', type: 'suggestion', text: 'Долина гейзеров', icon: '🚁', meta: '⭐ 5.0 · 35000₽ · 200 км' },
-        { id: '3', type: 'suggestion', text: 'Курильское озеро медведи', icon: '🐻', meta: '⭐ 4.8 · 45000₽ · 150 км' },
-        { id: '4', type: 'location', text: 'Термальные источники', icon: '♨️', meta: '⭐ 4.7 · 5000₽ · 12 км' },
-        { id: '5', type: 'suggestion', text: 'Рыбалка на реке', icon: '🎣', meta: '⭐ 4.6 · 12000₽ · 50 км' },
+        { id: '1', type: 'suggestion', text: 'Авачинский вулкан', icon: 'mountain', meta: '⭐ 4.9 · 8500₽ · 30 км' },
+        { id: '2', type: 'suggestion', text: 'Долина гейзеров', icon: 'helicopter', meta: '⭐ 5.0 · 35000₽ · 200 км' },
+        { id: '3', type: 'suggestion', text: 'Курильское озеро медведи', icon: 'paw', meta: '⭐ 4.8 · 45000₽ · 150 км' },
+        { id: '4', type: 'location', text: 'Термальные источники', icon: 'droplet', meta: '⭐ 4.7 · 5000₽ · 12 км' },
+        { id: '5', type: 'suggestion', text: 'Рыбалка на реке', icon: 'fish', meta: '⭐ 4.6 · 12000₽ · 50 км' },
       ];
       
       setSuggestions(mockSuggestions.filter(s => 
@@ -136,18 +158,34 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
   };
 
   const handlePhotoSearch = () => {
-    alert('📷 Поиск по фото будет доступен в следующей версии!');
+    alert('Поиск по фото будет доступен в следующей версии!');
   };
 
   const handleMapView = () => {
-    alert('🗺️ Поиск на карте будет доступен в следующей версии!');
+    alert('Поиск на карте будет доступен в следующей версии!');
+  };
+
+  const getIconComponent = (iconName: string) => {
+    const icons: { [key: string]: React.ComponentType<any> } = {
+      mountain: MountainIcon,
+      helicopter: HelicopterIcon,
+      paw: PawIcon,
+      droplet: DropletIcon,
+      fish: FishIcon,
+      clock: ClockIcon,
+      trending: TrendingIcon,
+      target: TargetIcon
+    };
+    return icons[iconName] || TargetIcon;
   };
 
   return (
     <div className="premium-search-container">
       {/* Main Search Bar */}
       <div className={`premium-search-bar ${isFocused ? 'focused' : ''}`}>
-        <div className="search-icon">🔍</div>
+        <div className="search-icon">
+          <SearchIcon size={24} />
+        </div>
         
         <input
           ref={inputRef}
@@ -163,7 +201,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
 
         {query && (
           <button className="clear-btn" onClick={handleClear} aria-label="Очистить">
-            ✕
+            <CloseIcon size={16} />
           </button>
         )}
 
@@ -174,7 +212,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
             aria-label="Голосовой поиск"
             title="Голосовой поиск"
           >
-            {isListening ? '🎙️' : '🎤'}
+            <MicrophoneIcon size={20} />
           </button>
           
           <button 
@@ -183,7 +221,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
             aria-label="Поиск по фото"
             title="Поиск по фото"
           >
-            📷
+            <CameraIcon size={20} />
           </button>
           
           <button 
@@ -192,7 +230,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
             aria-label="Показать на карте"
             title="Показать на карте"
           >
-            🗺️
+            <MapIcon size={20} />
           </button>
         </div>
       </div>
@@ -200,18 +238,26 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
       {/* Quick Tags */}
       {!isFocused && (
         <div className="quick-tags">
-          <div className="tags-label">🔥 ПОПУЛЯРНЫЕ:</div>
+          <div className="tags-label">
+            <FireIcon size={14} className="inline-icon" />
+            <span>ПОПУЛЯРНЫЕ:</span>
+          </div>
           <div className="tags-list">
-            {quickTags.map((tag, idx) => (
-              <button
-                key={idx}
-                className="quick-tag"
-                onClick={() => handleTagClick(tag.value)}
-              >
-                <span className="tag-icon">{tag.icon}</span>
-                <span className="tag-label">{tag.label}</span>
-              </button>
-            ))}
+            {quickTags.map((tag, idx) => {
+              const IconComponent = tag.icon;
+              return (
+                <button
+                  key={idx}
+                  className="quick-tag"
+                  onClick={() => handleTagClick(tag.value)}
+                >
+                  <span className="tag-icon">
+                    <IconComponent size={18} />
+                  </span>
+                  <span className="tag-label">{tag.label}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -222,14 +268,19 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
           {/* History */}
           {searchHistory.length > 0 && query.length === 0 && (
             <div className="dropdown-section">
-              <div className="section-header">⏱️ НЕДАВНИЕ ЗАПРОСЫ</div>
+              <div className="section-header">
+                <ClockIcon size={14} className="inline-icon" />
+                <span>НЕДАВНИЕ ЗАПРОСЫ</span>
+              </div>
               {searchHistory.slice(0, 5).map((item, idx) => (
                 <button
                   key={idx}
                   className="suggestion-item history-item"
                   onClick={() => handleTagClick(item)}
                 >
-                  <span className="suggestion-icon">🕐</span>
+                  <span className="suggestion-icon">
+                    <ClockIcon size={20} />
+                  </span>
                   <span className="suggestion-text">{item}</span>
                   <button 
                     className="remove-history"
@@ -240,7 +291,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
                       localStorage.setItem('searchHistory', JSON.stringify(newHistory));
                     }}
                   >
-                    ✕
+                    <CloseIcon size={12} />
                   </button>
                 </button>
               ))}
@@ -250,41 +301,62 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
           {/* Suggestions */}
           {suggestions.length > 0 && (
             <div className="dropdown-section">
-              <div className="section-header">💡 ПРЕДЛОЖЕНИЯ</div>
-              {suggestions.map((item) => (
-                <button
-                  key={item.id}
-                  className="suggestion-item"
-                  onClick={() => handleTagClick(item.text)}
-                >
-                  <span className="suggestion-icon">{item.icon}</span>
-                  <div className="suggestion-content">
-                    <span className="suggestion-text">{item.text}</span>
-                    {item.meta && <span className="suggestion-meta">{item.meta}</span>}
-                  </div>
-                </button>
-              ))}
+              <div className="section-header">
+                <LightbulbIcon size={14} className="inline-icon" />
+                <span>ПРЕДЛОЖЕНИЯ</span>
+              </div>
+              {suggestions.map((item) => {
+                const IconComponent = getIconComponent(item.icon);
+                return (
+                  <button
+                    key={item.id}
+                    className="suggestion-item"
+                    onClick={() => handleTagClick(item.text)}
+                  >
+                    <span className="suggestion-icon">
+                      <IconComponent size={20} />
+                    </span>
+                    <div className="suggestion-content">
+                      <span className="suggestion-text">{item.text}</span>
+                      {item.meta && (
+                        <span className="suggestion-meta">
+                          <StarIcon size={12} className="inline-icon" />
+                          {item.meta}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
 
           {/* Categories */}
           {query.length === 0 && (
             <div className="dropdown-section">
-              <div className="section-header">📂 КАТЕГОРИИ</div>
+              <div className="section-header">
+                <FolderIcon size={14} className="inline-icon" />
+                <span>КАТЕГОРИИ</span>
+              </div>
               <div className="categories-grid">
-                {categories.map((cat, idx) => (
-                  <button
-                    key={idx}
-                    className="category-card"
-                    onClick={() => handleTagClick(cat.label.toLowerCase())}
-                  >
-                    <span className="category-icon">{cat.icon}</span>
-                    <div className="category-info">
-                      <span className="category-label">{cat.label}</span>
-                      <span className="category-count">{cat.count}</span>
-                    </div>
-                  </button>
-                ))}
+                {categories.map((cat, idx) => {
+                  const IconComponent = cat.icon;
+                  return (
+                    <button
+                      key={idx}
+                      className="category-card"
+                      onClick={() => handleTagClick(cat.label.toLowerCase())}
+                    >
+                      <span className="category-icon">
+                        <IconComponent size={24} />
+                      </span>
+                      <div className="category-info">
+                        <span className="category-label">{cat.label}</span>
+                        <span className="category-count">{cat.count}</span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -292,7 +364,9 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
           {/* No Results */}
           {query.length > 1 && suggestions.length === 0 && (
             <div className="no-results">
-              <div className="no-results-icon">🔍</div>
+              <div className="no-results-icon">
+                <SearchIcon size={48} />
+              </div>
               <div className="no-results-text">Ничего не найдено</div>
               <div className="no-results-hint">Попробуйте другой запрос</div>
             </div>
