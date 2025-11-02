@@ -443,6 +443,13 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
         </div>
       </div>
 
+      {/* Filters Panel */}
+      <SearchFilters 
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleFiltersApply}
+      />
+
       {/* Quick Tags Carousel */}
       {!isFocused && (
         <div className="quick-tags">
@@ -498,14 +505,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
         </div>
       )}
 
-      {/* Filters Modal */}
-      <SearchFilters 
-        isOpen={showFilters}
-        onClose={() => setShowFilters(false)}
-        onApply={handleFiltersApply}
-      />
-
-      {/* Suggestions Dropdown */}
+      {/* Suggestions Dropdown */
       {isFocused && (
         <div className="search-dropdown">
           {/* History */}
