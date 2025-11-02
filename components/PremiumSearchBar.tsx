@@ -62,6 +62,9 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [carouselOffset, setCarouselOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -241,6 +244,30 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
     });
   };
 
+  // Drag to scroll functionality
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!carouselRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - carouselRef.current.offsetLeft);
+    setScrollLeft(carouselRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !carouselRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - carouselRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    carouselRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   const getIconComponent = (iconName: string) => {
     const icons: { [key: string]: React.ComponentType<any> } = {
       mountain: MountainIcon,
@@ -370,7 +397,14 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
               </button>
             </div>
           </div>
-          <div className="tags-carousel" ref={carouselRef}>
+          <div 
+            className="tags-carousel" 
+            ref={carouselRef}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+          >
             {quickTags.map((tag, idx) => {
               const IconComponent = tag.icon;
               return (
@@ -378,6 +412,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
                   key={idx}
                   className="quick-tag-compact"
                   onClick={() => handleTagClick(tag.value)}
+                  onMouseDown={(e) => e.stopPropagation()}
                 >
                   <span className="tag-icon-compact">
                     <IconComponent size={20} />

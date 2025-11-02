@@ -250,6 +250,12 @@
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+  cursor: grab;
+  user-select: none;
+}
+
+.tags-carousel:active {
+  cursor: grabbing;
 }
 
 .tags-carousel::-webkit-scrollbar {
@@ -819,6 +825,83 @@
 /* ================================================
    LIGHT THEME SUPPORT
    ================================================ */
+
+[data-theme="light"] .premium-search-bar {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .premium-search-bar:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.15);
+}
+
+[data-theme="light"] .search-input-premium {
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .search-input-premium::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .action-btn {
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .action-btn:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+[data-theme="light"] .tags-label {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="light"] .carousel-btn-small {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.25);
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .carousel-btn-small:hover {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="light"] .quick-tag-compact {
+  background: rgba(139, 92, 246, 0.08);
+  border-color: rgba(139, 92, 246, 0.15);
+  color: #1a1a1a;
+}
+
+[data-theme="light"] .quick-tag-compact:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+[data-theme="light"] .tag-icon-compact {
+  background: rgba(139, 92, 246, 0.2);
+  color: #5b21b6;
+}
+
+[data-theme="light"] .quick-tag-compact:hover .tag-icon-compact {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+[data-theme="light"] .tags-carousel::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .tags-carousel::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+}
+
+[data-theme="light"] .tags-carousel::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
 
 [data-theme="light"] .premium-search-bar {
   background: rgba(255, 255, 255, 0.95);
