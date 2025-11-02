@@ -82,12 +82,23 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-premium-black text-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl mx-6 mb-8">
+    <main className="min-h-screen bg-premium-black text-white relative overflow-hidden">
+      {/* Modern animated background */}
+      <div className="fixed inset-0 -z-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-[#0a0a0a] to-black"></div>
+        <div className="absolute inset-0 gradient-gold-aurora animate-aurora opacity-30"></div>
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-[#e6c149] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob"></div>
+          <div className="absolute top-40 right-10 w-72 h-72 bg-[#a2d2ff] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-1/2 w-72 h-72 bg-[#e6c149] rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-4000"></div>
+        </div>
+      </div>
+
+      {/* Hero Section - Modern Design */}
+      <section className="relative overflow-hidden rounded-3xl mx-4 sm:mx-6 mb-12 mt-6 backdrop-blur-xl border border-white/10">
         <div className="absolute inset-0 -z-10">
           <video 
-            className="w-full h-[48vh] object-cover" 
+            className="w-full h-[50vh] sm:h-[60vh] object-cover" 
             autoPlay 
             muted 
             loop 
@@ -97,99 +108,151 @@ export default function Home() {
             <source src="https://cdn.coverr.co/videos/coverr-aurora-over-mountains-0157/1080p.mp4" type="video/mp4" />
           </video>
         </div>
-        <div className="absolute inset-0 gradient-gold-aurora animate-aurora"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-        <div className="absolute inset-0 p-8 grid content-end gap-4">
-          <h1 className="font-display text-4xl sm:text-6xl font-black leading-tight">
-            Экосистема туризма Камчатки
-          </h1>
-          <p className="max-w-2xl text-white/85">
-            Туры, партнёры, CRM, бронирование, безопасность, рефералы и экология — в едином центре.
-          </p>
-          <div className="flex gap-2 items-center">
-            <input 
-              placeholder="Куда поедем? вулканы, океан, медведи…" 
-              className="flex-1 h-12 rounded-xl px-4 text-slate-900" 
-              name="q" 
-            />
-            <a 
-              href="/demo"
-              className="h-12 rounded-xl px-5 font-bold bg-premium-gold text-premium-black flex items-center gap-2"
-            >
-              🚀 Демо
-            </a>
-          </div>
-          <div className="flex gap-4 justify-center mt-4">
-            <a 
-              href="/auth/login"
-              className="px-6 py-2 bg-blue-600/20 text-blue-400 border border-blue-600/40 rounded-lg hover:bg-blue-600/30 transition-colors"
-            >
-              Войти
-            </a>
-            <a 
-              href="/auth/login"
-              className="px-6 py-2 bg-green-600/20 text-green-400 border border-green-600/40 rounded-lg hover:bg-green-600/30 transition-colors"
-            >
-              Регистрация
-            </a>
-          </div>
-          <div className="text-sm text-white/70 mt-2">
-            💡 <strong>Демо-режим</strong> - попробуйте все функции без регистрации
+        <div className="absolute inset-0 gradient-gold-aurora animate-aurora opacity-40"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+        
+        {/* Glass morphism content */}
+        <div className="relative p-6 sm:p-8 lg:p-12 grid content-end gap-6 min-h-[50vh] sm:min-h-[60vh]">
+          <div className="max-w-4xl space-y-6">
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-7xl font-black leading-tight bg-gradient-to-r from-[#e6c149] via-[#ffd700] to-[#a2d2ff] bg-clip-text text-transparent animate-fade-in">
+              Экосистема туризма<br />Камчатки
+            </h1>
+            <p className="max-w-2xl text-lg sm:text-xl text-white/90 leading-relaxed">
+              Туры, партнёры, CRM, бронирование, безопасность, рефералы и экология — в едином центре.
+            </p>
+            
+            {/* Modern search bar */}
+            <div className="flex flex-col sm:flex-row gap-3 max-w-2xl">
+              <div className="flex-1 relative flex items-center gap-2">
+                <input 
+                  placeholder="Куда поедем? вулканы, океан, медведи…" 
+                  className="flex-1 h-14 rounded-2xl px-6 text-slate-900 bg-white/95 backdrop-blur-sm border-2 border-transparent focus:border-[#e6c149] transition-all shadow-lg hover:shadow-xl" 
+                  name="q"
+                  id="search-input"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const value = (e.target as HTMLInputElement).value;
+                      if (value.trim()) {
+                        window.location.href = `/hub/tours?search=${encodeURIComponent(value)}`;
+                      }
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => {
+                    const input = document.getElementById('search-input') as HTMLInputElement;
+                    const value = input?.value.trim();
+                    if (value) {
+                      window.location.href = `/hub/tours?search=${encodeURIComponent(value)}`;
+                    }
+                  }}
+                  className="h-14 px-6 rounded-2xl font-bold bg-gradient-to-r from-[#e6c149] to-[#ffd700] text-premium-black flex items-center justify-center gap-2 hover:shadow-[0_0_30px_rgba(230,193,73,0.5)] transition-all hover:scale-105 whitespace-nowrap"
+                  aria-label="Найти туры"
+                >
+                  <span>🔍</span>
+                  <span>Найти</span>
+                </button>
+              </div>
+              <a 
+                href="/demo"
+                className="h-14 rounded-2xl px-8 font-bold bg-gradient-to-r from-[#a2d2ff]/20 to-[#e6c149]/20 backdrop-blur-sm text-white border border-[#a2d2ff]/30 rounded-xl hover:from-[#a2d2ff]/30 hover:to-[#e6c149]/30 transition-all hover:scale-105 flex items-center justify-center gap-2"
+              >
+                <span>🚀</span>
+                <span>Демо</span>
+              </a>
+            </div>
+            
+            {/* CTA buttons */}
+            <div className="flex flex-wrap gap-3 mt-4">
+              <a 
+                href="/auth/login"
+                className="px-6 py-3 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-xl hover:bg-white/20 transition-all hover:scale-105"
+              >
+                Войти
+              </a>
+              <a 
+                href="/auth/login"
+                className="px-6 py-3 bg-gradient-to-r from-[#a2d2ff]/20 to-[#e6c149]/20 backdrop-blur-sm text-white border border-[#a2d2ff]/30 rounded-xl hover:from-[#a2d2ff]/30 hover:to-[#e6c149]/30 transition-all hover:scale-105"
+              >
+                Регистрация
+              </a>
+            </div>
+            
+            <div className="flex items-center gap-2 text-sm text-white/70 bg-white/5 backdrop-blur-sm px-4 py-2 rounded-lg w-fit border border-white/10">
+              <span className="text-lg">💡</span>
+              <span><strong>Демо-режим</strong> - попробуйте все функции без регистрации</span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="px-6 py-6 grid gap-4">
-        <div className="grid gap-1 text-center">
-          <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-gold gold-glow">
+      {/* Main Content - Modern Cards */}
+      <section className="px-4 sm:px-6 py-8 grid gap-8">
+        <div className="grid gap-2 text-center max-w-4xl mx-auto">
+          <div className="font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight bg-gradient-to-r from-[#e6c149] via-[#ffd700] to-[#a2d2ff] bg-clip-text text-transparent">
             Камчатка.
           </div>
-          <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-gold gold-glow">
+          <div className="font-display text-3xl sm:text-5xl lg:text-6xl font-black leading-tight bg-gradient-to-r from-[#a2d2ff] via-[#e6c149] to-[#ffd700] bg-clip-text text-transparent">
             экосистема путешествий.
           </div>
         </div>
         
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-extrabold">Кому это нужно</h2>
-          <div className="text-white/70 text-sm">Выберите роль, чтобы продолжить</div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <h2 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+            Кому это нужно
+          </h2>
+          <div className="text-white/70 text-sm bg-white/5 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10">
+            Выберите роль, чтобы продолжить
+          </div>
         </div>
         
-        <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
+        <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
           {[
-            ['Турист', '/hub/tourist'],
-            ['Туроператор', '/hub/operator'],
-            ['Гид', '/hub/guide'],
-            ['Трансфер', '/hub/transfer'],
-            ['Размещение', '/hub/stay'],
-            ['Сувениры', '/hub/souvenirs'],
-            ['Прокат снаряжения', '/hub/gear'],
-            ['Прокат авто', '/hub/cars'],
-          ].map(([title, href]) => (
+            ['Турист', '/hub/tourist', '🏔️'],
+            ['Туроператор', '/hub/operator', '🏢'],
+            ['Гид', '/hub/guide', '🧭'],
+            ['Трансфер', '/hub/transfer', '🚌'],
+            ['Размещение', '/hub/stay', '🏨'],
+            ['Сувениры', '/hub/souvenirs', '🎁'],
+            ['Прокат снаряжения', '/hub/gear', '⛷️'],
+            ['Прокат авто', '/hub/cars', '🚗'],
+          ].map(([title, href, icon], index) => (
             <a 
               key={title} 
               href={href} 
-              className="rounded-2xl bg-white/5 border border-white/10 p-5 hover:bg-white/10 transition"
+              className="group relative rounded-2xl bg-gradient-to-br from-white/5 to-white/0 border border-white/10 p-6 hover:border-[#e6c149]/50 transition-all duration-300 hover:scale-105 hover:shadow-[0_8px_30px_rgba(230,193,73,0.2)] backdrop-blur-sm overflow-hidden"
+              style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="text-lg font-extrabold">{title}</div>
-              <div className="text-sm text-white/70">Персональные инструменты и витрины</div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#e6c149]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative z-10">
+                <div className="text-3xl mb-3 transform group-hover:scale-110 transition-transform">{icon}</div>
+                <div className="text-lg font-extrabold mb-2 group-hover:text-[#e6c149] transition-colors">{title}</div>
+                <div className="text-sm text-white/70">Персональные инструменты и витрины</div>
+              </div>
             </a>
           ))}
         </div>
       </section>
 
 
-      {/* Tours Section */}
-      <section className="px-6 py-6">
-        <h2 className="text-xl font-extrabold mb-4">Популярные туры</h2>
+      {/* Tours Section - Modern */}
+      <section className="px-4 sm:px-6 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+            Популярные туры
+          </h2>
+          <a href="/hub/tours" className="text-sm text-[#e6c149] hover:text-[#ffd700] transition-colors flex items-center gap-2">
+            Все туры <span>→</span>
+          </a>
+        </div>
         {loading ? (
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white/5 rounded-2xl h-80 animate-pulse"></div>
+              <div key={i} className="bg-gradient-to-br from-white/5 to-white/0 rounded-2xl border border-white/10 h-80 skeleton"></div>
             ))}
           </div>
         ) : tours.length > 0 ? (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {tours.map((tour) => (
               <TourCard
                 key={tour.id}
@@ -201,9 +264,10 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="text-center text-white/70 py-12">
-            <div className="text-4xl mb-4">🏔️</div>
-            <p>Туры временно недоступны</p>
+          <div className="text-center text-white/70 py-16 bg-gradient-to-br from-white/5 to-white/0 rounded-2xl border border-white/10 backdrop-blur-sm">
+            <div className="text-6xl mb-4">🏔️</div>
+            <p className="text-lg">Туры временно недоступны</p>
+            <p className="text-sm text-white/50 mt-2">Скоро здесь появятся удивительные маршруты</p>
           </div>
         )}
       </section>
@@ -297,6 +361,6 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </div>
+    </main>
   );
 }
