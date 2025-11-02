@@ -266,23 +266,27 @@
   border-radius: 10px;
 }
 
-/* Compact Tags */
+/* Compact Tags - Vertical Layout */
 .quick-tag-compact {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 5px;
-  padding: 7px 12px;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 10px 10px;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: 14px;
   color: white;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
+  min-width: 75px;
+  text-align: center;
 }
 
 .quick-tag {
@@ -304,9 +308,14 @@
 
 .quick-tag-compact:hover {
   background: rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.3);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+}
+
+.quick-tag-compact:hover .tag-icon-compact {
+  background: rgba(139, 92, 246, 0.25);
+  transform: scale(1.05);
 }
 
 .quick-tag-compact:active {
@@ -336,8 +345,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
+  background: rgba(139, 92, 246, 0.15);
+  border-radius: 10px;
+  padding: 6px;
 }
 
 .tag-label {
@@ -345,8 +357,12 @@
 }
 
 .tag-label-compact {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ================================================
@@ -719,13 +735,15 @@
   }
 
   .quick-tag-compact {
-    padding: 6px 10px;
-    font-size: 12px;
+    padding: 10px 8px 8px;
+    font-size: 11px;
+    min-width: 70px;
   }
 
   .tag-icon-compact {
-    width: 14px;
-    height: 14px;
+    width: 28px;
+    height: 28px;
+    padding: 5px;
   }
 
   .carousel-btn-small {
@@ -782,8 +800,19 @@
   }
 
   .quick-tag-compact {
-    padding: 5px 8px;
-    font-size: 11px;
+    padding: 8px 6px 6px;
+    font-size: 10px;
+    min-width: 65px;
+  }
+
+  .tag-icon-compact {
+    width: 26px;
+    height: 26px;
+    padding: 4px;
+  }
+
+  .tag-label-compact {
+    font-size: 10px;
   }
 }
 

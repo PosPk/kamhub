@@ -380,7 +380,7 @@ export function PremiumSearchBar({ onSearch, placeholder = 'Что ищете?' 
                   onClick={() => handleTagClick(tag.value)}
                 >
                   <span className="tag-icon-compact">
-                    <IconComponent size={16} />
+                    <IconComponent size={20} />
                   </span>
                   <span className="tag-label-compact">{tag.label}</span>
                 </button>
