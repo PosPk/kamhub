@@ -2,7 +2,7 @@
    SAMSUNG WEATHER ELEGANT DESIGN
    ================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 * {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -16,23 +16,8 @@
   width: 100%;
   height: 100%;
   z-index: 0;
-  background: linear-gradient(135deg, 
-    #0f172a 0%, 
-    #1e293b 20%, 
-    #334155 40%, 
-    #1e293b 60%, 
-    #0f172a 100%
-  );
-  animation: gradientShift 15s ease infinite;
-}
-
-@keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  transition: background 1s ease;
+  /* Анимация убрана - фон задается через inline style */
 }
 
 /* ПОГОДНЫЕ ЧАСТИЦЫ */
@@ -74,11 +59,11 @@
 /* HERO SECTION ELEGANT */
 .hero-elegant {
   position: relative;
-  min-height: 90vh;
+  min-height: 85vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 120px 20px 60px;
+  padding: 100px 20px 50px;
   z-index: 2;
 }
 
@@ -101,15 +86,16 @@
 }
 
 .hero-title-elegant {
-  font-size: clamp(42px, 8vw, 72px);
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 24px;
-  letter-spacing: -0.02em;
+  font-size: clamp(36px, 7vw, 56px);
+  font-weight: 300;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
   background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  font-family: 'Cormorant Garamond', 'Playfair Display', serif;
 }
 
 .hero-subtitle-elegant {
@@ -123,7 +109,7 @@
 /* SEARCH BOX ELEGANT */
 .search-elegant {
   max-width: 600px;
-  margin: 40px auto;
+  margin: 30px auto;
   animation: fadeInUp 1s ease-out 0.3s backwards;
 }
 
@@ -246,7 +232,7 @@
 
 /* PHOTOS GALLERY */
 .photos-gallery-elegant {
-  margin-top: 40px;
+  margin-top: 30px;
   overflow: hidden;
 }
 
@@ -293,20 +279,20 @@
 /* STATS ELEGANT */
 .stats-elegant {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 24px;
-  max-width: 600px;
-  margin: 60px auto 0;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 16px;
+  max-width: 500px;
+  margin: 40px auto 0;
   animation: fadeInUp 1s ease-out 0.5s backwards;
 }
 
 .stat-item-elegant {
   text-align: center;
-  padding: 20px;
+  padding: 14px;
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border-radius: 12px;
   transition: all 0.3s ease;
 }
 
@@ -317,14 +303,14 @@
 }
 
 .stat-value-elegant {
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 700;
   color: white;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .stat-label-elegant {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.6);
   text-transform: uppercase;
@@ -335,14 +321,14 @@
 .section-elegant {
   position: relative;
   z-index: 2;
-  padding: 80px 20px;
+  padding: 60px 20px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 .section-header-elegant {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 40px;
 }
 
 .section-title-elegant {
@@ -616,24 +602,47 @@
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .hero-elegant {
-    min-height: 80vh;
-    padding: 80px 16px 40px;
+    min-height: 75vh;
+    padding: 70px 14px 35px;
+  }
+
+  .hero-title-elegant {
+    font-size: clamp(32px, 9vw, 48px);
+    margin-bottom: 16px;
   }
 
   .section-elegant {
-    padding: 60px 16px;
+    padding: 45px 14px;
+  }
+
+  .section-header-elegant {
+    margin-bottom: 30px;
   }
 
   .innovations-elegant {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .carousel-elegant-wrapper {
-    padding: 0 40px;
+    padding: 0 35px;
   }
 
   .tour-card-elegant {
-    min-width: 280px;
-    max-width: 280px;
+    min-width: 260px;
+    max-width: 260px;
+  }
+
+  .stats-elegant {
+    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-value-elegant {
+    font-size: 22px;
+  }
+
+  .stat-label-elegant {
+    font-size: 10px;
   }
 }
