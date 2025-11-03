@@ -305,44 +305,51 @@ export default function ElegantHomePage() {
             </div>
 
             {/* ИКОНКИ АКТИВНОСТЕЙ */}
-            <div className="activity-icons-carousel" style={{ width: '100%', marginTop: '30px' }}>
+            <div className="activity-icons-carousel">
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/>
-                  <circle cx="12" cy="8" r="1" fill="currentColor"/>
-                  <path d="M9 22v-3M15 22v-3"/>
+                  <path d="M12 2l-8 14h16L12 2z"/>
+                  <path d="M12 2v10"/>
+                  <path d="M9 9l3-3 3 3"/>
+                  <path d="M4 16h16M6 20h12"/>
                 </svg>
                 <span className="activity-icon-label">Вулканы</span>
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="8" r="3"/>
-                  <path d="M4 14c0-2.5 2-4.5 4.5-4.5h7c2.5 0 4.5 2 4.5 4.5"/>
-                  <circle cx="7" cy="18" r="1" fill="currentColor"/>
-                  <circle cx="17" cy="18" r="1" fill="currentColor"/>
+                  <circle cx="8" cy="6" r="2"/>
+                  <circle cx="16" cy="6" r="2"/>
+                  <circle cx="12" cy="9" r="4"/>
+                  <path d="M8 13c0 2 1.5 4 4 4s4-2 4-4"/>
+                  <path d="M7 17l-2 4M17 17l2 4"/>
                 </svg>
                 <span className="activity-icon-label">Медведи</span>
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2v10M8 6h8M6 10h12"/>
-                  <circle cx="12" cy="17" r="5"/>
-                  <path d="M12 14v6M10 17h4"/>
+                  <path d="M12 22V8"/>
+                  <path d="M9 4c0 1 1 2 3 2s3-1 3-2"/>
+                  <path d="M8 8c0 2 2 3 4 3s4-1 4-3"/>
+                  <path d="M7 13c0 2 2 4 5 4s5-2 5-4"/>
+                  <circle cx="12" cy="20" r="2"/>
                 </svg>
                 <span className="activity-icon-label">Гейзеры</span>
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2v6M12 8c-3 0-5 2-5 5s2 5 5 5 5-2 5-5-2-5-5-5z"/>
-                  <path d="M6 18c-1-1-2-3-2-5M18 18c1-1 2-3 2-5"/>
+                  <path d="M12 2v20"/>
+                  <path d="M20 8c-2 2-4 3-8 3S6 10 4 8"/>
+                  <circle cx="12" cy="18" r="3"/>
+                  <path d="M9 18h6"/>
                 </svg>
                 <span className="activity-icon-label">Рыбалка</span>
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M12 9c-3 0-5-1.5-5-3s2-3 5-3 5 1.5 5 3-2 3-5 3z"/>
-                  <path d="M7 12c0 2 2 4 5 4s5-2 5-4"/>
+                  <path d="M7 2c0 3-1 5-1 7s2 3 3 3"/>
+                  <path d="M12 2c0 3-1 5-1 7s2 3 3 3"/>
+                  <path d="M17 2c0 3-1 5-1 7s2 3 3 3"/>
+                  <ellipse cx="12" cy="18" rx="8" ry="4"/>
                 </svg>
                 <span className="activity-icon-label">Термальные источники</span>
               </div>
@@ -355,9 +362,11 @@ export default function ElegantHomePage() {
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="6" r="4"/>
-                  <path d="M12 10v8M8 14l4 4 4-4"/>
-                  <path d="M6 18h12"/>
+                  <path d="M3 12h18"/>
+                  <circle cx="12" cy="12" r="2"/>
+                  <path d="M12 10V6"/>
+                  <path d="M12 14v6"/>
+                  <path d="M6 12l-3 3M18 12l3 3"/>
                 </svg>
                 <span className="activity-icon-label">Вертолётные туры</span>
               </div>
@@ -370,32 +379,38 @@ export default function ElegantHomePage() {
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="8" width="18" height="10" rx="2"/>
-                  <path d="M7 8V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/>
-                  <circle cx="8" cy="13" r="1" fill="currentColor"/>
-                  <circle cx="16" cy="13" r="1" fill="currentColor"/>
+                  <path d="M5 17h14M5 21h14"/>
+                  <rect x="7" y="8" width="10" height="6" rx="1"/>
+                  <path d="M9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                  <circle cx="8" cy="19" r="1.5"/>
+                  <circle cx="16" cy="19" r="1.5"/>
                 </svg>
                 <span className="activity-icon-label">Снегоходы</span>
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 12c0-3 2-5 5-5h8c3 0 5 2 5 5s-2 5-5 5H8c-3 0-5-2-5-5z"/>
-                  <path d="M7 12l3-3M17 12l-3-3"/>
+                  <path d="M3 15c2-1 4-1.5 6-1.5s4 .5 6 1.5 4 1.5 6 1.5"/>
+                  <path d="M5 9l3 3 3-3"/>
+                  <path d="M13 9l3 3 3-3"/>
+                  <circle cx="9" cy="6" r="1.5"/>
+                  <circle cx="15" cy="6" r="1.5"/>
                 </svg>
                 <span className="activity-icon-label">Каякинг</span>
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 17c3-3 6-2 9 0s6 3 9 0M3 12c3-3 6-2 9 0s6 3 9 0"/>
-                  <circle cx="12" cy="6" r="2"/>
+                  <path d="M2 17c3-2 6-3 10-3s7 1 10 3"/>
+                  <path d="M3 20c3-1 6-2 9-2s6 1 9 2"/>
+                  <circle cx="12" cy="8" r="2"/>
+                  <path d="M12 10v3l-2 2"/>
                 </svg>
                 <span className="activity-icon-label">Сёрфинг</span>
               </div>
               <div className="activity-icon-item">
                 <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
+                  <rect x="3" y="6" width="18" height="13" rx="2"/>
                   <circle cx="12" cy="12" r="3"/>
-                  <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+                  <path d="M7 6V4h2"/>
                 </svg>
                 <span className="activity-icon-label">Фототуры</span>
               </div>

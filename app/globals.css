@@ -1055,11 +1055,13 @@ body {
 /* ACTIVITY ICONS CAROUSEL */
 .activity-icons-carousel {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
   padding: 20px 0;
+  margin-top: 30px;
+  width: 100%;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
@@ -1087,11 +1089,11 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 130px;
-  padding: 20px 16px;
+  min-width: 100px;
+  padding: 14px 12px;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
   border: 2px solid rgba(139, 92, 246, 0.3);
-  border-radius: 20px;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(20px);
@@ -1122,10 +1124,10 @@ body {
 }
 
 .activity-icon-svg {
-  width: 52px;
-  height: 52px;
+  width: 36px;
+  height: 36px;
   color: #a5b4fc;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.4));
   transition: all 0.3s ease;
 }
@@ -1137,14 +1139,14 @@ body {
 }
 
 .activity-icon-label {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
   background: linear-gradient(135deg, #ffffff, #e0e7ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.2;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
