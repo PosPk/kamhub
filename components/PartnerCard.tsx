@@ -84,7 +84,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
   return (
     <div
       className={cn(
-        'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer',
+        'card-premium hover-lift overflow-hidden cursor-pointer animate-fade-in',
         className
       )}
       onClick={onClick}
@@ -112,23 +112,16 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
         
         {/* Категория */}
         <div className="absolute top-3 left-3">
-          <span
-            className={cn(
-              'px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1',
-              getCategoryColor(partner.category)
-            )}
-          >
-            <span>{getCategoryIcon(partner.category)}</span>
-            <span>{getCategoryText(partner.category)}</span>
+          <span className="badge badge-info">
+            {getCategoryIcon(partner.category)} {getCategoryText(partner.category)}
           </span>
         </div>
         
         {/* Верификация */}
         {partner.isVerified && (
           <div className="absolute top-3 right-3">
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
-              <span>✓</span>
-              <span>Проверен</span>
+            <span className="badge badge-success">
+              ✓ Проверен
             </span>
           </div>
         )}
@@ -191,7 +184,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
         {/* Кнопки действий */}
         <div className="flex space-x-2">
           <button
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
+            className="button-primary flex-1 text-sm"
             onClick={(e) => {
               e.stopPropagation();
               // Здесь будет логика связи с партнером
@@ -201,7 +194,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
           </button>
           
           <button
-            className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
+            className="button-secondary flex-1 text-sm"
             onClick={(e) => {
               e.stopPropagation();
               // Здесь будет логика просмотра профиля
