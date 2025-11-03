@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
+import { withCsrfProtection } from '@/lib/middleware/csrf';
+import { withRateLimit, RateLimitPresets } from '@/lib/middleware/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
@@ -58,10 +61,18 @@ export async function POST(request: NextRequest) {
       { status: 401 }
     );
   } catch (error) {
-    console.error('Sign in error:', error);
+    logger.error('Sign in error', error, {
+      endpoint: '/api/auth/signin',
+    });
     return NextResponse.json(
       { error: 'Внутренняя ошибка сервера' },
       { status: 500 }
     );
   }
 }
+
+// Export with CSRF protection and strict Rate Limiting (5 попыток/15 мин)
+export const POST = withRateLimit(
+  RateLimitPresets.authentication,
+  withCsrfProtection(handler)
+);

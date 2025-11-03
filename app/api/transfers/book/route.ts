@@ -8,11 +8,14 @@ import { telegramService } from '@/lib/notifications/telegram';
 import { transferPayments } from '@/lib/payments/transfer-payments';
 import { matchingEngine } from '@/lib/transfers/matching';
 import { createBookingWithLock } from '@/lib/transfers/booking';
+import { logger } from '@/lib/logger';
+import { withCsrfProtection } from '@/lib/middleware/csrf';
+import { withRateLimit, RateLimitPresets } from '@/lib/middleware/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 // POST /api/transfers/book - Бронирование трансфера (THREAD-SAFE)
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const body: TransferBookingRequest = await request.json();
     
@@ -185,8 +188,11 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(response);
 
-    } catch (dbError) {
-      console.error('Database error:', dbError);
+      } catch (dbError) {
+      logger.error('Database error in transfer booking', dbError, {
+        scheduleId: body.scheduleId,
+        passengersCount: body.passengersCount,
+      });
       
       // Fallback к тестовому бронированию
       const mockBooking = createMockBooking(body);
@@ -206,13 +212,21 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error in transfer booking:', error);
+    logger.error('Error in transfer booking', error, {
+      endpoint: '/api/transfers/book',
+    });
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера при создании бронирования'
     }, { status: 500 });
   }
 }
+
+// Export with CSRF protection and Rate Limiting
+export const POST = withRateLimit(
+  RateLimitPresets.creation, // 5 запросов/1 минута
+  withCsrfProtection(handler)
+);
 
 // Функция для генерации кода подтверждения
 function generateConfirmationCode(): string {
@@ -275,15 +289,17 @@ async function sendRealBookingNotifications(
       });
     }
 
-    console.log('Уведомления отправлены успешно:', {
+    logger.info('Booking notifications sent successfully', {
       bookingId: booking.id,
       smsSent: !!contactInfo.phone,
       emailSent: !!contactInfo.email,
-      telegramSent: !!driver.telegram_chat_id
+      telegramSent: !!driver.telegram_chat_id,
     });
 
   } catch (error) {
-    console.error('Error sending real notifications:', error);
+    logger.error('Error sending booking notifications', error, {
+      bookingId: booking.id,
+    });
     // Не прерываем выполнение при ошибке уведомлений
   }
 }

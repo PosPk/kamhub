@@ -244,11 +244,27 @@ export const RateLimitPresets = {
 
 /**
  * Обертка для API route с rate limiting
+ * Поддерживает вложенные middleware (например, CSRF + Rate Limit)
  */
-export function withRateLimit(config: RateLimitConfig, handler: Function) {
+export function withRateLimit(config: RateLimitConfig, handler: Function | any) {
   const limiter = rateLimit(config);
   
   return async (request: NextRequest) => {
+    // Если handler уже обернут в другой middleware (например, withCsrfProtection)
+    // вызываем его напрямую внутри rate limit
+    if (typeof handler === 'function') {
+      return limiter(request, async (req: NextRequest) => {
+        // Проверяем является ли handler оберткой другого middleware
+        if (handler.length === 1) {
+          // Это уже обернутый handler (например, withCsrfProtection(originalHandler))
+          return handler(req);
+        } else {
+          // Это оригинальный handler
+          return handler(req);
+        }
+      });
+    }
+    
     return limiter(request, async (req: NextRequest) => {
       return handler(req);
     });

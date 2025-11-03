@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
 import { Partner, ApiResponse, PaginatedResponse } from '@/types';
+import { logger } from '@/lib/logger';
+import { withCsrfProtection } from '@/lib/middleware/csrf';
+import { withRateLimit, RateLimitPresets } from '@/lib/middleware/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -125,7 +128,9 @@ export async function GET(request: NextRequest) {
     } as ApiResponse<PaginatedResponse<Partner>>);
 
   } catch (error) {
-    console.error('Error fetching partners:', error);
+    logger.error('Error fetching partners', error, {
+      endpoint: '/api/partners',
+    });
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch partners',
@@ -135,7 +140,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/partners - Создание нового партнера
-export async function POST(request: NextRequest) {
+async function createPartner(request: NextRequest) {
   try {
     const body = await request.json();
     
@@ -204,7 +209,10 @@ export async function POST(request: NextRequest) {
     } as ApiResponse<{ id: string; createdAt: Date }>);
 
   } catch (error) {
-    console.error('Error creating partner:', error);
+    logger.error('Error creating partner', error, {
+      endpoint: '/api/partners',
+      method: 'POST',
+    });
     return NextResponse.json({
       success: false,
       error: 'Failed to create partner',
@@ -212,3 +220,9 @@ export async function POST(request: NextRequest) {
     } as ApiResponse<null>, { status: 500 });
   }
 }
+
+// Export with CSRF protection and Rate Limiting
+export const POST = withRateLimit(
+  RateLimitPresets.creation,
+  withCsrfProtection(createPartner)
+);
