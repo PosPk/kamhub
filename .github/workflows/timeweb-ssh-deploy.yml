@@ -1,0 +1,117 @@
+name: 🚀 Deploy to Timeweb VDS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - cursor/**
+  workflow_dispatch: # Позволяет запускать вручную
+
+jobs:
+  deploy:
+    name: Deploy to Timeweb VDS
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔐 Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.TIMEWEB_SSH_KEY }}
+          # Альтернативно можно использовать пароль через sshpass
+
+      - name: 📦 Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: 🚀 Deploy to server
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+        run: |
+          echo "🚀 Starting deployment to $SSH_USER@$SSH_HOST:$SSH_PORT"
+          
+          # Создаем скрипт деплоя
+          cat > deploy-remote.sh << 'DEPLOY_SCRIPT'
+          #!/bin/bash
+          set -e
+          
+          echo "📦 Updating application..."
+          
+          # Переход в директорию проекта
+          cd /var/www/kamhub || cd /root/kamhub || {
+            echo "❌ Project directory not found, creating..."
+            mkdir -p /var/www/kamhub
+            cd /var/www/kamhub
+          }
+          
+          # Обновление кода
+          if [ -d .git ]; then
+            echo "🔄 Pulling latest changes..."
+            git fetch origin
+            git reset --hard origin/main || git reset --hard origin/master
+          else
+            echo "⚠️ Git not found, skipping git pull"
+          fi
+          
+          # Установка зависимостей
+          echo "📚 Installing dependencies..."
+          npm ci --production=false
+          
+          # Проверка типов (опционально)
+          echo "🔍 Type checking..."
+          npm run type-check || echo "⚠️ Type check failed, continuing..."
+          
+          # Сборка приложения
+          echo "🏗️ Building application..."
+          npm run build
+          
+          # Применение миграций (если есть)
+          if [ -f "scripts/migrate.ts" ] || [ -f "package.json" ] && grep -q "migrate" package.json; then
+            echo "🗄️ Running database migrations..."
+            npm run migrate:up || echo "⚠️ Migrations failed, continuing..."
+          fi
+          
+          # Перезапуск приложения
+          echo "🔄 Restarting application..."
+          
+          # Проверяем используемый процесс-менеджер
+          if command -v pm2 &> /dev/null; then
+            echo "📦 Using PM2..."
+            pm2 restart kamhub || pm2 start ecosystem.config.js --name kamhub
+            pm2 save
+          elif [ -f "package.json" ] && grep -q "\"start\"" package.json; then
+            echo "📦 Using systemd or direct start..."
+            # Если используется systemd
+            systemctl restart kamhub || systemctl start kamhub || {
+              echo "⚠️ systemd not found, starting directly..."
+              nohup npm start > /var/log/kamhub.log 2>&1 &
+            }
+          else
+            echo "⚠️ No process manager found, starting directly..."
+            nohup npm start > /var/log/kamhub.log 2>&1 &
+          fi
+          
+          echo "✅ Deployment completed!"
+          DEPLOY_SCRIPT
+          
+          # Передача скрипта на сервер и выполнение
+          sshpass -p "$SSH_PASSWORD" scp -o StrictHostKeyChecking=no -P "$SSH_PORT" deploy-remote.sh "$SSH_USER@$SSH_HOST:/tmp/deploy-remote.sh"
+          
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" << 'ENDSSH'
+            chmod +x /tmp/deploy-remote.sh
+            bash /tmp/deploy-remote.sh
+            rm /tmp/deploy-remote.sh
+          ENDSSH
+
+      - name: ✅ Deployment successful
+        run: |
+          echo "✅ Successfully deployed to Timeweb VDS!"
+          echo "🌐 Your application should be available at:"
+          echo "   http://${{ secrets.TIMEWEB_SSH_HOST }}"
