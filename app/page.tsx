@@ -25,6 +25,7 @@ export default function ElegantHomePage() {
   });
   const [weatherData, setWeatherData] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const statsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +34,11 @@ export default function ElegantHomePage() {
     createParticles();
     setTimeout(() => animateStats(), 500);
     
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'dark';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
     // Update time every minute
     const timeInterval = setInterval(() => {
       setCurrentTime(new Date());
@@ -40,6 +46,13 @@ export default function ElegantHomePage() {
     
     return () => clearInterval(timeInterval);
   }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   const fetchData = async () => {
     try {
@@ -177,8 +190,30 @@ export default function ElegantHomePage() {
       </div>
 
       <main style={{ position: 'relative', zIndex: 2 }}>
-        {/* THEME TOGGLE */}
-        {/* <ThemeToggle /> */}
+        {/* THEME TOGGLE BUTTON */}
+        <button 
+          onClick={toggleTheme}
+          className="theme-toggle-btn"
+          title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
+        >
+          {theme === 'dark' ? (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          ) : (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          )}
+        </button>
 
         {/* HERO SECTION */}
         <section className="hero-elegant">
@@ -390,113 +425,229 @@ export default function ElegantHomePage() {
 
             {/* ИКОНКИ АКТИВНОСТЕЙ */}
             <div className="activity-icons-carousel">
+              {/* 1. Вулканы - треугольная гора с лавой */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2l-8 14h16L12 2z"/>
-                  <path d="M12 2v10"/>
-                  <path d="M9 9l3-3 3 3"/>
-                  <path d="M4 16h16M6 20h12"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M12 3L3 18h18L12 3z" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M12 3L3 18h18L12 3z"/>
+                  <path d="M12 6l-4 8h8l-4-8z" fill="rgba(255,255,255,0.15)"/>
+                  <circle cx="12" cy="4" r="1.5" fill="currentColor"/>
+                  <path d="M10 4c0-1 1-1.5 2-1.5s2 .5 2 1.5"/>
                 </svg>
                 <span className="activity-icon-label">Вулканы</span>
               </div>
+
+              {/* 2. Медведи - узнаваемый силуэт медведя */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="8" cy="6" r="2"/>
-                  <circle cx="16" cy="6" r="2"/>
-                  <circle cx="12" cy="9" r="4"/>
-                  <path d="M8 13c0 2 1.5 4 4 4s4-2 4-4"/>
-                  <path d="M7 17l-2 4M17 17l2 4"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="7" cy="6" r="2.5"/>
+                  <circle cx="17" cy="6" r="2.5"/>
+                  <ellipse cx="12" cy="11" rx="6" ry="5" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M9 15c0 2 1 3 3 3s3-1 3-3"/>
+                  <circle cx="10" cy="10" r="0.8" fill="currentColor"/>
+                  <circle cx="14" cy="10" r="0.8" fill="currentColor"/>
+                  <path d="M12 11v1.5" strokeWidth="1.5"/>
+                  <path d="M6 17c1 2 2 3 3 4M18 17c-1 2-2 3-3 4" strokeWidth="2"/>
                 </svg>
                 <span className="activity-icon-label">Медведи</span>
               </div>
+
+              {/* 3. Гейзеры - фонтан воды */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 22V8"/>
-                  <path d="M9 4c0 1 1 2 3 2s3-1 3-2"/>
-                  <path d="M8 8c0 2 2 3 4 3s4-1 4-3"/>
-                  <path d="M7 13c0 2 2 4 5 4s5-2 5-4"/>
-                  <circle cx="12" cy="20" r="2"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <ellipse cx="12" cy="20" rx="5" ry="2" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M12 20V10" strokeWidth="2.5"/>
+                  <path d="M9 8c0-2 1-3 3-3s3 1 3 3"/>
+                  <path d="M8 12c0-1.5 1-2.5 2-2.5"/>
+                  <path d="M16 12c0-1.5-1-2.5-2-2.5"/>
+                  <path d="M10 6c-1-1-1-2 0-3M14 6c1-1 1-2 0-3"/>
+                  <path d="M12 4V2"/>
                 </svg>
                 <span className="activity-icon-label">Гейзеры</span>
               </div>
+
+              {/* 4. Рыбалка - удочка с рыбой */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2v20"/>
-                  <path d="M20 8c-2 2-4 3-8 3S6 10 4 8"/>
-                  <circle cx="12" cy="18" r="3"/>
-                  <path d="M9 18h6"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M3 3l16 8" strokeWidth="1.5"/>
+                  <circle cx="20" cy="12" r="1" fill="currentColor"/>
+                  <path d="M19 12c1 3 1 6-2 7" strokeWidth="1.5"/>
+                  <ellipse cx="16" cy="18" rx="3" ry="2" fill="rgba(255,255,255,0.15)"/>
+                  <circle cx="15" cy="17.5" r="0.5" fill="currentColor"/>
+                  <path d="M13 18l1-1" strokeWidth="1"/>
                 </svg>
                 <span className="activity-icon-label">Рыбалка</span>
               </div>
+
+              {/* 5. Термальные источники - пар над водой */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M7 2c0 3-1 5-1 7s2 3 3 3"/>
-                  <path d="M12 2c0 3-1 5-1 7s2 3 3 3"/>
-                  <path d="M17 2c0 3-1 5-1 7s2 3 3 3"/>
-                  <ellipse cx="12" cy="18" rx="8" ry="4"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <ellipse cx="12" cy="17" rx="8" ry="4" fill="rgba(255,255,255,0.15)"/>
+                  <path d="M7 5c0 2-0.5 3-0.5 4s1 2 1.5 2"/>
+                  <path d="M12 4c0 2-0.5 3-0.5 4s1 2 1.5 2"/>
+                  <path d="M17 5c0 2-0.5 3-0.5 4s1 2 1.5 2"/>
+                  <path d="M4 13c0 2 3 4 8 4s8-2 8-4"/>
                 </svg>
                 <span className="activity-icon-label">Термальные источники</span>
               </div>
+
+              {/* 6. Океан - волны */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 12c0-3 3-6 9-6s9 3 9 6M3 12c0 3 3 6 9 6s9-3 9-6"/>
-                  <path d="M12 6v12M6 9l12 6M6 15l12-6"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M2 14c2-2 4-3 6-2s4 3 6 2 4-3 6-2" fill="none"/>
+                  <path d="M2 18c2-2 4-3 6-2s4 3 6 2 4-3 6-2" fill="none"/>
+                  <circle cx="18" cy="7" r="3" fill="rgba(255,255,255,0.1)" strokeWidth="1.5"/>
+                  <path d="M16 7h4M18 5v4"/>
                 </svg>
                 <span className="activity-icon-label">Океан</span>
               </div>
+
+              {/* 7. Вертолёт - с винтом */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 12h18"/>
-                  <circle cx="12" cy="12" r="2"/>
-                  <path d="M12 10V6"/>
-                  <path d="M12 14v6"/>
-                  <path d="M6 12l-3 3M18 12l3 3"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M5 8h14" strokeWidth="2"/>
+                  <ellipse cx="12" cy="13" rx="6" ry="4" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M12 17v3"/>
+                  <path d="M9 20h6" strokeWidth="2"/>
+                  <circle cx="10" cy="13" r="1" fill="currentColor"/>
+                  <circle cx="14" cy="13" r="1" fill="currentColor"/>
+                  <path d="M12 8V6" strokeWidth="1.5"/>
                 </svg>
-                <span className="activity-icon-label">Вертолётные туры</span>
+                <span className="activity-icon-label">Вертолёт</span>
               </div>
+
+              {/* 8. Горы - три пика */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 20l6-6M6 14l12-12M10 18l12-12"/>
-                  <path d="M18 6l-6 6"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M2 20L8 10l4 4 4-8 6 14z" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M2 20L8 10l4 4 4-8 6 14"/>
+                  <path d="M12 6l3 7h-6l3-7z" fill="rgba(255,255,255,0.15)"/>
                 </svg>
                 <span className="activity-icon-label">Горы</span>
               </div>
+
+              {/* 9. Снегоход - вид сбоку */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 17h14M5 21h14"/>
-                  <rect x="7" y="8" width="10" height="6" rx="1"/>
-                  <path d="M9 8V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                  <circle cx="8" cy="19" r="1.5"/>
-                  <circle cx="16" cy="19" r="1.5"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="8" y="10" width="10" height="5" rx="1" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M8 12h10"/>
+                  <circle cx="10" cy="17" r="2"/>
+                  <circle cx="16" cy="17" r="2"/>
+                  <path d="M6 17h2M14 17h2M18 17h2"/>
+                  <path d="M13 10V7h2"/>
                 </svg>
                 <span className="activity-icon-label">Снегоходы</span>
               </div>
+
+              {/* 10. Каякинг - лодка с вёслами */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 15c2-1 4-1.5 6-1.5s4 .5 6 1.5 4 1.5 6 1.5"/>
-                  <path d="M5 9l3 3 3-3"/>
-                  <path d="M13 9l3 3 3-3"/>
-                  <circle cx="9" cy="6" r="1.5"/>
-                  <circle cx="15" cy="6" r="1.5"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <ellipse cx="12" cy="14" rx="9" ry="3" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M3 14l2-3 2 3"/>
+                  <path d="M17 14l2-3 2 3"/>
+                  <circle cx="7" cy="8" r="1.5" fill="currentColor"/>
+                  <circle cx="17" cy="8" r="1.5" fill="currentColor"/>
+                  <path d="M7 10v2M17 10v2"/>
                 </svg>
                 <span className="activity-icon-label">Каякинг</span>
               </div>
+
+              {/* 11. Сёрфинг - человек на доске */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M2 17c3-2 6-3 10-3s7 1 10 3"/>
-                  <path d="M3 20c3-1 6-2 9-2s6 1 9 2"/>
-                  <circle cx="12" cy="8" r="2"/>
-                  <path d="M12 10v3l-2 2"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="12" cy="5" r="2" fill="rgba(255,255,255,0.2)"/>
+                  <path d="M12 7v4l-2 2"/>
+                  <path d="M12 11l2 2"/>
+                  <path d="M4 15c3-2 5-2 8-2s5 0 8 2" strokeWidth="2.5"/>
+                  <path d="M3 19c3-1 6-1.5 9-1.5s6 .5 9 1.5"/>
                 </svg>
                 <span className="activity-icon-label">Сёрфинг</span>
               </div>
+
+              {/* 12. Фототур - камера */}
               <div className="activity-icon-item">
-                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="6" width="18" height="13" rx="2"/>
-                  <circle cx="12" cy="12" r="3"/>
-                  <path d="M7 6V4h2"/>
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="2" y="8" width="20" height="12" rx="2" fill="rgba(255,255,255,0.1)"/>
+                  <circle cx="13" cy="14" r="3"/>
+                  <circle cx="13" cy="14" r="1.5" fill="currentColor"/>
+                  <rect x="6" y="5" width="4" height="3" rx="0.5"/>
+                  <circle cx="18" cy="11" r="0.8" fill="currentColor"/>
                 </svg>
                 <span className="activity-icon-label">Фототуры</span>
+              </div>
+
+              {/* 13. Этнотуры - чум/яранга */}
+              <div className="activity-icon-item">
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M4 20L12 4l8 16z" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M4 20L12 4l8 16"/>
+                  <path d="M8 20l4-8 4 8"/>
+                  <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                  <path d="M12 8v3"/>
+                </svg>
+                <span className="activity-icon-label">Этнотуры</span>
+              </div>
+
+              {/* 14. Дайвинг - маска и трубка */}
+              <div className="activity-icon-item">
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="10" cy="10" r="5" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M14 8h4c1 0 2 1 2 2v3"/>
+                  <path d="M2 16c2-1 4-2 6-2s4 1 6 2"/>
+                  <path d="M3 19c2-0.5 4-1 5-1s3 0.5 5 1"/>
+                  <circle cx="8" cy="9" r="1" fill="currentColor"/>
+                  <circle cx="12" cy="9" r="1" fill="currentColor"/>
+                </svg>
+                <span className="activity-icon-label">Дайвинг</span>
+              </div>
+
+              {/* 15. Альпинизм - человек на скале */}
+              <div className="activity-icon-item">
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M3 22L9 8l6 6 5-10" strokeWidth="2"/>
+                  <circle cx="15" cy="6" r="1.5" fill="currentColor"/>
+                  <path d="M15 8v2l-1 2"/>
+                  <path d="M15 10l2 1"/>
+                  <path d="M10 22l2-4M18 22l-2-6"/>
+                </svg>
+                <span className="activity-icon-label">Альпинизм</span>
+              </div>
+
+              {/* 16. Треккинг - рюкзак и палка */}
+              <div className="activity-icon-item">
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="8" y="6" width="8" height="10" rx="1" fill="rgba(255,255,255,0.1)"/>
+                  <path d="M10 6V4h4v2"/>
+                  <circle cx="12" cy="11" r="1.5" fill="currentColor"/>
+                  <path d="M8 16v6M16 16v6"/>
+                  <path d="M5 10l-2 12"/>
+                </svg>
+                <span className="activity-icon-label">Треккинг</span>
+              </div>
+
+              {/* 17. Собачьи упряжки */}
+              <div className="activity-icon-item">
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <ellipse cx="8" cy="10" rx="3" ry="2.5" fill="rgba(255,255,255,0.1)"/>
+                  <circle cx="7" cy="8" r="1.5"/>
+                  <circle cx="9" cy="8" r="1.5"/>
+                  <path d="M8 12v2l-1 2M8 14l1 2"/>
+                  <path d="M11 12h10"/>
+                  <rect x="18" y="10" width="4" height="4" rx="0.5"/>
+                </svg>
+                <span className="activity-icon-label">Собачьи упряжки</span>
+              </div>
+
+              {/* 18. Лыжи/Сноуборд */}
+              <div className="activity-icon-item">
+                <svg className="activity-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <circle cx="12" cy="5" r="1.5" fill="currentColor"/>
+                  <path d="M12 7v3l-2 2"/>
+                  <path d="M12 10l2 2"/>
+                  <path d="M4 22l5-8M20 22l-5-8" strokeWidth="2.5"/>
+                  <path d="M8 16l8-2"/>
+                </svg>
+                <span className="activity-icon-label">Лыжи</span>
               </div>
             </div>
 
