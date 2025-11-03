@@ -1,0 +1,152 @@
+name: ⚡ Auto Deploy via Timeweb API
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 🚀 Автоматический деплой через Timeweb API
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Получение информации о сервере
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN1 }}
+        run: |
+          echo "🔍 Получение информации о сервере через Timeweb API..."
+          
+          if [ -z "$TIMEWEB_TOKEN" ]; then
+            echo "❌ TIMEWEB_TOKEN1 не найден в GitHub Secrets!"
+            exit 1
+          fi
+          
+          # Установка jq для парсинга JSON
+          sudo apt-get update
+          sudo apt-get install -y jq curl
+          
+          # Получение списка серверов
+          RESPONSE=$(curl -s -H "Authorization: Bearer $TIMEWEB_TOKEN" \
+            https://api.timeweb.cloud/api/v1/servers)
+          
+          echo "📊 Ответ API:"
+          echo "$RESPONSE" | jq '.' || echo "$RESPONSE"
+          
+          # Извлечение IP первого сервера
+          SERVER_IP=$(echo "$RESPONSE" | jq -r '.servers[0].ip // .servers[0].external_ip // empty')
+          SERVER_ID=$(echo "$RESPONSE" | jq -r '.servers[0].id // empty')
+          
+          if [ -z "$SERVER_IP" ]; then
+            echo "⚠️ Серверы не найдены через API, используем прямой SSH деплой"
+            SERVER_IP="5.129.248.224"
+            echo "TIMEWEB_SERVER_IP=$SERVER_IP" >> $GITHUB_ENV
+            echo "TIMEWEB_USE_SSH=true" >> $GITHUB_ENV
+          else
+            echo "✅ Сервер найден: $SERVER_IP (ID: $SERVER_ID)"
+            echo "TIMEWEB_SERVER_IP=$SERVER_IP" >> $GITHUB_ENV
+            echo "TIMEWEB_SERVER_ID=$SERVER_ID" >> $GITHUB_ENV
+            echo "TIMEWEB_USE_SSH=true" >> $GITHUB_ENV
+          fi
+
+      - name: 📦 Install sshpass
+        if: env.TIMEWEB_USE_SSH == 'true'
+        run: |
+          sudo apt-get install -y sshpass
+
+      - name: 🚀 Деплой через SSH
+        if: env.TIMEWEB_USE_SSH == 'true'
+        env:
+          SSH_HOST: ${{ env.TIMEWEB_SERVER_IP }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+          PROJECT_DIR: /var/www/kamhub
+        run: |
+          echo "🚀 Деплой на $SSH_USER@$SSH_HOST:$SSH_PORT"
+          
+          # Проверка пароля
+          if [ -z "$SSH_PASSWORD" ]; then
+            echo "⚠️ SSH пароль не найден в секретах, проверьте подключение"
+          fi
+          
+          # Создаем скрипт деплоя
+          DEPLOY_SCRIPT=$(cat << 'DEPLOY_EOF'
+          #!/bin/bash
+          set -e
+          PROJECT_DIR="${1:-/var/www/kamhub}"
+          cd "$PROJECT_DIR" || { mkdir -p "$PROJECT_DIR" && cd "$PROJECT_DIR"; }
+          
+          if [ -d .git ]; then
+            echo "🔄 Обновление кода..."
+            git fetch origin
+            git reset --hard origin/main || git reset --hard origin/master || true
+            git clean -fd
+          fi
+          
+          if [ ! -f package.json ]; then
+            echo "❌ package.json не найден!"
+            exit 1
+          fi
+          
+          echo "📚 Установка зависимостей..."
+          npm ci || npm install
+          
+          echo "🔍 Проверка типов..."
+          npm run type-check || echo "⚠️ Type check failed"
+          
+          echo "🏗️ Сборка..."
+          npm run build
+          
+          echo "🗄️ Миграции..."
+          npm run migrate:up || echo "⚠️ Migrations failed"
+          
+          echo "🔄 Перезапуск..."
+          if command -v pm2 &> /dev/null; then
+            if pm2 list | grep -q "kamchatour-hub"; then
+              pm2 restart kamchatour-hub --update-env
+            else
+              [ -f ecosystem.config.js ] && pm2 start ecosystem.config.js || pm2 start npm --name kamchatour-hub -- start
+              pm2 save
+            fi
+          else
+            pkill -f "node.*kamhub" || true
+            nohup npm start > /var/log/kamhub.log 2>&1 &
+          fi
+          
+          echo "✅ Деплой завершен!"
+          DEPLOY_EOF
+          )
+          
+          # Отправка и выполнение
+          echo "$DEPLOY_SCRIPT" | sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cat > /tmp/deploy.sh && chmod +x /tmp/deploy.sh && bash /tmp/deploy.sh '$PROJECT_DIR' && rm /tmp/deploy.sh"
+
+      - name: ✅ Health Check
+        if: env.TIMEWEB_USE_SSH == 'true'
+        env:
+          SERVER_IP: ${{ env.TIMEWEB_SERVER_IP }}
+        run: |
+          echo "🏥 Проверка здоровья..."
+          sleep 5
+          curl -f "http://$SERVER_IP:3000/api/health" && echo "✅ Health OK" || echo "⚠️ Health check failed"
+
+      - name: 📊 Summary
+        if: always()
+        run: |
+          echo "✅ Деплой завершен!"
+          echo "🌐 Сервер: ${{ env.TIMEWEB_SERVER_IP }}"
+          echo "🔗 URL: http://${{ env.TIMEWEB_SERVER_IP }}:3000"

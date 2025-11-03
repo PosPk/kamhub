@@ -21,10 +21,36 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sshpass
 
+      - name: 🔍 Получение IP сервера через Timeweb API
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN1 }}
+        run: |
+          echo "🔍 Получение IP сервера через Timeweb API..."
+          
+          if [ -z "$TIMEWEB_TOKEN" ]; then
+            echo "⚠️ TIMEWEB_TOKEN1 не найден, используем прямой SSH"
+            echo "TIMEWEB_SSH_HOST=${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}" >> $GITHUB_ENV
+          else
+            sudo apt-get update && sudo apt-get install -y jq curl
+            
+            RESPONSE=$(curl -s -H "Authorization: Bearer $TIMEWEB_TOKEN" \
+              https://api.timeweb.cloud/api/v1/servers)
+            
+            SERVER_IP=$(echo "$RESPONSE" | jq -r '.servers[0].ip // .servers[0].external_ip // empty')
+            
+            if [ -n "$SERVER_IP" ]; then
+              echo "✅ IP получен через API: $SERVER_IP"
+              echo "TIMEWEB_SSH_HOST=$SERVER_IP" >> $GITHUB_ENV
+            else
+              echo "⚠️ IP не получен через API, используем прямой SSH"
+              echo "TIMEWEB_SSH_HOST=${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}" >> $GITHUB_ENV
+            fi
+          fi
+
       - name: 🔐 Test SSH Connection
         env:
-          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
-          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER }}
+          SSH_HOST: ${{ env.TIMEWEB_SSH_HOST }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
           SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
           SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
         run: |
