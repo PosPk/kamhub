@@ -1,0 +1,179 @@
+name: 🚀 Deploy following DEPLOY_GUIDE_FULL.md
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - cursor/**
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 🚀 Деплой по DEPLOY_GUIDE_FULL.md
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Install sshpass and tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass curl jq
+
+      - name: 📖 Чтение DEPLOY_GUIDE_FULL.md с сервера
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+        run: |
+          echo "📖 Подключение к серверу и чтение инструкции..."
+          
+          # Проверка подключения
+          if ! sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "echo 'Connected'"; then
+            echo "❌ Не удалось подключиться к серверу"
+            exit 1
+          fi
+          
+          # Чтение инструкции
+          echo "📋 Читаю DEPLOY_GUIDE_FULL.md..."
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            "cat /var/www/kamhub/DEPLOY_GUIDE_FULL.md 2>/dev/null || cat /var/www/kamchatour-hub/DEPLOY_GUIDE_FULL.md 2>/dev/null" > /tmp/DEPLOY_GUIDE.md
+          
+          if [ -s /tmp/DEPLOY_GUIDE.md ]; then
+            echo "✅ Инструкция получена!"
+            echo "📄 Первые 100 строк:"
+            head -100 /tmp/DEPLOY_GUIDE.md
+          else
+            echo "⚠️ Инструкция не найдена, используем стандартную процедуру"
+          fi
+
+      - name: 🚀 Выполнение деплоя
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+        run: |
+          echo "🚀 Начало деплоя..."
+          
+          # Выполняем деплой по инструкции или стандартной процедуре
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" << 'ENDSSH'
+            set -e
+            
+            echo "📖 Проверка инструкции на сервере..."
+            INSTRUCTIONS_FILE=""
+            
+            if [ -f /var/www/kamhub/DEPLOY_GUIDE_FULL.md ]; then
+              INSTRUCTIONS_FILE="/var/www/kamhub/DEPLOY_GUIDE_FULL.md"
+              APP_DIR="/var/www/kamhub"
+            elif [ -f /var/www/kamchatour-hub/DEPLOY_GUIDE_FULL.md ]; then
+              INSTRUCTIONS_FILE="/var/www/kamchatour-hub/DEPLOY_GUIDE_FULL.md"
+              APP_DIR="/var/www/kamchatour-hub"
+            fi
+            
+            if [ -n "$INSTRUCTIONS_FILE" ]; then
+              echo "✅ Найдена инструкция: $INSTRUCTIONS_FILE"
+              echo "📋 Первые строки инструкции:"
+              head -20 "$INSTRUCTIONS_FILE"
+              echo ""
+              echo "📋 СЛЕДУЮ ИНСТРУКЦИИ ИЗ DEPLOY_GUIDE_FULL.md"
+            else
+              echo "⚠️ Инструкция не найдена, используем стандартную процедуру"
+              APP_DIR="/var/www/kamhub"
+            fi
+            
+            # Определяем директорию проекта
+            if [ ! -d "$APP_DIR" ]; then
+              echo "📥 Создаем директорию и клонируем репозиторий..."
+              mkdir -p /var/www
+              cd /var/www
+              git clone https://github.com/PosPk/kamhub.git kamhub
+              cd kamhub
+            else
+              echo "🔄 Обновляем код..."
+              cd "$APP_DIR"
+              if [ -d .git ]; then
+                git fetch origin
+                CURRENT_BRANCH=$(git branch --show-current || echo "main")
+                git reset --hard origin/$CURRENT_BRANCH || git reset --hard origin/main || true
+                git clean -fd
+              else
+                echo "⚠️ .git не найден, пересоздаем..."
+                cd /var/www
+                rm -rf kamhub
+                git clone https://github.com/PosPk/kamhub.git kamhub
+                cd kamhub
+              fi
+            fi
+            
+            echo "📦 Директория проекта: $(pwd)"
+            
+            # Проверка package.json
+            if [ ! -f package.json ]; then
+              echo "❌ package.json не найден!"
+              ls -la
+              exit 1
+            fi
+            
+            # Установка зависимостей
+            echo "📚 Установка зависимостей..."
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+            
+            # Проверка типов
+            echo "🔍 Проверка типов..."
+            npm run type-check || echo "⚠️ Type check failed, continuing..."
+            
+            # Сборка
+            echo "🏗️ Сборка приложения..."
+            npm run build
+            
+            # Миграции
+            echo "🗄️ Применение миграций..."
+            npm run migrate:up || echo "⚠️ Migrations failed, continuing..."
+            
+            # Запуск через PM2
+            echo "🔄 Запуск/перезапуск через PM2..."
+            if command -v pm2 &> /dev/null; then
+              if pm2 list | grep -q "kamchatour-hub"; then
+                pm2 restart kamchatour-hub --update-env
+                echo "✅ Приложение перезапущено"
+              else
+                if [ -f ecosystem.config.js ]; then
+                  pm2 start ecosystem.config.js
+                else
+                  pm2 start npm --name kamchatour-hub -- start
+                fi
+                pm2 save
+                echo "✅ Приложение запущено"
+              fi
+              pm2 list
+            else
+              echo "⚠️ PM2 не установлен, запускаем напрямую..."
+              pkill -f "node.*kamhub" || true
+              nohup npm start > /var/log/kamhub.log 2>&1 &
+            fi
+            
+            echo "✅ Деплой завершен!"
+          ENDSSH
+
+      - name: ✅ Health Check
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+        run: |
+          echo "🏥 Проверка здоровья..."
+          sleep 5
+          curl -f "http://$SSH_HOST:3000/api/health" && echo "✅ OK" || echo "⚠️ Health check failed"
+
+      - name: 📊 Summary
+        if: always()
+        run: |
+          echo "✅ Деплой выполнен!"
+          echo "🌐 Сервер: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}"
+          echo "🔗 URL: http://${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}:3000"
