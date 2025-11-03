@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
 import { withCsrfProtection } from '@/lib/middleware/csrf';
 import { withRateLimit, RateLimitPresets } from '@/lib/middleware/rate-limit';
+import { generateToken } from '@/lib/auth/jwt';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,10 +44,31 @@ async function handler(request: NextRequest) {
     users.push(newUser);
     process.env.REGISTERED_USERS = JSON.stringify(users);
 
-    // Возвращаем пользователя без пароля
-    const { password: _, ...userWithoutPassword } = newUser;
+    // Генерируем JWT токен для нового пользователя
+    const token = await generateToken(
+      newUser.id,
+      newUser.roles[0],
+      newUser.email
+    );
     
-    return NextResponse.json(userWithoutPassword);
+    // Возвращаем пользователя без пароля, но с токеном
+    const { password: _, ...userWithoutPassword } = newUser;
+    const responseData = {
+      ...userWithoutPassword,
+      token, // ✅ JWT токен
+    };
+    
+    const response = NextResponse.json(responseData);
+    
+    // Устанавливаем токен в cookie
+    response.cookies.set('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 24 * 7, // 7 дней
+    });
+
+    return response;
   } catch (error) {
     logger.error('Sign up error', error, {
       endpoint: '/api/auth/signup',

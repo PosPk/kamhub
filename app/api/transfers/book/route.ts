@@ -11,11 +11,12 @@ import { createBookingWithLock } from '@/lib/transfers/booking';
 import { logger } from '@/lib/logger';
 import { withCsrfProtection } from '@/lib/middleware/csrf';
 import { withRateLimit, RateLimitPresets } from '@/lib/middleware/rate-limit';
+import { withAuth } from '@/lib/auth/middleware';
 
 export const dynamic = 'force-dynamic';
 
 // POST /api/transfers/book - Бронирование трансфера (THREAD-SAFE)
-async function handler(request: NextRequest) {
+async function handler(request: NextRequest, authPayload: { userId: string; role: string }) {
   try {
     const body: TransferBookingRequest = await request.json();
     
@@ -104,7 +105,7 @@ async function handler(request: NextRequest) {
       const bookingResult = await createBookingWithLock({
         scheduleId: body.scheduleId,
         passengersCount: body.passengersCount,
-        userId: 'user_123', // TODO: получать из JWT токена
+        userId: authPayload.userId, // ✅ Получаем из JWT токена
         contactInfo: body.contactInfo,
         specialRequests: body.specialRequests
       });
@@ -222,10 +223,12 @@ async function handler(request: NextRequest) {
   }
 }
 
-// Export with CSRF protection and Rate Limiting
+// Export with full protection: Auth + CSRF + Rate Limiting
 export const POST = withRateLimit(
   RateLimitPresets.creation, // 5 запросов/1 минута
-  withCsrfProtection(handler)
+  withCsrfProtection(
+    withAuth(handler)
+  )
 );
 
 // Функция для генерации кода подтверждения

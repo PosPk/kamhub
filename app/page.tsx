@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { AppLayout } from '@/components/Layout/AppLayout';
 import { Tour, Partner, Weather } from '@/types';
 import { TourCard } from '@/components/TourCard';
 import { PartnerCard } from '@/components/PartnerCard';
@@ -82,7 +83,8 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-premium-black text-white">
+    <AppLayout>
+      <main className="min-h-screen bg-premium-black text-white">
       {/* Hero Section */}
       <section className="relative overflow-hidden rounded-3xl mx-6 mb-8">
         <div className="absolute inset-0 -z-10">
@@ -297,6 +299,7 @@ export default function Home() {
           ))}
         </div>
       </section>
-    </main>
+      </main>
+    </AppLayout>
   );
 }
