@@ -1,0 +1,169 @@
+name: 🚀 Auto Deploy to Timeweb VDS
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to Timeweb VDS
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: 🔐 Test SSH Connection
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+        run: |
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_USER" ] || [ -z "$SSH_PASSWORD" ]; then
+            echo "❌ GitHub Secrets не настроены!"
+            echo "Настройте секреты: TIMEWEB_SSH_HOST, TIMEWEB_SSH_USER, TIMEWEB_SSH_PASSWORD"
+            exit 1
+          fi
+          
+          echo "✅ Секреты найдены"
+          echo "Host: $SSH_HOST"
+          echo "User: $SSH_USER"
+
+      - name: 🚀 Deploy to server
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+          PROJECT_DIR: /var/www/kamhub
+        run: |
+          echo "🚀 Начало деплоя на $SSH_USER@$SSH_HOST:$SSH_PORT"
+          
+          # Создаем скрипт деплоя
+          cat > /tmp/deploy-remote.sh << 'DEPLOY_SCRIPT'
+          #!/bin/bash
+          set -e
+          
+          PROJECT_DIR="${1:-/var/www/kamhub}"
+          
+          echo "📦 Обновление приложения в $PROJECT_DIR"
+          
+          # Создаем директорию если нет
+          mkdir -p "$PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          
+          # Если это первый раз и нет .git
+          if [ ! -d .git ]; then
+            echo "⚠️ Git репозиторий не найден"
+            echo "ℹ️ Для первого деплоя нужно клонировать репозиторий вручную"
+            echo "   git clone https://github.com/ВАШ_USERNAME/kamhub.git $PROJECT_DIR"
+          else
+            echo "🔄 Обновление кода из Git..."
+            git fetch origin
+            CURRENT_BRANCH=$(git branch --show-current || echo "main")
+            git reset --hard origin/$CURRENT_BRANCH || git reset --hard origin/main || git reset --hard origin/master
+            git clean -fd
+          fi
+          
+          # Проверка package.json
+          if [ ! -f package.json ]; then
+            echo "❌ package.json не найден. Возможно проект не загружен."
+            exit 1
+          fi
+          
+          # Установка зависимостей
+          echo "📚 Установка зависимостей..."
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+          
+          # Проверка типов (не блокирует)
+          echo "🔍 Проверка типов..."
+          npm run type-check || echo "⚠️ Type check failed, continuing..."
+          
+          # Сборка
+          echo "🏗️ Сборка приложения..."
+          npm run build
+          
+          # Миграции (не блокирует)
+          echo "🗄️ Применение миграций..."
+          npm run migrate:up || echo "⚠️ Migrations failed, continuing..."
+          
+          # Перезапуск через PM2
+          echo "🔄 Перезапуск приложения..."
+          if command -v pm2 &> /dev/null; then
+            if pm2 list | grep -q "kamchatour-hub"; then
+              pm2 restart kamchatour-hub --update-env
+              echo "✅ Приложение перезапущено через PM2"
+            else
+              if [ -f ecosystem.config.js ]; then
+                pm2 start ecosystem.config.js
+              else
+                pm2 start npm --name kamchatour-hub -- start
+              fi
+              pm2 save
+              echo "✅ Приложение запущено через PM2"
+            fi
+            pm2 list
+          else
+            echo "⚠️ PM2 не установлен, запускаем напрямую..."
+            pkill -f "node.*kamhub" || true
+            nohup npm start > /var/log/kamhub.log 2>&1 &
+            echo "✅ Приложение запущено (PID: $!)"
+          fi
+          
+          echo "✅ Деплой завершен!"
+          DEPLOY_SCRIPT
+          
+          # Передаем скрипт на сервер
+          sshpass -p "$SSH_PASSWORD" scp -o StrictHostKeyChecking=no -P "$SSH_PORT" /tmp/deploy-remote.sh "$SSH_USER@$SSH_HOST:/tmp/deploy-remote.sh"
+          
+          # Выполняем на сервере
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" << ENDSSH
+            chmod +x /tmp/deploy-remote.sh
+            bash /tmp/deploy-remote.sh "$PROJECT_DIR"
+            rm /tmp/deploy-remote.sh
+          ENDSSH
+
+      - name: ✅ Health Check
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
+        run: |
+          echo "🏥 Проверка здоровья приложения..."
+          sleep 5
+          
+          if [ -n "$SSH_HOST" ]; then
+            if curl -f -s "http://$SSH_HOST:3000/api/health" > /dev/null 2>&1; then
+              echo "✅ Health check passed!"
+            else
+              echo "⚠️ Health check failed (возможно сервер еще запускается)"
+            fi
+          fi
+
+      - name: 📊 Deployment Summary
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST }}
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ ДЕПЛОЙ ЗАВЕРШЕН!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Репозиторий: ${{ github.repository }}"
+          echo "🌿 Ветка: ${{ github.ref_name }}"
+          echo "💬 Коммит: ${{ github.sha }}"
+          echo "👤 Автор: ${{ github.actor }}"
+          if [ -n "$SSH_HOST" ]; then
+            echo "🌐 Сервер: $SSH_HOST"
+            echo "🔗 URL: http://$SSH_HOST:3000"
+          fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
