@@ -105,7 +105,15 @@ const getNavigationForRole = (role: AppRole): NavItem[] => {
 };
 
 export function Sidebar({ role }: { role: AppRole }) {
-  const pathname = usePathname();
+  let pathname = '/';
+  try {
+    pathname = usePathname();
+  } catch (error) {
+    if (typeof window !== 'undefined') {
+      pathname = window.location.pathname;
+    }
+  }
+  
   const navigation = getNavigationForRole(role);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 

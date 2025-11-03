@@ -15,7 +15,7 @@ import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { MobileNav } from './MobileNav';
-import { useRoles } from '@/contexts/RoleContext';
+import { useRoles, AppRole } from '@/contexts/RoleContext';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -28,10 +28,22 @@ export function AppLayout({
   showHeader = true,
   showSidebar = true 
 }: AppLayoutProps) {
-  const { roles, isLoading } = useRoles();
-  const currentRole = roles[0] || 'traveler';
+  // Безопасное использование useRoles с проверкой
+  let roles: string[] = ['traveler'];
+  let isLoading = false;
+  
+  try {
+    const rolesContext = useRoles();
+    roles = rolesContext.roles;
+    isLoading = rolesContext.isLoading;
+  } catch (error) {
+    // Если контекст недоступен (SSR), используем значения по умолчанию
+    console.warn('RoleContext not available, using default');
+  }
+  
+  const currentRole = (roles[0] || 'traveler') as AppRole;
 
-  if (isLoading) {
+  if (isLoading && typeof window !== 'undefined') {
     return (
       <div className="min-h-screen bg-premium-black flex items-center justify-center">
         <div className="text-center">

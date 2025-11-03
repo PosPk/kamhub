@@ -56,30 +56,31 @@ export default function Home() {
   };
 
   const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          // Устанавливаем координаты Петропавловска-Камчатского по умолчанию
-          setUserLocation({
-            lat: 53.0195,
-            lng: 158.6505,
-          });
-        }
-      );
-    } else {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
       // Устанавливаем координаты Петропавловска-Камчатского по умолчанию
       setUserLocation({
         lat: 53.0195,
         lng: 158.6505,
       });
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        // Устанавливаем координаты Петропавловска-Камчатского по умолчанию
+        setUserLocation({
+          lat: 53.0195,
+          lng: 158.6505,
+        });
+      }
+    );
   };
 
   return (

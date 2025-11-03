@@ -12,7 +12,14 @@ import { useRoles } from '@/contexts/RoleContext';
 import Link from 'next/link';
 
 export function Header() {
-  const { roles } = useRoles();
+  let roles: string[] = ['traveler'];
+  try {
+    const rolesContext = useRoles();
+    roles = rolesContext.roles;
+  } catch (error) {
+    console.warn('RoleContext not available in Header');
+  }
+  
   const [showSearch, setShowSearch] = useState(false);
   const [notifications, setNotifications] = useState(0); // TODO: получать из API
 
