@@ -139,19 +139,21 @@ jobs:
               echo "✅ Приложение перезапущено через PM2"
             else
               if [ -f ecosystem.config.js ]; then
+                # Убеждаемся что порт 8080
+                sed -i 's/PORT: 3000/PORT: 8080/g' ecosystem.config.js || true
                 pm2 start ecosystem.config.js
               else
-                pm2 start npm --name kamchatour-hub -- start
+                PORT=8080 pm2 start npm --name kamchatour-hub -- start
               fi
               pm2 save
-              echo "✅ Приложение запущено через PM2"
+              echo "✅ Приложение запущено через PM2 на порту 8080"
             fi
             pm2 list
           else
-            echo "⚠️ PM2 не установлен, запускаем напрямую..."
+            echo "⚠️ PM2 не установлен, запускаем напрямую на порту 8080..."
             pkill -f "node.*kamhub" || true
-            nohup npm start > /var/log/kamhub.log 2>&1 &
-            echo "✅ Приложение запущено (PID: $!)"
+            PORT=8080 nohup npm start > /var/log/kamhub.log 2>&1 &
+            echo "✅ Приложение запущено на порту 8080 (PID: $!)"
           fi
           
           echo "✅ Деплой завершен!"
@@ -175,8 +177,10 @@ jobs:
           sleep 5
           
           if [ -n "$SSH_HOST" ]; then
-            if curl -f -s "http://$SSH_HOST:3000/api/health" > /dev/null 2>&1; then
-              echo "✅ Health check passed!"
+            if curl -f -s "http://$SSH_HOST:8080/api/health" > /dev/null 2>&1; then
+              echo "✅ Health check passed (прямой доступ на 8080)!"
+            elif curl -f -s "http://$SSH_HOST/api/health" > /dev/null 2>&1; then
+              echo "✅ Health check passed (через Nginx)!"
             else
               echo "⚠️ Health check failed (возможно сервер еще запускается)"
             fi
@@ -195,6 +199,7 @@ jobs:
           echo "👤 Автор: ${{ github.actor }}"
           if [ -n "$SSH_HOST" ]; then
             echo "🌐 Сервер: $SSH_HOST"
-            echo "🔗 URL: http://$SSH_HOST:3000"
+            echo "🔗 Прямой доступ: http://$SSH_HOST:8080"
+            echo "🔗 Через Nginx: http://$SSH_HOST"
           fi
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

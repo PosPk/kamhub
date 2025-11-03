@@ -140,12 +140,18 @@ jobs:
             if pm2 list | grep -q "kamchatour-hub"; then
               pm2 restart kamchatour-hub --update-env
             else
-              [ -f ecosystem.config.js ] && pm2 start ecosystem.config.js || pm2 start npm --name kamchatour-hub -- start
+              if [ -f ecosystem.config.js ]; then
+                # Убеждаемся что порт 8080
+                sed -i 's/PORT: 3000/PORT: 8080/g' ecosystem.config.js || true
+                pm2 start ecosystem.config.js
+              else
+                PORT=8080 pm2 start npm --name kamchatour-hub -- start
+              fi
               pm2 save
             fi
           else
             pkill -f "node.*kamhub" || true
-            nohup npm start > /var/log/kamhub.log 2>&1 &
+            PORT=8080 nohup npm start > /var/log/kamhub.log 2>&1 &
           fi
           
           echo "✅ Деплой завершен!"
@@ -162,7 +168,7 @@ jobs:
         run: |
           echo "🏥 Проверка здоровья..."
           sleep 5
-          curl -f "http://$SERVER_IP:3000/api/health" && echo "✅ Health OK" || echo "⚠️ Health check failed"
+          curl -f "http://$SERVER_IP:8080/api/health" && echo "✅ Health OK" || curl -f "http://$SERVER_IP/api/health" && echo "✅ Health OK (через Nginx)" || echo "⚠️ Health check failed"
 
       - name: 📊 Summary
         if: always()

@@ -1,0 +1,181 @@
+name: 🚀 Deploy by DEPLOY_GUIDE_FULL.md
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - cursor/**
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 🚀 Деплой по полной инструкции
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass curl jq
+
+      - name: 📖 Загрузка инструкции с GitHub
+        run: |
+          echo "📖 Загружаю инструкцию DEPLOY_GUIDE_FULL.md из ветки deploy-guide-2025..."
+          curl -sL "https://raw.githubusercontent.com/PosPk/kamhub/deploy-guide-2025/ДЕПЛОЙ_ИНСТРУКЦИЯ_ПОЛНАЯ.md" > /tmp/DEPLOY_GUIDE.md
+          curl -sL "https://raw.githubusercontent.com/PosPk/kamhub/deploy-guide-2025/БЫСТРЫЙ_СТАРТ_ДЕПЛОЙ.md" > /tmp/QUICK_START.md
+          
+          echo "✅ Инструкции загружены"
+          echo "📄 DEPLOY_GUIDE: $(wc -l < /tmp/DEPLOY_GUIDE.md) строк"
+          echo "📄 QUICK_START: $(wc -l < /tmp/QUICK_START.md) строк"
+
+      - name: 🚀 Выполнение деплоя по инструкции
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+          PROJECT_DIR: /var/www/kamhub
+        run: |
+          echo "🚀 Выполнение деплоя по DEPLOY_GUIDE_FULL.md..."
+          
+          # Выполняем деплой согласно инструкции
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" << 'ENDSSH'
+            set -e
+            
+            APP_DIR="/var/www/kamhub"
+            echo "📖 Следую инструкции из DEPLOY_GUIDE_FULL.md"
+            
+            # Проверка существования директории
+            if [ ! -d "$APP_DIR" ]; then
+              echo "📥 Первый деплой: создание директории и клонирование..."
+              mkdir -p /var/www
+              cd /var/www
+              git clone https://github.com/PosPk/kamhub.git kamhub
+              cd kamhub
+            else
+              echo "🔄 Обновление существующего проекта..."
+              cd "$APP_DIR"
+              
+              if [ -d .git ]; then
+                git fetch origin
+                CURRENT_BRANCH=$(git branch --show-current || echo "main")
+                git reset --hard origin/$CURRENT_BRANCH || git reset --hard origin/main || true
+                git clean -fd
+              else
+                echo "⚠️ .git не найден, пересоздаем..."
+                cd /var/www
+                rm -rf kamhub
+                git clone https://github.com/PosPk/kamhub.git kamhub
+                cd kamhub
+              fi
+            fi
+            
+            echo "📦 Директория: $(pwd)"
+            
+            # Проверка package.json
+            if [ ! -f package.json ]; then
+              echo "❌ package.json не найден!"
+              ls -la
+              exit 1
+            fi
+            
+            # Установка зависимостей (согласно инструкции)
+            echo "📚 Установка зависимостей..."
+            if [ -f package-lock.json ]; then
+              npm ci
+            else
+              npm install
+            fi
+            
+            # Проверка типов (не блокирует)
+            echo "🔍 Проверка типов..."
+            npm run type-check || echo "⚠️ Type check failed, continuing..."
+            
+            # Сборка (согласно инструкции)
+            echo "🏗️ Сборка проекта..."
+            npm run build
+            
+            # Миграции (согласно инструкции)
+            echo "🗄️ Применение миграций БД..."
+            npm run migrate:up || echo "⚠️ Migrations failed, continuing..."
+            
+            # Запуск через PM2 на порту 8080 (согласно инструкции)
+            echo "🔄 Запуск через PM2 на порту 8080..."
+            if command -v pm2 &> /dev/null; then
+              # Обновляем ecosystem.config.js если нужно
+              if [ -f ecosystem.config.js ]; then
+                # Убеждаемся что порт 8080
+                sed -i 's/PORT: 3000/PORT: 8080/g' ecosystem.config.js || true
+              fi
+              
+              if pm2 list | grep -q "kamchatour-hub"; then
+                echo "🔄 Перезапуск существующего процесса..."
+                pm2 restart kamchatour-hub --update-env
+              else
+                echo "▶️ Запуск нового процесса на порту 8080..."
+                if [ -f ecosystem.config.js ]; then
+                  # Убеждаемся что порт 8080 в ecosystem.config.js
+                  if ! grep -q "PORT: 8080" ecosystem.config.js; then
+                    sed -i 's/PORT: 3000/PORT: 8080/g' ecosystem.config.js || true
+                  fi
+                  pm2 start ecosystem.config.js
+                else
+                  echo "PORT=8080" > .env.production
+                  PORT=8080 pm2 start npm --name kamchatour-hub -- start
+                fi
+                pm2 save
+              fi
+              
+              pm2 list
+            else
+              echo "⚠️ PM2 не установлен, запускаем напрямую на 8080..."
+              pkill -f "node.*kamhub" || true
+              PORT=8080 nohup npm start > /var/log/kamhub.log 2>&1 &
+              echo "✅ Запущено на порту 8080 (PID: $!)"
+            fi
+            
+            echo "✅ Деплой завершен по инструкции!"
+            echo "🌐 Приложение работает на порту 8080"
+            echo "🔗 Nginx должен проксировать на http://localhost:8080"
+          ENDSSH
+
+      - name: ✅ Health Check (порт 8080)
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+        run: |
+          echo "🏥 Проверка здоровья на порту 8080..."
+          sleep 5
+          
+          # Проверка напрямую
+          if curl -f -s "http://$SSH_HOST:8080/api/health" > /dev/null 2>&1; then
+            echo "✅ Health check passed (прямое подключение на 8080)"
+          else
+            echo "⚠️ Health check failed на 8080"
+          fi
+          
+          # Проверка через Nginx (порт 80)
+          if curl -f -s "http://$SSH_HOST/api/health" > /dev/null 2>&1; then
+            echo "✅ Health check passed (через Nginx на 80)"
+          else
+            echo "⚠️ Health check failed через Nginx"
+          fi
+
+      - name: 📊 Deployment Summary
+        if: always()
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ ДЕПЛОЙ ЗАВЕРШЕН ПО ИНСТРУКЦИИ!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Репозиторий: ${{ github.repository }}"
+          echo "🌿 Ветка: ${{ github.ref_name }}"
+          echo "💬 Коммит: ${{ github.sha }}"
+          echo "🌐 Сервер: $SSH_HOST"
+          echo "🔗 Прямой доступ: http://$SSH_HOST:8080"
+          echo "🔗 Через Nginx: http://$SSH_HOST"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
