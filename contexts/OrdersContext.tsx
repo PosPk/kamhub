@@ -55,6 +55,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     (async () => {
       try {
+        if (typeof window === 'undefined') return;
         const raw = localStorage.getItem(STORAGE_KEY);
         if (raw) {
           const parsedOrders = JSON.parse(raw).map((order: any) => ({
@@ -73,6 +74,7 @@ export const OrdersProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   useEffect(() => {
     (async () => {
       try {
+        if (typeof window === 'undefined') return;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
       } catch (e) {
         console.error('Failed to persist orders', e);
