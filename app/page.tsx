@@ -190,22 +190,6 @@ export default function ElegantHomePage() {
               Туры, трансферы, размещение — всё для вашего путешествия в одном месте
             </p>
 
-            {/* WEATHER DEBUG */}
-            {weatherData && (
-              <div style={{ 
-                background: 'rgba(0,0,0,0.5)', 
-                padding: '10px', 
-                borderRadius: '10px', 
-                fontSize: '12px',
-                marginBottom: '20px'
-              }}>
-                🌤️ Погода: {weatherData.temperature_2m}°C | 
-                Код: {weatherData.weathercode} | 
-                День: {weatherData.is_day ? 'Да' : 'Нет'} | 
-                Тема: {currentTheme}
-              </div>
-            )}
-
             <div className="search-elegant">
               <div className="search-box-elegant glass-card">
                 <button className="search-function-btn" title="Голосовой поиск">
