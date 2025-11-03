@@ -217,6 +217,16 @@ export default function ElegantHomePage() {
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <button 
+                  className="search-btn-elegant"
+                  onClick={handleSearch}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
+                  </svg>
+                  Найти
+                </button>
+                <button 
                   className="filter-btn-elegant"
                   onClick={() => setShowFilters(!showFilters)}
                 >
@@ -298,6 +308,75 @@ export default function ElegantHomePage() {
                       <option value="budget">До 10 000 ₽</option>
                       <option value="mid">10 000 - 30 000 ₽</option>
                       <option value="premium">От 30 000 ₽</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 2v10l5 3"/>
+                      </svg>
+                      Сезон
+                    </label>
+                    <select value={filters.season} onChange={(e) => setFilters({...filters, season: e.target.value})}>
+                      <option value="all">Любой</option>
+                      <option value="summer">Лето</option>
+                      <option value="winter">Зима</option>
+                      <option value="spring">Весна</option>
+                      <option value="autumn">Осень</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                      </svg>
+                      Группа
+                    </label>
+                    <select value={filters.groupSize} onChange={(e) => setFilters({...filters, groupSize: e.target.value})}>
+                      <option value="all">Любая</option>
+                      <option value="solo">Индивидуально</option>
+                      <option value="small">Малая (2-6)</option>
+                      <option value="large">Большая (7+)</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <circle cx="12" cy="12" r="2"/>
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/>
+                        <path d="M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                      </svg>
+                      Транспорт
+                    </label>
+                    <select value={filters.transportation} onChange={(e) => setFilters({...filters, transportation: e.target.value})}>
+                      <option value="all">Любой</option>
+                      <option value="helicopter">Вертолет</option>
+                      <option value="car">Авто</option>
+                      <option value="boat">Катер</option>
+                      <option value="hiking">Пеший</option>
+                    </select>
+                  </div>
+
+                  <div className="filter-group">
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                      Питание
+                    </label>
+                    <select value={filters.meals} onChange={(e) => setFilters({...filters, meals: e.target.value})}>
+                      <option value="all">Любое</option>
+                      <option value="included">Включено</option>
+                      <option value="partial">Частично</option>
+                      <option value="none">Не включено</option>
                     </select>
                   </div>
                 </div>
