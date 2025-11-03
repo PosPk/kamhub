@@ -174,14 +174,14 @@
 /* FILTERS PANEL */
 .filters-panel-elegant {
   margin-top: 12px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.06);
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.08));
   backdrop-filter: blur(30px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
   border-radius: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
   animation: slideDown 0.3s ease-out;
 }
 
@@ -197,13 +197,18 @@
 }
 
 .filter-group label {
-  display: block;
+  display: flex;
+  align-items: center;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(165, 180, 252, 0.9);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 6px;
+}
+
+.filter-group label svg {
+  flex-shrink: 0;
 }
 
 .filter-group select {
@@ -609,6 +614,22 @@
   .hero-title-elegant {
     font-size: clamp(32px, 9vw, 48px);
     margin-bottom: 16px;
+  }
+
+  .filters-panel-elegant {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .filter-group label {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+
+  .filter-group select {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 
   .section-elegant {

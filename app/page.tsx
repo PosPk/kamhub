@@ -238,86 +238,66 @@ export default function ElegantHomePage() {
               {showFilters && (
                 <div className="filters-panel-elegant glass-card">
                   <div className="filter-group">
-                    <label>Категория</label>
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/>
+                      </svg>
+                      Категория
+                    </label>
                     <select value={filters.category} onChange={(e) => setFilters({...filters, category: e.target.value})}>
-                      <option value="all">Все</option>
-                      <option value="volcano">🌋 Вулканы</option>
-                      <option value="wildlife">🐻 Медведи и природа</option>
-                      <option value="fishing">🎣 Рыбалка</option>
-                      <option value="hot-springs">♨️ Термальные источники</option>
-                      <option value="ocean">🌊 Океан и побережье</option>
+                      <option value="all">Все категории</option>
+                      <option value="volcano">Вулканы</option>
+                      <option value="wildlife">Медведи и природа</option>
+                      <option value="fishing">Рыбалка</option>
+                      <option value="hot-springs">Термальные источники</option>
+                      <option value="ocean">Океан и побережье</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Цена</label>
-                    <select value={filters.priceRange} onChange={(e) => setFilters({...filters, priceRange: e.target.value})}>
-                      <option value="all">Любая</option>
-                      <option value="budget">💰 До 10 000 ₽</option>
-                      <option value="mid">💎 10 000 - 30 000 ₽</option>
-                      <option value="premium">👑 От 30 000 ₽</option>
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label>Длительность</label>
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                      </svg>
+                      Длительность
+                    </label>
                     <select value={filters.duration} onChange={(e) => setFilters({...filters, duration: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="1">⏱️ 1 день</option>
-                      <option value="2-3">📅 2-3 дня</option>
-                      <option value="week">📆 Неделя+</option>
+                      <option value="1">1 день</option>
+                      <option value="2-3">2-3 дня</option>
+                      <option value="week">Неделя+</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Сложность</label>
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 8v8M8 12h8"/>
+                      </svg>
+                      Сложность
+                    </label>
                     <select value={filters.difficulty} onChange={(e) => setFilters({...filters, difficulty: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="easy">🟢 Легкая</option>
-                      <option value="medium">🟡 Средняя</option>
-                      <option value="hard">🔴 Сложная</option>
+                      <option value="easy">Легкая</option>
+                      <option value="medium">Средняя</option>
+                      <option value="hard">Сложная</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Сезон</label>
-                    <select value={filters.season} onChange={(e) => setFilters({...filters, season: e.target.value})}>
-                      <option value="all">Любой</option>
-                      <option value="summer">☀️ Лето</option>
-                      <option value="winter">❄️ Зима</option>
-                      <option value="spring">🌸 Весна</option>
-                      <option value="autumn">🍂 Осень</option>
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label>Группа</label>
-                    <select value={filters.groupSize} onChange={(e) => setFilters({...filters, groupSize: e.target.value})}>
+                    <label>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="12" height="12" style={{ display: 'inline', marginRight: '4px' }}>
+                        <path d="M20 7h-4V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                      </svg>
+                      Цена
+                    </label>
+                    <select value={filters.priceRange} onChange={(e) => setFilters({...filters, priceRange: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="solo">👤 Индивидуально</option>
-                      <option value="small">👥 Малая (2-6)</option>
-                      <option value="large">👨‍👩‍👧‍👦 Большая (7+)</option>
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label>Транспорт</label>
-                    <select value={filters.transportation} onChange={(e) => setFilters({...filters, transportation: e.target.value})}>
-                      <option value="all">Любой</option>
-                      <option value="helicopter">🚁 Вертолет</option>
-                      <option value="car">🚙 Авто</option>
-                      <option value="boat">🚤 Катер</option>
-                      <option value="hiking">🥾 Пеший</option>
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label>Питание</label>
-                    <select value={filters.meals} onChange={(e) => setFilters({...filters, meals: e.target.value})}>
-                      <option value="all">Любое</option>
-                      <option value="included">🍱 Включено</option>
-                      <option value="partial">🥪 Частично</option>
-                      <option value="none">❌ Не включено</option>
+                      <option value="budget">До 10 000 ₽</option>
+                      <option value="mid">10 000 - 30 000 ₽</option>
+                      <option value="premium">От 30 000 ₽</option>
                     </select>
                   </div>
                 </div>
