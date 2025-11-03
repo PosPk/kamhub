@@ -599,7 +599,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE VIEW tour_schedule_details AS
 SELECT 
     s.*,
-    t.title as tour_title,
+    t.name as tour_title,
     t.description as tour_description,
     t.difficulty as tour_difficulty,
     o.name as operator_name,
@@ -634,13 +634,6 @@ CREATE INDEX idx_tour_bookings_user_date
 CREATE INDEX idx_tour_bookings_operator_status 
     ON tour_bookings_v2(operator_id, status) 
     WHERE status NOT IN ('cancelled', 'refunded');
-
--- =====================================================
--- НАЧАЛЬНЫЕ ДАННЫЕ
--- =====================================================
-
--- Комментарии для документации
-COMMENT ON SCHEMA public IS 'Kamchatour Hub - Tour System v2.0';
 
 -- Финал
 SELECT 'Tour System Schema v2.0 installed successfully!' as status;
