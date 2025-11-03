@@ -190,6 +190,21 @@ jobs:
         run: |
           echo "🚀 Деплой на сервер $SSH_HOST..."
           
+          # Проверка пароля
+          if [ -z "$SSH_PASSWORD" ]; then
+            echo "❌ SSH пароль не найден в секретах!"
+            echo "Добавьте TIMEWEB_SSH_PASSWORD в GitHub Secrets"
+            exit 1
+          fi
+          
+          # Проверка подключения
+          echo "🔍 Проверка SSH подключения..."
+          if ! sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "echo '✅ Подключение OK'"; then
+            echo "❌ Не удалось подключиться к серверу!"
+            echo "Проверьте: SSH_HOST, SSH_USER, SSH_PASSWORD"
+            exit 1
+          fi
+          
           # Создаем скрипт деплоя
           cat > /tmp/deploy-remote.sh << 'DEPLOY_SCRIPT'
           #!/bin/bash
@@ -202,20 +217,27 @@ jobs:
           mkdir -p "$PROJECT_DIR"
           cd "$PROJECT_DIR"
           
-          # Обновление кода
-          if [ -d .git ]; then
+          # Первый деплой - клонирование репозитория
+          if [ ! -d .git ]; then
+            echo "📥 Первый деплой: клонирование репозитория..."
+            cd /var/www
+            rm -rf kamhub
+            git clone https://github.com/PosPk/kamhub.git kamhub
+            cd kamhub
+          else
             echo "🔄 Обновление кода из Git..."
             git fetch origin
             CURRENT_BRANCH=$(git branch --show-current || echo "main")
-            git reset --hard origin/$CURRENT_BRANCH || git reset --hard origin/main
+            git reset --hard origin/$CURRENT_BRANCH || git reset --hard origin/main || true
             git clean -fd
-          else
-            echo "⚠️ Git не найден, возможно первый деплой"
           fi
           
           # Проверка package.json
           if [ ! -f package.json ]; then
-            echo "❌ package.json не найден!"
+            echo "❌ package.json не найден после клонирования!"
+            echo "Директория: $(pwd)"
+            echo "Содержимое:"
+            ls -la
             exit 1
           fi
           

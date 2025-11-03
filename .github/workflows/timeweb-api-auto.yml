@@ -81,7 +81,17 @@ jobs:
           
           # Проверка пароля
           if [ -z "$SSH_PASSWORD" ]; then
-            echo "⚠️ SSH пароль не найден в секретах, проверьте подключение"
+            echo "❌ SSH пароль не найден в секретах!"
+            echo "Добавьте TIMEWEB_SSH_PASSWORD в GitHub Secrets"
+            exit 1
+          fi
+          
+          # Проверка подключения перед деплоем
+          echo "🔍 Проверка SSH подключения..."
+          if ! sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "echo '✅ Подключение OK'"; then
+            echo "❌ Не удалось подключиться к серверу!"
+            echo "Проверьте: SSH_HOST, SSH_USER, SSH_PASSWORD"
+            exit 1
           fi
           
           # Создаем скрипт деплоя
@@ -91,15 +101,25 @@ jobs:
           PROJECT_DIR="${1:-/var/www/kamhub}"
           cd "$PROJECT_DIR" || { mkdir -p "$PROJECT_DIR" && cd "$PROJECT_DIR"; }
           
-          if [ -d .git ]; then
+          # Первый деплой - клонирование репозитория
+          if [ ! -d .git ]; then
+            echo "📥 Первый деплой: клонирование репозитория..."
+            cd /var/www
+            rm -rf kamhub
+            git clone https://github.com/PosPk/kamhub.git kamhub
+            cd kamhub
+          else
             echo "🔄 Обновление кода..."
             git fetch origin
-            git reset --hard origin/main || git reset --hard origin/master || true
+            git reset --hard origin/main || git reset --hard origin/master || git reset --hard origin/$(git branch --show-current) || true
             git clean -fd
           fi
           
           if [ ! -f package.json ]; then
-            echo "❌ package.json не найден!"
+            echo "❌ package.json не найден после клонирования!"
+            echo "Директория: $(pwd)"
+            echo "Содержимое:"
+            ls -la
             exit 1
           fi
           
