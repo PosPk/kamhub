@@ -4,6 +4,7 @@
 // =============================================
 
 import { query } from '@/lib/database';
+import { logger } from '@/lib/logger';
 
 interface PaymentRequest {
   bookingId: string;
@@ -90,7 +91,10 @@ export class TransferPaymentSystem {
       };
 
     } catch (error) {
-      console.error('Payment creation error:', error);
+      logger.error('Payment creation error', error, {
+        bookingId: request.bookingId,
+        amount: request.amount,
+      });
       return {
         success: false,
         error: 'Ошибка создания платежа'
@@ -150,7 +154,9 @@ export class TransferPaymentSystem {
       }
 
     } catch (error) {
-      console.error('Payment confirmation error:', error);
+      logger.error('Payment confirmation error', error, {
+        paymentId,
+      });
       return {
         success: false,
         error: 'Ошибка подтверждения платежа'
@@ -208,7 +214,10 @@ export class TransferPaymentSystem {
       };
 
     } catch (error) {
-      console.error('Refund processing error:', error);
+      logger.error('Refund processing error', error, {
+        paymentId: request.paymentId,
+        amount: request.amount,
+      });
       return {
         success: false,
         error: 'Ошибка обработки возврата'
@@ -325,7 +334,11 @@ export class TransferPaymentSystem {
       };
 
       // Заглушка для демонстрации
-      console.log('CloudPayments payment creation:', cloudPaymentsData);
+      logger.info('CloudPayments payment creation', {
+        invoiceId: cloudPaymentsData.InvoiceId,
+        amount: cloudPaymentsData.Amount,
+        currency: cloudPaymentsData.Currency,
+      });
       
       return {
         success: true,
@@ -333,7 +346,7 @@ export class TransferPaymentSystem {
       };
 
     } catch (error) {
-      console.error('CloudPayments payment creation error:', error);
+      logger.error('CloudPayments payment creation error', error);
       return {
         success: false,
         error: 'Ошибка создания платежа в CloudPayments'
@@ -347,13 +360,13 @@ export class TransferPaymentSystem {
   }> {
     try {
       // Здесь будет реальный запрос к CloudPayments API
-      console.log('Checking CloudPayments status for:', paymentId);
+      logger.debug('Checking CloudPayments status', { paymentId });
       
       // Заглушка для демонстрации
       return { status: 'success' };
 
     } catch (error) {
-      console.error('CloudPayments status check error:', error);
+      logger.error('CloudPayments status check error', error, { paymentId });
       return { status: 'failed' };
     }
   }
@@ -369,12 +382,17 @@ export class TransferPaymentSystem {
   }> {
     try {
       // Здесь будет реальная интеграция с CloudPayments API для возвратов
-      console.log('CloudPayments refund creation:', request);
+      logger.info('CloudPayments refund creation', {
+        paymentId: request.paymentId,
+        amount: request.amount,
+      });
       
       return { success: true };
 
     } catch (error) {
-      console.error('CloudPayments refund creation error:', error);
+      logger.error('CloudPayments refund creation error', error, {
+        paymentId: request.paymentId,
+      });
       return {
         success: false,
         error: 'Ошибка создания возврата в CloudPayments'
@@ -419,13 +437,13 @@ export class TransferPaymentSystem {
   // Резервирование средств
   private async reserveFunds(paymentId: string, amount: number): Promise<void> {
     // Здесь будет логика резервирования средств
-    console.log('Reserving funds:', { paymentId, amount });
+    logger.info('Reserving funds', { paymentId, amount });
   }
 
   // Освобождение зарезервированных средств
   private async releaseFunds(paymentId: string): Promise<void> {
     // Здесь будет логика освобождения средств
-    console.log('Releasing funds:', paymentId);
+    logger.info('Releasing funds', { paymentId });
   }
 
   // Отмена записи платежа
@@ -439,7 +457,7 @@ export class TransferPaymentSystem {
   // Отправка уведомлений о платеже
   private async sendPaymentNotifications(paymentId: string, status: string): Promise<void> {
     // Здесь будет отправка уведомлений о статусе платежа
-    console.log('Sending payment notifications:', { paymentId, status });
+    logger.info('Sending payment notifications', { paymentId, status });
   }
 
   // Получение статистики платежей
@@ -475,7 +493,7 @@ export class TransferPaymentSystem {
       };
 
     } catch (error) {
-      console.error('Payment stats error:', error);
+      logger.error('Payment stats error', error, { period });
       return {
         totalPayments: 0,
         successfulPayments: 0,

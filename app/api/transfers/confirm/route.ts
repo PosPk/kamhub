@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
 import { TransferConfirmationRequest, TransferConfirmationResponse } from '@/types/transfer';
 import { config } from '@/lib/config';
+import { logger } from '@/lib/logger';
+import { withCsrfProtection } from '@/lib/middleware/csrf';
+import { withRateLimit, RateLimitPresets } from '@/lib/middleware/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
 // POST /api/transfers/confirm - Подтверждение/отклонение бронирования перевозчиком
-export async function POST(request: NextRequest) {
+async function handler(request: NextRequest) {
   try {
     const body: TransferConfirmationRequest = await request.json();
     
@@ -118,8 +121,11 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(response);
 
-    } catch (dbError) {
-      console.error('Database error:', dbError);
+      } catch (dbError) {
+      logger.error('Database error in transfer confirmation', dbError, {
+        bookingId: body.bookingId,
+        action: body.action,
+      });
       
       // Fallback к тестовому подтверждению
       const mockResponse: TransferConfirmationResponse = {
@@ -135,13 +141,21 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error in transfer confirmation:', error);
+    logger.error('Error in transfer confirmation', error, {
+      endpoint: '/api/transfers/confirm',
+    });
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера при обработке подтверждения'
     }, { status: 500 });
   }
 }
+
+// Export with CSRF protection and Rate Limiting
+export const POST = withRateLimit(
+  RateLimitPresets.api,
+  withCsrfProtection(handler)
+);
 
 // Функция для отправки уведомлений о подтверждении (заглушка)
 async function sendConfirmationNotifications(
@@ -151,7 +165,7 @@ async function sendConfirmationNotifications(
 ): Promise<void> {
   try {
     // Здесь будет реальная отправка уведомлений
-    console.log('Отправка уведомлений о подтверждении:', {
+    logger.info('Sending confirmation notifications', {
       bookingId: booking.id,
       action: action,
       message: message,
@@ -167,7 +181,7 @@ async function sendConfirmationNotifications(
 
     if (action === 'confirm') {
       // Отправляем детали поездки
-      console.log('Отправка деталей поездки:', {
+        logger.info('Sending trip details', {
         departureTime: booking.departure_time,
         driverName: 'Иванов Иван Иванович', // Заглушка
         driverPhone: '+7-914-123-45-67', // Заглушка
@@ -176,6 +190,8 @@ async function sendConfirmationNotifications(
     }
 
   } catch (error) {
-    console.error('Error sending confirmation notifications:', error);
+    logger.error('Error sending confirmation notifications', error, {
+      bookingId: booking.id,
+    });
   }
 }

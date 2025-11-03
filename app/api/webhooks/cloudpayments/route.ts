@@ -14,6 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { processCloudPaymentsWebhook } from '@/lib/payments/cloudpayments-webhook';
 import { transaction } from '@/lib/database';
 
@@ -57,19 +58,18 @@ export async function POST(request: NextRequest) {
     // Получаем подпись из header
     const signature = request.headers.get('X-Content-HMAC');
     
-    console.log('📨 CloudPayments webhook received', {
+    logger.info('CloudPayments webhook received', {
       signature: signature ? 'present' : 'MISSING',
       bodyLength: rawBody.length,
-      timestamp: new Date().toISOString()
     });
     
     // 🛡️ ВАЛИДАЦИЯ WEBHOOK
     const validation = await processCloudPaymentsWebhook(rawBody, signature);
     
     if (!validation.success) {
-      console.error('❌ Webhook validation failed:', {
+      logger.error('Webhook validation failed', undefined, {
         error: validation.error,
-        errorCode: validation.errorCode
+        errorCode: validation.errorCode,
       });
       
       // CloudPayments код 13 = отклонено (повторит позже)
@@ -78,12 +78,12 @@ export async function POST(request: NextRequest) {
     
     const webhookData = validation.data!;
     
-    console.log('✅ Webhook validated', {
+    logger.info('Webhook validated', {
       transactionId: webhookData.TransactionId,
       amount: webhookData.Amount,
       status: webhookData.Status,
       invoiceId: webhookData.InvoiceId,
-      testMode: webhookData.TestMode
+      testMode: webhookData.TestMode,
     });
     
     // 📊 ОБРАБОТКА WEBHOOK В ТРАНЗАКЦИИ
@@ -172,10 +172,10 @@ export async function POST(request: NextRequest) {
                    'Ваше бронирование подтверждено! Платеж получен.', NOW())
         `, [bookingId, booking.user_id, booking.operator_id]);
         
-        console.log('✅ Payment confirmed', {
+        logger.info('Payment confirmed', {
           bookingId,
           transactionId,
-          amount: webhookData.Amount
+          amount: webhookData.Amount,
         });
         
       } else if (webhookData.Status === 'Declined') {
@@ -212,10 +212,10 @@ export async function POST(request: NextRequest) {
         const { cancelBooking } = await import('@/lib/transfers/booking');
         await cancelBooking(bookingId, `Payment declined: ${webhookData.Reason}`);
         
-        console.log('❌ Payment declined', {
+        logger.warn('Payment declined', {
           bookingId,
           transactionId,
-          reason: webhookData.Reason
+          reason: webhookData.Reason,
         });
       }
       
@@ -226,7 +226,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ code: 0 });
     
   } catch (error: any) {
-    console.error('❌ Webhook processing error:', error);
+    logger.error('Webhook processing error', error, {
+      endpoint: '/api/webhooks/cloudpayments',
+    });
     
     // CloudPayments код 13 = ошибка (повторит позже)
     return NextResponse.json({ 
@@ -235,7 +237,7 @@ export async function POST(request: NextRequest) {
     });
   } finally {
     const duration = Date.now() - startTime;
-    console.log(`⏱️ Webhook processed in ${duration}ms`);
+    logger.debug(`Webhook processed in ${duration}ms`);
   }
 }
 

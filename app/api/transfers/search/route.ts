@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
 import { TransferSearchRequest, TransferSearchResponse, TransferOption, SearchMetadata } from '@/types/transfer';
 import { config } from '@/lib/config';
+import { logger } from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -251,7 +252,12 @@ export async function GET(request: NextRequest) {
       });
 
     } catch (dbError) {
-      console.error('Database error:', dbError);
+      logger.error('Database error in transfer search', dbError, {
+        from,
+        to,
+        date,
+        passengers,
+      });
       
       // Fallback к тестовым данным при ошибке БД
       const mockTransfers = generateMockTransfers(from, to, date, passengers, vehicleType, budgetMin, budgetMax);
@@ -277,7 +283,9 @@ export async function GET(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('Error in transfer search:', error);
+    logger.error('Error in transfer search', error, {
+      endpoint: '/api/transfers/search',
+    });
     return NextResponse.json({
       success: false,
       error: 'Внутренняя ошибка сервера при поиске трансферов'

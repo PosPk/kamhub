@@ -56,7 +56,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
   return (
     <div
       className={cn(
-        'bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300 cursor-pointer',
+        'card-premium hover-lift overflow-hidden cursor-pointer animate-fade-in',
         className
       )}
       onClick={onClick}
@@ -80,18 +80,14 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         
         {/* Сложность */}
         <div className="absolute top-3 left-3">
-          <span
-            className={cn(
-              'px-3 py-1 rounded-full text-xs font-bold bg-premium-gold text-premium-black'
-            )}
-          >
+          <span className="badge badge-gold">
             {getDifficultyText(tour.difficulty)}
           </span>
         </div>
         
         {/* Рейтинг */}
         {tour.rating > 0 && (
-          <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full flex items-center space-x-1">
+          <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center space-x-1 shadow-glow-gold">
             <span className="text-premium-gold">⭐</span>
             <span className="text-sm font-bold text-white">{tour.rating}</span>
             <span className="text-xs text-white/70">({tour.reviewsCount})</span>
@@ -107,7 +103,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
             {tour.title}
           </h3>
           <div className="text-right ml-2">
-            <div className="text-xl font-black text-premium-gold">
+            <div className="text-xl font-black text-gradient-gold">
               {formatCurrency(tour.priceFrom, 'RUB')}
             </div>
             <div className="text-sm text-white/70">за человека</div>
@@ -161,7 +157,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
 
         {/* Кнопка бронирования */}
         <button
-          className="w-full bg-premium-gold hover:bg-premium-gold/90 text-premium-black font-bold py-3 px-4 rounded-xl transition-all duration-200"
+          className="button-primary w-full py-3"
           onClick={(e) => {
             e.stopPropagation();
             // Здесь будет логика бронирования

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { AppLayout } from '@/components/Layout/AppLayout';
 import { Tour, Weather } from '@/types';
 
 export default function OperatorDashboard() {
@@ -126,7 +127,8 @@ export default function OperatorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-premium-black">
+    <AppLayout>
+      <div className="min-h-screen bg-premium-black">
       {/* Header */}
       <div className="bg-gradient-to-r from-premium-black to-premium-gold/10 border-b border-premium-gold/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -533,6 +535,6 @@ export default function OperatorDashboard() {
           </div>
         )}
       </div>
-    </div>
+    </AppLayout>
   );
 }

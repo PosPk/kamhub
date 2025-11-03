@@ -62,7 +62,7 @@ export function EcoPointsWidget({ userId, className }: EcoPointsWidgetProps) {
 
   const getCurrentPosition = (): Promise<GeolocationPosition> => {
     return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
+      if (typeof window === 'undefined' || !navigator.geolocation) {
         reject(new Error('Geolocation is not supported'));
         return;
       }

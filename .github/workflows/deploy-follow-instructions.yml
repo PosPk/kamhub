@@ -1,0 +1,96 @@
+name: 🚀 Deploy following DEPLOY_GUIDE_FULL.md
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - cursor/**
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: 🚀 Деплой по инструкции DEPLOY_GUIDE_FULL.md
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: 📖 Чтение инструкции с сервера
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+        run: |
+          echo "📖 Чтение инструкции DEPLOY_GUIDE_FULL.md с сервера..."
+          
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            "cat /var/www/kamhub/DEPLOY_GUIDE_FULL.md" > /tmp/DEPLOY_GUIDE_FULL.md || \
+            echo "⚠️ Файл не найден на сервере, используем стандартную процедуру"
+          
+          if [ -f /tmp/DEPLOY_GUIDE_FULL.md ]; then
+            echo "✅ Инструкция получена:"
+            cat /tmp/DEPLOY_GUIDE_FULL.md | head -50
+          fi
+
+      - name: 🚀 Выполнение деплоя по инструкции
+        env:
+          SSH_HOST: ${{ secrets.TIMEWEB_SSH_HOST || '5.129.248.224' }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+        run: |
+          echo "🚀 Выполнение деплоя по инструкции DEPLOY_GUIDE_FULL.md..."
+          
+          # Если инструкция есть, используем её, иначе стандартная процедура
+          if [ -f /tmp/DEPLOY_GUIDE_FULL.md ]; then
+            echo "📖 Используем инструкцию с сервера"
+            # Здесь можно добавить парсинг инструкции и выполнение команд
+          else
+            echo "📋 Используем стандартную процедуру деплоя"
+          fi
+          
+          # Выполнение деплоя
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" << 'ENDSSH'
+            cd /var/www/kamhub || /var/www/kamchatour-hub || exit 1
+            
+            # Если есть инструкция, читаем её
+            if [ -f DEPLOY_GUIDE_FULL.md ]; then
+              echo "📖 Инструкция найдена на сервере"
+            fi
+            
+            # Обновление кода
+            if [ -d .git ]; then
+              git fetch origin
+              git pull origin main || git pull origin master
+            else
+              echo "📥 Первый деплой: клонирование..."
+              cd /var/www
+              git clone https://github.com/PosPk/kamhub.git kamhub
+              cd kamhub
+            fi
+            
+            # Установка зависимостей
+            npm ci || npm install
+            
+            # Сборка
+            npm run build
+            
+            # Миграции
+            npm run migrate:up || echo "⚠️ Миграции пропущены"
+            
+            # Перезапуск PM2
+            if command -v pm2 &> /dev/null; then
+              pm2 restart kamchatour-hub || pm2 start ecosystem.config.js
+              pm2 save
+            fi
+            
+            echo "✅ Деплой завершен"
+          ENDSSH

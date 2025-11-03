@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
+import { withCsrfProtection } from '@/lib/middleware/csrf';
 import { query } from '@/lib/database';
 import { Tour, ApiResponse } from '@/types';
 import { config } from '@/lib/config';
@@ -143,7 +145,9 @@ export async function GET(request: NextRequest) {
     } as ApiResponse<{ tours: Tour[]; pagination: any }>);
 
   } catch (error) {
-    console.error('Error fetching tours:', error);
+    logger.error('Error fetching tours', error, {
+      endpoint: '/api/tours',
+    });
     
     // Возвращаем тестовые данные если БД недоступна
     const mockTours: Tour[] = [
@@ -267,7 +271,7 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/tours - Создание нового тура
-export async function POST(request: NextRequest) {
+async function createTour(request: NextRequest) {
   try {
     const body = await request.json();
     const {
@@ -339,7 +343,10 @@ export async function POST(request: NextRequest) {
     } as ApiResponse<{ id: string; message: string }>);
 
   } catch (error) {
-    console.error('Error creating tour:', error);
+    logger.error('Error creating tour', error, {
+      endpoint: '/api/tours',
+      method: 'POST',
+    });
     return NextResponse.json({
       success: false,
       error: 'Failed to create tour',
@@ -347,3 +354,6 @@ export async function POST(request: NextRequest) {
     } as ApiResponse<null>, { status: 500 });
   }
 }
+
+// Export with CSRF protection
+export const POST = withCsrfProtection(createTour);

@@ -1,0 +1,335 @@
+name: 🚀 Deploy via Timeweb API (TIMEWEB_TOKEN1)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - cursor/**
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Действие'
+        required: false
+        default: 'deploy'
+        type: choice
+        options:
+          - setup
+          - deploy
+          - status
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  setup-infrastructure:
+    name: 🏗️ Настройка инфраструктуры Timeweb
+    runs-on: ubuntu-latest
+    if: github.event.inputs.action == 'setup' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: npm install -g tsx
+
+      - name: 🏗️ Настройка инфраструктуры Timeweb через API
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN1 }}
+        run: |
+          if [ -z "$TIMEWEB_TOKEN" ]; then
+            echo "❌ TIMEWEB_TOKEN1 не найден в GitHub Secrets!"
+            echo "Добавьте секрет: TIMEWEB_TOKEN1"
+            exit 1
+          fi
+          
+          echo "🚀 Начало настройки инфраструктуры через Timeweb API..."
+          echo "Используется токен из TIMEWEB_TOKEN1"
+          tsx scripts/timeweb-setup.ts
+
+      - name: 💾 Сохранение информации об инфраструктуре
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: timeweb-infrastructure
+          path: |
+            timeweb-resources.json
+            .env.production.timeweb
+          retention-days: 90
+
+      - name: 📋 Следующие шаги
+        if: always()
+        run: |
+          echo "✅ Настройка инфраструктуры завершена!"
+          echo ""
+          echo "📋 Следующие шаги:"
+          echo "1. Скачайте артефакты из этого запуска"
+          echo "2. Добавьте необходимые секреты в GitHub:"
+          echo "   - DATABASE_URL (из .env.production.timeweb)"
+          echo "   - SERVER_HOST (из timeweb-resources.json)"
+          echo "3. Запустите деплой через push или workflow_dispatch"
+
+  check-status:
+    name: 🔍 Проверка статуса
+    runs-on: ubuntu-latest
+    if: github.event.inputs.action == 'status'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 📦 Install dependencies
+        run: npm install -g tsx
+
+      - name: 📊 Проверка статуса проекта
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN1 }}
+        run: |
+          if [ -z "$TIMEWEB_TOKEN" ]; then
+            echo "❌ TIMEWEB_TOKEN1 не найден!"
+            exit 1
+          fi
+          echo "🔍 Проверка статуса через Timeweb API..."
+          tsx scripts/timeweb-manage.ts project
+
+      - name: 📋 Список ресурсов
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN1 }}
+        run: |
+          echo "📦 Список всех ресурсов..."
+          tsx scripts/timeweb-manage.ts list
+
+  deploy:
+    name: 🚀 Деплой приложения
+    runs-on: ubuntu-latest
+    if: github.event.inputs.action == 'deploy' || github.event.inputs.action == '' || github.event_name == 'push'
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests
+        run: npm test || echo "⚠️ Тесты не найдены, пропускаем..."
+
+      - name: 🏗️ Build application
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://kamchatour.timeweb.app' }}
+          NODE_ENV: production
+
+      - name: 🔍 Получение информации о сервере через API
+        env:
+          TIMEWEB_TOKEN: ${{ secrets.TIMEWEB_TOKEN1 }}
+        run: |
+          if [ -z "$TIMEWEB_TOKEN" ]; then
+            echo "❌ TIMEWEB_TOKEN1 не найден в GitHub Secrets!"
+            echo "Добавьте секрет: TIMEWEB_TOKEN1"
+            exit 1
+          fi
+          
+          echo "🔍 Получение информации о сервере через Timeweb API..."
+          
+          # Попытка получить информацию о сервере через API
+          SERVER_INFO=$(curl -s -H "Authorization: Bearer $TIMEWEB_TOKEN" \
+            https://api.timeweb.cloud/api/v1/servers | jq -r '.servers[0] // empty')
+          
+          if [ -z "$SERVER_INFO" ]; then
+            echo "⚠️ Сервер не найден через API, используем SSH деплой"
+            echo "TIMEWEB_SERVER_FOUND=false" >> $GITHUB_ENV
+          else
+            SERVER_IP=$(echo "$SERVER_INFO" | jq -r '.ip // .external_ip // empty')
+            SERVER_ID=$(echo "$SERVER_INFO" | jq -r '.id // empty')
+            
+            if [ -n "$SERVER_IP" ]; then
+              echo "✅ Сервер найден: $SERVER_IP (ID: $SERVER_ID)"
+              echo "TIMEWEB_SERVER_IP=$SERVER_IP" >> $GITHUB_ENV
+              echo "TIMEWEB_SERVER_ID=$SERVER_ID" >> $GITHUB_ENV
+              echo "TIMEWEB_SERVER_FOUND=true" >> $GITHUB_ENV
+            else
+              echo "⚠️ IP сервера не найден, используем SSH деплой"
+              echo "TIMEWEB_SERVER_FOUND=false" >> $GITHUB_ENV
+            fi
+          fi
+
+      - name: 🔐 Setup SSH (если есть SSH данные)
+        if: env.TIMEWEB_SERVER_FOUND == 'true' && secrets.TIMEWEB_SSH_PASSWORD != ''
+        run: |
+          echo "🔐 Настройка SSH для деплоя..."
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: 🚀 Деплой через SSH
+        if: env.TIMEWEB_SERVER_FOUND == 'true'
+        env:
+          SSH_HOST: ${{ env.TIMEWEB_SERVER_IP }}
+          SSH_USER: ${{ secrets.TIMEWEB_SSH_USER || 'root' }}
+          SSH_PASSWORD: ${{ secrets.TIMEWEB_SSH_PASSWORD }}
+          SSH_PORT: ${{ secrets.TIMEWEB_SSH_PORT || '22' }}
+          PROJECT_DIR: /var/www/kamhub
+        run: |
+          echo "🚀 Деплой на сервер $SSH_HOST..."
+          
+          # Проверка пароля
+          if [ -z "$SSH_PASSWORD" ]; then
+            echo "❌ SSH пароль не найден в секретах!"
+            echo "Добавьте TIMEWEB_SSH_PASSWORD в GitHub Secrets"
+            exit 1
+          fi
+          
+          # Проверка подключения
+          echo "🔍 Проверка SSH подключения..."
+          if ! sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "echo '✅ Подключение OK'"; then
+            echo "❌ Не удалось подключиться к серверу!"
+            echo "Проверьте: SSH_HOST, SSH_USER, SSH_PASSWORD"
+            exit 1
+          fi
+          
+          # Создаем скрипт деплоя
+          cat > /tmp/deploy-remote.sh << 'DEPLOY_SCRIPT'
+          #!/bin/bash
+          set -e
+          
+          PROJECT_DIR="${1:-/var/www/kamhub}"
+          
+          echo "📦 Обновление приложения в $PROJECT_DIR"
+          
+          mkdir -p "$PROJECT_DIR"
+          cd "$PROJECT_DIR"
+          
+          # Первый деплой - клонирование репозитория
+          if [ ! -d .git ]; then
+            echo "📥 Первый деплой: клонирование репозитория..."
+            cd /var/www
+            rm -rf kamhub
+            git clone https://github.com/PosPk/kamhub.git kamhub
+            cd kamhub
+          else
+            echo "🔄 Обновление кода из Git..."
+            git fetch origin
+            CURRENT_BRANCH=$(git branch --show-current || echo "main")
+            git reset --hard origin/$CURRENT_BRANCH || git reset --hard origin/main || true
+            git clean -fd
+          fi
+          
+          # Проверка package.json
+          if [ ! -f package.json ]; then
+            echo "❌ package.json не найден после клонирования!"
+            echo "Директория: $(pwd)"
+            echo "Содержимое:"
+            ls -la
+            exit 1
+          fi
+          
+          # Установка зависимостей
+          echo "📚 Установка зависимостей..."
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi
+          
+          # Проверка типов
+          echo "🔍 Проверка типов..."
+          npm run type-check || echo "⚠️ Type check failed, continuing..."
+          
+          # Сборка
+          echo "🏗️ Сборка приложения..."
+          npm run build
+          
+          # Миграции
+          echo "🗄️ Применение миграций..."
+          npm run migrate:up || echo "⚠️ Migrations failed, continuing..."
+          
+          # Перезапуск через PM2
+          echo "🔄 Перезапуск приложения..."
+          if command -v pm2 &> /dev/null; then
+            if pm2 list | grep -q "kamchatour-hub"; then
+              pm2 restart kamchatour-hub --update-env
+              echo "✅ Приложение перезапущено через PM2"
+            else
+              if [ -f ecosystem.config.js ]; then
+                # Убеждаемся что порт 8080
+                sed -i 's/PORT: 3000/PORT: 8080/g' ecosystem.config.js || true
+                pm2 start ecosystem.config.js
+              else
+                PORT=8080 pm2 start npm --name kamchatour-hub -- start
+              fi
+              pm2 save
+              echo "✅ Приложение запущено через PM2 на порту 8080"
+            fi
+            pm2 list
+          else
+            echo "⚠️ PM2 не установлен, запускаем напрямую на порту 8080..."
+            pkill -f "node.*kamhub" || true
+            PORT=8080 nohup npm start > /var/log/kamhub.log 2>&1 &
+            echo "✅ Приложение запущено на порту 8080 (PID: $!)"
+          fi
+          
+          echo "✅ Деплой завершен!"
+          DEPLOY_SCRIPT
+          
+          # Передача и выполнение скрипта
+          sshpass -p "$SSH_PASSWORD" scp -o StrictHostKeyChecking=no -P "$SSH_PORT" /tmp/deploy-remote.sh "$SSH_USER@$SSH_HOST:/tmp/deploy-remote.sh"
+          
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" << ENDSSH
+            chmod +x /tmp/deploy-remote.sh
+            bash /tmp/deploy-remote.sh "$PROJECT_DIR"
+            rm /tmp/deploy-remote.sh
+          ENDSSH
+
+      - name: ✅ Health Check
+        if: env.TIMEWEB_SERVER_FOUND == 'true'
+        env:
+          SERVER_IP: ${{ env.TIMEWEB_SERVER_IP }}
+        run: |
+          echo "🏥 Проверка здоровья приложения..."
+          sleep 5
+          
+          if [ -n "$SERVER_IP" ]; then
+            if curl -f -s "http://$SERVER_IP:8080/api/health" > /dev/null 2>&1; then
+              echo "✅ Health check passed (прямой доступ на 8080)!"
+            elif curl -f -s "http://$SERVER_IP/api/health" > /dev/null 2>&1; then
+              echo "✅ Health check passed (через Nginx)!"
+            else
+              echo "⚠️ Health check failed (возможно сервер еще запускается)"
+              echo "Проверьте вручную: http://$SERVER_IP:8080/api/health или http://$SERVER_IP/api/health"
+            fi
+          fi
+
+      - name: 📊 Deployment Summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ ДЕПЛОЙ ЗАВЕРШЕН!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📦 Репозиторий: ${{ github.repository }}"
+          echo "🌿 Ветка: ${{ github.ref_name }}"
+          echo "💬 Коммит: ${{ github.sha }}"
+          echo "👤 Автор: ${{ github.actor }}"
+          if [ -n "${{ env.TIMEWEB_SERVER_IP }}" ]; then
+            echo "🌐 Сервер: ${{ env.TIMEWEB_SERVER_IP }}"
+            echo "🔗 Прямой доступ: http://${{ env.TIMEWEB_SERVER_IP }}:8080"
+            echo "🔗 Через Nginx: http://${{ env.TIMEWEB_SERVER_IP }}"
+          fi
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

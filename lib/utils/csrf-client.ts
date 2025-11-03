@@ -1,115 +1,85 @@
 /**
- * CSRF CLIENT UTILITIES
- * Утилиты для работы с CSRF токенами на клиенте
+ * CSRF TOKEN CLIENT UTILITIES
+ * 
+ * Helper functions for working with CSRF tokens on the client side
+ * 
+ * Usage:
+ *   import { fetchWithCsrf, ensureCsrfToken } from '@/lib/utils/csrf-client';
+ *   
+ *   // Automatic CSRF handling
+ *   const response = await fetchWithCsrf('/api/transfers/book', {
+ *     method: 'POST',
+ *     body: JSON.stringify(data),
+ *   });
  */
 
 /**
- * Получить CSRF токен из cookie
+ * Get CSRF token from cookie
  */
 export function getCsrfToken(): string | null {
   if (typeof document === 'undefined') {
     return null;
   }
-  
+
   const match = document.cookie.match(/csrf_token=([^;]+)/);
-  return match ? match[1] : null;
+  return match ? decodeURIComponent(match[1]) : null;
 }
 
 /**
- * Загрузить CSRF токен с сервера если его нет
+ * Ensure CSRF token exists, request if missing
  */
-export async function ensureCsrfToken(): Promise<string | null> {
+export async function ensureCsrfToken(): Promise<string> {
   let token = getCsrfToken();
-  
+
   if (!token) {
     try {
       const response = await fetch('/api/csrf-token');
+      if (!response.ok) {
+        throw new Error('Failed to get CSRF token');
+      }
       const data = await response.json();
       token = data.token;
     } catch (error) {
-      console.error('Failed to fetch CSRF token:', error);
-      return null;
+      console.error('Error fetching CSRF token:', error);
+      throw new Error('Unable to obtain CSRF token');
     }
   }
-  
+
   return token;
 }
 
 /**
- * Обертка для fetch с автоматическим добавлением CSRF токена
+ * Fetch with automatic CSRF token handling
+ * 
+ * Automatically adds X-CSRF-Token header to all requests
  */
 export async function fetchWithCsrf(
   url: string,
   options: RequestInit = {}
 ): Promise<Response> {
-  // Для GET запросов CSRF не нужен
-  if (!options.method || options.method === 'GET' || options.method === 'HEAD') {
-    return fetch(url, options);
-  }
-  
-  // Получаем токен
   const token = await ensureCsrfToken();
-  
-  if (!token) {
-    throw new Error('CSRF token not available');
-  }
-  
-  // Добавляем токен в headers
+
+  // Merge headers
   const headers = new Headers(options.headers);
   headers.set('X-CSRF-Token', token);
-  
+
+  // Ensure Content-Type for POST/PUT/PATCH
+  if (options.method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method)) {
+    if (!headers.has('Content-Type')) {
+      headers.set('Content-Type', 'application/json');
+    }
+  }
+
   return fetch(url, {
     ...options,
-    headers
+    headers,
   });
 }
 
-// Для Next.js без React import
-import * as React from 'react';
-
 /**
- * React hook для CSRF токена
+ * Check if CSRF protection is enabled
  */
-export function useCsrfToken() {
-  const [token, setToken] = React.useState<string | null>(null);
-  
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      ensureCsrfToken().then(setToken);
-    }
-  }, []);
-  
-  return token;
+export function isCsrfEnabled(): boolean {
+  // Can be controlled via environment variable
+  return process.env.NEXT_PUBLIC_CSRF_ENABLED !== 'false';
 }
-
-/**
- * Пример использования:
- * 
- * import { fetchWithCsrf } from '@/lib/utils/csrf-client';
- * 
- * // Вместо обычного fetch:
- * const response = await fetchWithCsrf('/api/transfers/book', {
- *   method: 'POST',
- *   headers: { 'Content-Type': 'application/json' },
- *   body: JSON.stringify(data)
- * });
- * 
- * // CSRF токен автоматически добавлен в headers!
- * 
- * 
- * В React компоненте:
- * 
- * import { useCsrfToken, fetchWithCsrf } from '@/lib/utils/csrf-client';
- * 
- * function BookingForm() {
- *   const csrfToken = useCsrfToken();
- *   
- *   const handleSubmit = async (data) => {
- *     const response = await fetchWithCsrf('/api/transfers/book', {
- *       method: 'POST',
- *       headers: { 'Content-Type': 'application/json' },
- *       body: JSON.stringify(data)
- *     });
- *   };
- * }
- */

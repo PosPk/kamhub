@@ -13,6 +13,7 @@
 
 import { PoolClient } from 'pg';
 import { transaction } from '@/lib/database';
+import { logger } from '@/lib/logger';
 
 export interface BookingRequest {
   scheduleId: string;
@@ -228,7 +229,10 @@ export async function createBookingWithLock(
     });
 
   } catch (error: any) {
-    console.error('Critical error in createBookingWithLock:', error);
+    logger.error('Critical error in createBookingWithLock', error, {
+      scheduleId: request.scheduleId,
+      passengersCount: request.passengersCount,
+    });
     
     return {
       success: false,
@@ -317,7 +321,10 @@ export async function holdSeats(
     });
 
   } catch (error: any) {
-    console.error('Error in holdSeats:', error);
+    logger.error('Error in holdSeats', error, {
+      scheduleId,
+      passengersCount,
+    });
     return {
       success: false,
       error: 'Ошибка блокировки мест',
@@ -342,7 +349,7 @@ export async function releaseHold(holdId: string): Promise<boolean> {
       return (result.rowCount ?? 0) > 0;
     });
   } catch (error) {
-    console.error('Error releasing hold:', error);
+    logger.error('Error releasing hold', error, { holdId });
     return false;
   }
 }
@@ -363,7 +370,7 @@ export async function cleanupExpiredHolds(): Promise<number> {
       return result.rowCount || 0;
     });
   } catch (error) {
-    console.error('Error cleaning up expired holds:', error);
+    logger.error('Error cleaning up expired holds', error);
     return 0;
   }
 }
@@ -408,7 +415,10 @@ export async function checkAvailability(
       seatsLeft
     };
   } catch (error) {
-    console.error('Error checking availability:', error);
+    logger.error('Error checking availability', error, {
+      scheduleId,
+      passengersCount,
+    });
     return { available: false, seatsLeft: 0 };
   }
 }
@@ -494,7 +504,10 @@ export async function cancelBooking(
     });
 
   } catch (error) {
-    console.error('Error cancelling booking:', error);
+    logger.error('Error cancelling booking', error, {
+      bookingId,
+      reason,
+    });
     return {
       success: false,
       error: 'Ошибка отмены бронирования',
