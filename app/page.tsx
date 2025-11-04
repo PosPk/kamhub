@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Calendar, Users, Star, Clock, TrendingUp, Mountain, Waves, Flame, AlertTriangle, Shield, Phone } from 'lucide-react';
 import { TourCard } from '@/components/TourCard';
-import { SkeletonTourCard } from '@/components/ui/SkeletonLoader';
 import type { Tour } from '@/types';
 
 export default function Home() {
@@ -244,7 +243,11 @@ export default function Home() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <SkeletonTourCard key={i} />
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-6 animate-pulse">
+                <div className="w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-xl mb-4" />
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+              </div>
             ))}
           </div>
         ) : tours.length > 0 ? (
