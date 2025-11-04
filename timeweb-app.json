@@ -5,12 +5,16 @@
   "runtime": "nodejs20",
   "buildCommand": "npm run build",
   "startCommand": "npm start",
-  "port": 3000,
+  "port": 8080,
   "environment": "production",
   "autoDeploy": true,
   "envVars": {
     "NODE_ENV": "production",
-    "PORT": "3000"
+    "PORT": "8080",
+    "JWT_SECRET": "kamchatour-super-secret-key-2025-production",
+    "NEXTAUTH_URL": "https://pospk-kamhub-70c4.twc1.net",
+    "NEXT_PUBLIC_API_URL": "https://pospk-kamhub-70c4.twc1.net/api",
+    "SKIP_SENTRY": "true"
   },
   "postgresql": {
     "enabled": true,
