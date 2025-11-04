@@ -25,7 +25,11 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:watch": "vitest --watch",
+    "db:test:init": "tsx scripts/init-test-db.ts",
+    "db:test:clean": "tsx scripts/clean-test-db.ts",
+    "db:test:reset": "npm run db:test:clean && npm run db:test:init"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
@@ -53,6 +57,7 @@
     "@typescript-eslint/parser": "^6.21.0",
     "@vitest/ui": "^3.2.4",
     "autoprefixer": "^10.4.20",
+    "dotenv": "^17.2.3",
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.5.5",
     "eslint-config-prettier": "^10.1.8",
