@@ -1,412 +1,271 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Sparkles, Zap, TrendingUp, Star, Play, MapPin, Calendar, Users, 
-  Search, Mountain, Flame, Shield, Phone, Award, Target, Rocket,
-  Bot, Cloud, Heart, ChevronRight, X
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Tour, Partner, Weather } from '@/types';
 import { TourCard } from '@/components/TourCard';
-import { AIChatWidget } from '@/components/AIChatWidget';
+import { PartnerCard } from '@/components/PartnerCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { EcoPointsWidget } from '@/components/EcoPointsWidget';
-import type { Tour } from '@/types';
+import { AIChatWidget } from '@/components/AIChatWidget';
+import { Rocket, Lightbulb, Backpack, Building2, Map, Bus, Hotel, Gift, Tent, Car } from 'lucide-react';
 
 export default function Home() {
   const [tours, setTours] = useState<Tour[]>([]);
+  const [partners, setPartners] = useState<Partner[]>([]);
+  const [weather, setWeather] = useState<Weather | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showAIChat, setShowAIChat] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
-  const [mounted, setMounted] = useState(false);
-  const [activeCategory, setActiveCategory] = useState('all');
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [showChat, setShowChat] = useState(false);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [nearbyEcoPoints, setNearbyEcoPoints] = useState([]);
 
   useEffect(() => {
-    setMounted(true);
-    fetchTours();
-    
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    fetchData();
+    getUserLocation();
   }, []);
 
-  const fetchTours = async () => {
+  const fetchData = async () => {
     try {
-      const response = await fetch('/api/tours?limit=12');
-      const data = await response.json();
-      if (data.success && data.data?.data) {
-        setTours(data.data.data);
+      setLoading(true);
+      
+      // Загружаем туры
+      const toursResponse = await fetch('/api/tours?limit=6');
+      const toursData = await toursResponse.json();
+      if (toursData.success && toursData.data?.data) {
+        setTours(toursData.data.data);
       }
+
+      // Загружаем партнеров
+      const partnersResponse = await fetch('/api/partners?limit=6');
+      const partnersData = await partnersResponse.json();
+      if (partnersData.success && partnersData.data?.data) {
+        setPartners(partnersData.data.data);
+      }
+
+      // Загружаем eco-points
+      const ecoPointsResponse = await fetch('/api/eco-points?limit=10');
+      const ecoPointsData = await ecoPointsResponse.json();
+      if (ecoPointsData.success && ecoPointsData.data) {
+        setNearbyEcoPoints(ecoPointsData.data);
+      }
+
     } catch (error) {
-      console.error('Error fetching tours:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!mounted) return null;
-
-  const parallaxOffset = scrollY * 0.5;
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setUserLocation({
+            lat: 53.0195,
+            lng: 158.6505,
+          });
+        }
+      );
+    } else {
+      setUserLocation({
+        lat: 53.0195,
+        lng: 158.6505,
+      });
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
-      
-      {/* HERO с видео фоном + 3D эффект */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Видео фон (fallback - градиент) */}
-        <div className="absolute inset-0">
-          <div 
-            className="absolute inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-teal-900"
-            style={{ transform: `translateY(${parallaxOffset}px)` }}
-          />
-          {/* Animated overlay */}
-          <div className="absolute inset-0 bg-black/40" />
+    <main className="min-h-screen bg-gradient-to-br from-white via-sky-blue/5 to-ultramarine/5 dark:from-premium-black dark:via-premium-black dark:to-premium-black text-gray-900 dark:text-white transition-colors duration-300">
+      {/* Hero Section - Modern */}
+      <section className="relative overflow-hidden mx-6 mb-16 mt-8 rounded-[3rem] shadow-2xl animate-fade-in">
+        <div className="absolute inset-0 -z-10">
+          <video
+            className="w-full h-[60vh] object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="https://images.unsplash.com/photo-1520496938500-76fd098ad75a?q=80&w=1920&auto=format&fit=crop"
+          >
+            <source src="https://cdn.coverr.co/videos/coverr-aurora-over-mountains-0157/1080p.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-ultramarine/40 via-light-blue/30 to-deep-blue/40 dark:from-premium-black/50 dark:via-premium-gold/20 dark:to-premium-black/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-ultramarine/90 via-ultramarine/40 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent"></div>
+        
+        <div className="relative z-10 p-12 md:p-16 grid content-end gap-6 min-h-[60vh]">
+          <div className="animate-fade-in-up">
+            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black leading-tight text-white drop-shadow-2xl mb-4">
+              Камчатка
+            </h1>
+            <p className="text-2xl md:text-3xl font-bold text-white/95 drop-shadow-lg mb-2">
+              экосистема путешествий
+            </p>
+            <p className="max-w-3xl text-lg md:text-xl text-white/90 drop-shadow-md">
+              Туры, партнёры, CRM, бронирование, безопасность, рефералы и экология — в едином центре
+            </p>
+          </div>
           
-          {/* Floating particles */}
-          <div className="absolute inset-0">
-            {[...Array(20)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-2 h-2 bg-white/20 rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animation: `float ${5 + Math.random() * 10}s ease-in-out infinite`,
-                  animationDelay: `${Math.random() * 5}s`,
+          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center animate-scale-in">
+            <input 
+              placeholder="🔍 Поиск: вулканы, океан, медведи..." 
+              className="flex-1 h-16 rounded-2xl px-6 text-lg text-gray-900 bg-white/95 backdrop-blur border-2 border-white/50 focus:border-white focus:outline-none focus:ring-4 focus:ring-white/30 shadow-xl transition-all"
+              name="q"
+            />
+            <a href="/demo" className="btn-primary whitespace-nowrap flex items-center gap-2">
+              <Rocket className="w-5 h-5" />
+              Попробовать демо
+            </a>
+          </div>
+          
+          <div className="flex flex-wrap gap-4 mt-4 animate-fade-in">
+            <a href="/auth/login" className="px-8 py-3 bg-white/95 backdrop-blur text-ultramarine dark:text-premium-gold border-2 border-white rounded-2xl hover:bg-white hover:scale-105 transition-all font-bold shadow-lg text-lg">
+              Войти
+            </a>
+            <a href="/auth/register" className="px-8 py-3 bg-white/20 backdrop-blur text-white border-2 border-white/50 rounded-2xl hover:bg-white/30 hover:border-white hover:scale-105 transition-all font-bold shadow-lg text-lg">
+              Регистрация
+            </a>
+            <div className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur rounded-2xl border border-white/30 text-white/90 text-sm">
+              <Lightbulb className="w-5 h-5" />
+              <span><strong>Демо-режим:</strong> без регистрации</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <section className="px-6 py-12 grid gap-12">
+        <div className="text-center animate-fade-in-up">
+          <h2 className="text-4xl md:text-5xl font-black text-deep-blue dark:text-premium-gold mb-4">
+            Выберите свою роль
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-white/70 max-w-2xl mx-auto">
+            Персонализированный опыт для каждого участника экосистемы туризма Камчатки
+          </p>
+        </div>
+        
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+          {[
+            { title: 'Турист', href: '/hub/tourist', icon: Backpack, desc: 'Откройте для себя Камчатку' },
+            { title: 'Туроператор', href: '/hub/operator', icon: Building2, desc: 'Управляйте турами и клиентами' },
+            { title: 'Гид', href: '/hub/guide', icon: Map, desc: 'Проводите незабываемые экскурсии' },
+            { title: 'Трансфер', href: '/hub/transfer', icon: Bus, desc: 'Организуйте перевозки' },
+            { title: 'Размещение', href: '/hub/stay', icon: Hotel, desc: 'Предложите уютное жильё' },
+            { title: 'Сувениры', href: '/hub/souvenirs', icon: Gift, desc: 'Продавайте местные сувениры' },
+            { title: 'Снаряжение', href: '/hub/gear', icon: Tent, desc: 'Прокат туристического оборудования' },
+            { title: 'Авто', href: '/hub/cars', icon: Car, desc: 'Аренда автомобилей' },
+          ].map(({ title, href, icon: Icon, desc }, index) => (
+            <a 
+              key={title} 
+              href={href} 
+              className="card-modern p-6 group animate-scale-in"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300 text-ultramarine dark:text-premium-gold">
+                <Icon className="w-12 h-12" strokeWidth={1.5} />
+              </div>
+              <h3 className="text-xl font-bold text-ultramarine dark:text-premium-gold mb-2 group-hover:text-light-blue dark:group-hover:text-yellow-400 transition-colors">
+                {title}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-white/70">
+                {desc}
+              </p>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* Tours Section */}
+      <section className="px-6 py-12 bg-gradient-modern rounded-[3rem] mx-6 mb-12">
+        <div className="text-center mb-12 animate-fade-in-up">
+          <h2 className="text-4xl md:text-5xl font-black text-deep-blue dark:text-premium-gold mb-4">
+            Популярные туры
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-white/70 max-w-2xl mx-auto">
+            Исследуйте самые захватывающие маршруты Камчатки
+          </p>
+        </div>
+        {loading ? (
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white/5 rounded-2xl h-80 animate-pulse"></div>
+            ))}
+          </div>
+        ) : tours.length > 0 ? (
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {tours.map((tour) => (
+              <TourCard
+                key={tour.id}
+                tour={tour}
+                onClick={() => {
+                  console.log('Tour clicked:', tour.id);
                 }}
               />
             ))}
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-12 text-white/70">
+            Туры скоро появятся
+          </div>
+        )}
+      </section>
 
-        {/* Hero Content с Glassmorphism */}
-        <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
-          <div 
-            className="animate-fade-in-up"
-            style={{ animationDelay: '0.2s' }}
-          >
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full mb-8 shadow-2xl">
-              <Sparkles className="w-5 h-5 text-yellow-400 animate-pulse" />
-              <span className="text-white font-semibold">AI-powered туристическая платформа</span>
-              <Zap className="w-5 h-5 text-blue-400 animate-pulse" />
+      {/* Partners & Safety */}
+      <section className="px-6 py-6 grid gap-4 sm:grid-cols-3">
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-4 sm:grid-cols-2 sm:items-start">
+          <div className="grid gap-4">
+            <div className="text-sm text-white/70">SOS и безопасность</div>
+            <div className="grid gap-3">
+              <a href="#" className="rounded-xl bg-premium-gold text-premium-black text-center py-3 font-bold">SOS</a>
+              <a href="#" className="rounded-xl bg-white/10 text-center py-3 font-bold">МЧС</a>
+              <a href="#" className="rounded-xl bg-white/10 text-center py-3 font-bold">Сейсмика</a>
             </div>
-
-            {/* Main Title с градиентом */}
-            <h1 className="text-6xl md:text-8xl font-black mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 bg-clip-text text-transparent animate-glow">
-                Камчатка
-              </span>
-              <br />
-              <span className="text-white drop-shadow-2xl">
-                как в кино
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-3xl text-white/90 mb-12 max-w-3xl mx-auto drop-shadow-lg font-light">
-              AI планирует маршрут, дроны снимают ваш трип, блокчейн хранит воспоминания
-            </p>
-
-            {/* CTA Buttons с микроанимациями */}
-            <div className="flex flex-wrap gap-4 justify-center">
-              <button 
-                onClick={() => setShowAIChat(true)}
-                className="group px-8 py-5 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold rounded-2xl hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-pink-500/50 flex items-center gap-3"
-              >
-                <Bot className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                Спросить AI-гида
-                <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </button>
-              
-              <button className="group px-8 py-5 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-bold rounded-2xl hover:bg-white/20 transition-all duration-300 shadow-2xl flex items-center gap-3">
-                <Play className="w-6 h-6" />
-                Смотреть видео
-              </button>
-            </div>
-
-            {/* Stats с анимацией */}
-            <div className="grid grid-cols-3 gap-8 mt-16 max-w-2xl mx-auto">
-              {[
-                { value: '500+', label: 'AI-туров', icon: Rocket },
-                { value: '50K+', label: 'Туристов', icon: Users },
-                { value: '4.9★', label: 'Рейтинг', icon: Star },
-              ].map((stat, i) => (
-                <div 
-                  key={i}
-                  className="p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl hover:bg-white/10 transition-all duration-300 animate-scale-in"
-                  style={{ animationDelay: `${0.5 + i * 0.1}s` }}
-                >
-                  <stat.icon className="w-8 h-8 text-yellow-400 mx-auto mb-3" />
-                  <div className="text-3xl font-black text-white mb-1">{stat.value}</div>
-                  <div className="text-sm text-white/70">{stat.label}</div>
+            <div className="text-white/70 text-xs">Тестовый режим: интеграции в процессе</div>
+          </div>
+          <div className="w-full h-72 rounded-2xl overflow-hidden border border-white/10 bg-black grid place-items-center cursor-pointer group">
+            <div className="w-[70%] sm:w-[80%]">
+              <a href="/hub/safety" target="_blank" rel="noopener noreferrer" className="group inline-block w-full max-w-[520px]">
+                <div className="rounded-2xl border border-white/10 bg-black grid place-items-center map-button-glow w-full">
+                  <img src="/graphics/kamchatka-button.svg" alt="Камчатка" className="kamchatka-button w-full h-auto" />
                 </div>
-              ))}
+              </a>
             </div>
           </div>
         </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-3 bg-white/50 rounded-full" />
-          </div>
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-2">
+          <div className="text-sm text-white/70">Экология</div>
+          <div className="text-2xl font-black text-premium-gold">Eco‑points: 0</div>
+          <div className="text-white/70 text-sm">Собирайте баллы за бережное поведение</div>
         </div>
       </section>
 
-      {/* AI Chat Overlay */}
-      {showAIChat && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="relative w-full max-w-2xl animate-scale-in">
-            <button
-              onClick={() => setShowAIChat(false)}
-              className="absolute -top-4 -right-4 z-10 p-2 bg-white rounded-full shadow-xl hover:scale-110 transition-transform"
-            >
-              <X className="w-6 h-6 text-gray-900" />
-            </button>
-            <AIChatWidget 
-              userId="demo-user" 
-              onClose={() => setShowAIChat(false)}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Dashboard Section - 3 колонки */}
-      <section className="container mx-auto px-4 py-20 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Погода - Real-time */}
-          <div className="lg:col-span-1 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <div className="sticky top-24">
-              <WeatherWidget 
-                lat={53.0} 
-                lng={158.65} 
-                location="Петропавловск-Камчатский"
-                className="shadow-xl hover:shadow-2xl transition-shadow"
-              />
-            </div>
-          </div>
-
-          {/* Featured Tours - центральная колонка */}
-          <div className="lg:col-span-2 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-2">
-                  AI подобрал для вас
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  На основе ваших интересов и погоды
-                </p>
-              </div>
-              <Bot className="w-12 h-12 text-purple-600 animate-pulse" />
-            </div>
-
-            {/* Tours Grid */}
-            {loading ? (
-              <div className="grid gap-6">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-48 bg-white dark:bg-gray-800 rounded-3xl animate-pulse" />
-                ))}
-              </div>
-            ) : tours.length > 0 ? (
-              <div className="grid gap-6">
-                {tours.slice(0, 4).map((tour, i) => (
-                  <div 
-                    key={tour.id}
-                    className="animate-scale-in"
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                  >
-                    <TourCard
-                      tour={tour}
-                      onClick={() => console.log('Tour:', tour.id)}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl">
-                <Rocket className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  AI создает туры...
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Подождите немного, мы генерируем маршруты специально для вас
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+      {/* AI Chat */}
+      <section className="px-6 py-6">
+        <h2 className="text-xl font-extrabold mb-4">AI-Гид по Камчатке</h2>
+        <AIChatWidget userId="demo-user" />
       </section>
 
-      {/* Eco-Points - Геймификация */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12 animate-fade-in-up">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
-              <Heart className="w-5 h-5 text-green-600 animate-pulse" />
-              <span className="text-green-900 dark:text-green-300 font-semibold">Экология</span>
-            </div>
-            <h2 className="text-5xl font-black text-gray-900 dark:text-white mb-4">
-              Зарабатывай баллы за заботу о природе
-            </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">
-              Сортируй мусор, сажай деревья, получай скидки на туры
-            </p>
-          </div>
-
-          <EcoPointsWidget 
-            userId="demo-user"
-            className="shadow-2xl hover:shadow-3xl transition-shadow"
-          />
+      {/* Quick Links */}
+      <section className="px-6 py-8 grid gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-extrabold">Быстрые переходы</h2>
+        </div>
+        <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
+          <a href="/partners" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Каталог туров</a>
+          <a href="/search" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Поиск</a>
+          <a href="/premium" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Витрина Commerce</a>
+          <a href="/premium2" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Витрина Adventure</a>
+          <a href="/hub/stay" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Размещение</a>
+          <a href="/hub/safety" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Безопасность</a>
+          <a href="/hub/operator" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Рефералы и бусты</a>
         </div>
       </section>
-
-      {/* Features - Что делает платформу крутой */}
-      <section className="bg-gradient-to-br from-purple-900 via-blue-900 to-teal-900 py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/30" />
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-20">
-            <h2 className="text-6xl font-black text-white mb-6">
-              Это не просто сайт.<br />Это экосистема будущего.
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: Bot,
-                title: 'AI-планировщик',
-                description: 'Искусственный интеллект создает маршрут под вашу физподготовку, бюджет и погоду',
-                color: 'from-purple-500 to-pink-600',
-              },
-              {
-                icon: Cloud,
-                title: 'Real-time погода',
-                description: 'Данные с метеостанций Камчатки обновляются каждые 10 минут',
-                color: 'from-blue-500 to-cyan-600',
-              },
-              {
-                icon: Mountain,
-                title: 'Мониторинг вулканов',
-                description: 'Интеграция с KVERT - следим за активностью вулканов 24/7',
-                color: 'from-orange-500 to-red-600',
-              },
-              {
-                icon: Award,
-                title: 'Геймификация',
-                description: 'Достижения, бейджи, рейтинги - превратили туризм в игру',
-                color: 'from-green-500 to-teal-600',
-              },
-              {
-                icon: Shield,
-                title: 'Блокчейн-безопасность',
-                description: 'Ваши данные и бронирования защищены распределенной сетью',
-                color: 'from-indigo-500 to-purple-600',
-              },
-              {
-                icon: Target,
-                title: 'AR/VR туры',
-                description: 'Виртуальные туры в 360° - посмотрите маршрут до поездки',
-                color: 'from-pink-500 to-rose-600',
-              },
-            ].map((feature, i) => (
-              <div
-                key={i}
-                className="group p-8 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl hover:bg-white/20 transition-all duration-500 animate-scale-in"
-                style={{ animationDelay: `${i * 0.1}s` }}
-              >
-                <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                
-                <h3 className="text-2xl font-bold text-white mb-3">
-                  {feature.title}
-                </h3>
-                
-                <p className="text-white/70 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="container mx-auto px-4 py-32">
-        <div className="max-w-4xl mx-auto text-center">
-          <Rocket className="w-24 h-24 text-purple-600 mx-auto mb-8 animate-float" />
-          
-          <h2 className="text-6xl font-black text-gray-900 dark:text-white mb-6">
-            Начнем?
-          </h2>
-          
-          <p className="text-2xl text-gray-600 dark:text-gray-400 mb-12">
-            AI уже готовит ваш идеальный маршрут
-          </p>
-          
-          <button 
-            onClick={() => setShowAIChat(true)}
-            className="group px-16 py-6 bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white font-black text-xl rounded-3xl hover:scale-110 transition-all duration-500 shadow-2xl hover:shadow-purple-500/50 flex items-center gap-4 mx-auto"
-          >
-            <Sparkles className="w-8 h-8 group-hover:rotate-12 transition-transform" />
-            Начать приключение
-            <ChevronRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
-          </button>
-        </div>
-      </section>
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        @keyframes glow {
-          0%, 100% { filter: brightness(1); }
-          50% { filter: brightness(1.2); }
-        }
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        .animate-glow {
-          animation: glow 3s ease-in-out infinite;
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-          opacity: 0;
-        }
-        .animate-scale-in {
-          animation: scale-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-          opacity: 0;
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out forwards;
-        }
-      `}</style>
-    </div>
+    </main>
   );
 }
