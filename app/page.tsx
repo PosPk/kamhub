@@ -180,8 +180,15 @@ export default function Home() {
 
 
       {/* Tours Section */}
-      <section className="px-6 py-6">
-        <h2 className="text-xl font-extrabold mb-4">Популярные туры</h2>
+      <section className="px-6 py-12 bg-gradient-modern rounded-[3rem] mx-6 mb-12">
+        <div className="text-center mb-12 animate-fade-in-up">
+          <h2 className="text-4xl md:text-5xl font-black text-deep-blue dark:text-premium-gold mb-4">
+            Популярные туры
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-white/70 max-w-2xl mx-auto">
+            Исследуйте самые захватывающие маршруты Камчатки
+          </p>
+        </div>
         {loading ? (
           <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (

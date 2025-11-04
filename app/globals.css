@@ -15,6 +15,82 @@
   --premium-gold: #D4AF37;
 }
 
+/* Современные анимации */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out;
+}
+
+/* Стильные карточки */
+.card-modern {
+  @apply rounded-3xl bg-white dark:bg-white/5 border-2 border-gray-100 dark:border-white/10;
+  @apply shadow-xl shadow-sky-blue/10 dark:shadow-none;
+  @apply transition-all duration-300;
+  @apply hover:shadow-2xl hover:shadow-ultramarine/20 dark:hover:shadow-premium-gold/20;
+  @apply hover:scale-105 hover:-translate-y-1;
+  @apply hover:border-ultramarine/50 dark:hover:border-premium-gold/50;
+}
+
+/* Градиенты */
+.gradient-modern {
+  background: linear-gradient(135deg, 
+    rgba(0, 71, 171, 0.1) 0%, 
+    rgba(74, 144, 226, 0.05) 50%, 
+    rgba(135, 206, 235, 0.1) 100%);
+}
+
+.dark .gradient-modern {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.1) 0%, 
+    rgba(255, 215, 0, 0.05) 50%, 
+    rgba(184, 134, 11, 0.1) 100%);
+}
+
+/* Кнопки */
+.btn-primary {
+  @apply px-8 py-4 rounded-2xl font-bold text-lg;
+  @apply bg-gradient-to-r from-ultramarine to-light-blue dark:from-premium-gold dark:to-yellow-400;
+  @apply text-white dark:text-premium-black;
+  @apply shadow-lg shadow-ultramarine/30 dark:shadow-premium-gold/30;
+  @apply hover:shadow-xl hover:shadow-ultramarine/50 dark:hover:shadow-premium-gold/50;
+  @apply hover:scale-105 transition-all duration-300;
+  @apply active:scale-95;
+}
+
 /* Import UI improvements */
 @import './ui-improvements.css';
 
