@@ -1,6 +1,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { 
+  DollarSign, 
+  BarChart3, 
+  Target, 
+  TrendingUp, 
+  Calendar, 
+  Ticket, 
+  Backpack,
+  Check,
+  X,
+  Clock,
+  RefreshCw,
+  MapPin,
+  Star,
+  Users,
+  Building2
+} from 'lucide-react';
 
 interface DashboardStats {
   totalTours: number;
@@ -174,8 +191,9 @@ export default function TourOperatorDashboard() {
       <div className="max-w-7xl mx-auto mb-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              🎒 Дашборд Туроператора
+            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+              <Backpack className="w-8 h-8 text-gold" />
+              Дашборд Туроператора
             </h1>
             <p className="text-gray-400">
               Управление турами и бронированиями
@@ -183,9 +201,10 @@ export default function TourOperatorDashboard() {
           </div>
           <button
             onClick={loadDashboard}
-            className="bg-gold/10 border border-gold text-gold px-4 py-2 rounded-lg hover:bg-gold/20 transition"
+            className="bg-gold/10 border border-gold text-gold px-4 py-2 rounded-lg hover:bg-gold/20 transition flex items-center gap-2"
           >
-            🔄 Обновить
+            <RefreshCw className="w-4 h-4" />
+            Обновить
           </button>
         </div>
 
@@ -195,7 +214,7 @@ export default function TourOperatorDashboard() {
           <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 rounded-xl p-6">
             <div className="flex justify-between items-start mb-2">
               <span className="text-green-400 text-sm">Общая выручка</span>
-              <span className="text-2xl">💰</span>
+              <DollarSign className="w-6 h-6 text-green-400" />
             </div>
             <p className="text-3xl font-bold text-white mb-1">
               {stats.totalRevenue.toLocaleString('ru-RU')} ₽
@@ -209,7 +228,7 @@ export default function TourOperatorDashboard() {
           <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/30 rounded-xl p-6">
             <div className="flex justify-between items-start mb-2">
               <span className="text-blue-400 text-sm">Бронирований</span>
-              <span className="text-2xl">📊</span>
+              <BarChart3 className="w-6 h-6 text-blue-400" />
             </div>
             <p className="text-3xl font-bold text-white mb-1">
               {stats.totalBookings}
@@ -223,7 +242,7 @@ export default function TourOperatorDashboard() {
           <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/30 rounded-xl p-6">
             <div className="flex justify-between items-start mb-2">
               <span className="text-purple-400 text-sm">Туры</span>
-              <span className="text-2xl">🎯</span>
+              <Target className="w-6 h-6 text-purple-400" />
             </div>
             <p className="text-3xl font-bold text-white mb-1">
               {stats.totalTours}
@@ -237,7 +256,7 @@ export default function TourOperatorDashboard() {
           <div className="bg-gradient-to-br from-gold/20 to-gold/10 border border-gold/30 rounded-xl p-6">
             <div className="flex justify-between items-start mb-2">
               <span className="text-gold text-sm">Заполняемость</span>
-              <span className="text-2xl">📈</span>
+              <TrendingUp className="w-6 h-6 text-gold" />
             </div>
             <p className="text-3xl font-bold text-white mb-1">
               {stats.occupancyRate.toFixed(1)}%
@@ -251,20 +270,21 @@ export default function TourOperatorDashboard() {
         {/* Tabs */}
         <div className="flex gap-2 mb-6 border-b border-gray-700">
           {[
-            { id: 'overview', label: '📊 Обзор', icon: '📊' },
-            { id: 'bookings', label: '🎫 Бронирования', icon: '🎫' },
-            { id: 'schedules', label: '📅 Расписание', icon: '📅' },
-            { id: 'tours', label: '🎒 Туры', icon: '🎒' }
+            { id: 'overview', label: 'Обзор', Icon: BarChart3 },
+            { id: 'bookings', label: 'Бронирования', Icon: Ticket },
+            { id: 'schedules', label: 'Расписание', Icon: Calendar },
+            { id: 'tours', label: 'Туры', Icon: Backpack }
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab.id as any)}
-              className={`px-6 py-3 rounded-t-lg transition ${
+              className={`px-6 py-3 rounded-t-lg transition flex items-center gap-2 ${
                 selectedTab === tab.id
                   ? 'bg-gold text-black font-bold'
                   : 'text-gray-400 hover:text-white hover:bg-gray-800'
               }`}
             >
+              <tab.Icon className="w-5 h-5" />
               {tab.label}
             </button>
           ))}
@@ -276,8 +296,9 @@ export default function TourOperatorDashboard() {
             {/* Upcoming Tours */}
             {upcomingTours.length > 0 && (
               <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">
-                  🚀 Предстоящие туры (сегодня/завтра)
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <Calendar className="w-6 h-6 text-gold" />
+                  Предстоящие туры (сегодня/завтра)
                 </h2>
                 <div className="space-y-4">
                   {upcomingTours.map(tour => (
@@ -287,11 +308,13 @@ export default function TourOperatorDashboard() {
                           <h3 className="text-lg font-bold text-white mb-1">
                             {tour.tourTitle}
                           </h3>
-                          <p className="text-gray-400 text-sm">
-                            📅 {new Date(tour.startDate).toLocaleDateString('ru-RU')} в {tour.departureTime}
+                          <p className="text-gray-400 text-sm flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            {new Date(tour.startDate).toLocaleDateString('ru-RU')} в {tour.departureTime}
                           </p>
-                          <p className="text-gray-400 text-sm">
-                            📍 {tour.meetingPoint}
+                          <p className="text-gray-400 text-sm flex items-center gap-1">
+                            <MapPin className="w-4 h-4" />
+                            {tour.meetingPoint}
                           </p>
                         </div>
                         <div className="text-right">
@@ -311,12 +334,16 @@ export default function TourOperatorDashboard() {
                               <span className="text-white text-sm">
                                 {booking.contact_name} ({booking.participants_count} чел.)
                               </span>
-                              <span className={`text-xs px-2 py-1 rounded ${
+                              <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${
                                 booking.check_in_status === 'checked_in' 
                                   ? 'bg-green-500/20 text-green-400'
                                   : 'bg-yellow-500/20 text-yellow-400'
                               }`}>
-                                {booking.check_in_status === 'checked_in' ? '✅ Отметились' : '⏳ Ожидание'}
+                                {booking.check_in_status === 'checked_in' ? (
+                                  <><Check className="w-3 h-3" /> Отметились</>
+                                ) : (
+                                  <><Clock className="w-3 h-3" /> Ожидание</>
+                                )}
                               </span>
                             </div>
                           ))}
@@ -331,8 +358,9 @@ export default function TourOperatorDashboard() {
             {/* Revenue Chart */}
             {revenueChart.length > 0 && (
               <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-                <h2 className="text-xl font-bold text-white mb-4">
-                  📈 Выручка за последние 30 дней
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-6 h-6 text-gold" />
+                  Выручка за последние 30 дней
                 </h2>
                 <div className="h-64 flex items-end gap-2">
                   {revenueChart.map((day, idx) => {
@@ -362,27 +390,34 @@ export default function TourOperatorDashboard() {
 
             {/* Status Distribution */}
             <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-              <h2 className="text-xl font-bold text-white mb-4">
-                📊 Статистика по статусам
-              </h2>
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-6 h-6 text-gold" />
+                  Статистика по статусам
+                </h2>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center">
                   <p className="text-4xl font-bold text-yellow-400">
                     {stats.statusStats.pending}
                   </p>
-                  <p className="text-gray-400 mt-2">⏳ Ожидание</p>
+                  <p className="text-gray-400 mt-2 flex items-center justify-center gap-1">
+                    <Clock className="w-4 h-4" /> Ожидание
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-bold text-green-400">
                     {stats.statusStats.confirmed}
                   </p>
-                  <p className="text-gray-400 mt-2">✅ Подтверждено</p>
+                  <p className="text-gray-400 mt-2 flex items-center justify-center gap-1">
+                    <Check className="w-4 h-4" /> Подтверждено
+                  </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-bold text-red-400">
                     {stats.statusStats.cancelled}
                   </p>
-                  <p className="text-gray-400 mt-2">❌ Отменено</p>
+                  <p className="text-gray-400 mt-2 flex items-center justify-center gap-1">
+                    <X className="w-4 h-4" /> Отменено
+                  </p>
                 </div>
               </div>
             </div>
@@ -391,8 +426,9 @@ export default function TourOperatorDashboard() {
 
         {selectedTab === 'bookings' && (
           <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">
-              🎫 Активные бронирования ({activeBookings.length})
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <Ticket className="w-6 h-6 text-gold" />
+              Активные бронирования ({activeBookings.length})
             </h2>
             <div className="space-y-3">
               {activeBookings.length === 0 ? (
@@ -460,8 +496,9 @@ export default function TourOperatorDashboard() {
 
         {selectedTab === 'schedules' && (
           <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">
-              📅 Ближайшие расписания ({schedules.length})
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <Calendar className="w-6 h-6 text-gold" />
+              Ближайшие расписания ({schedules.length})
             </h2>
             <div className="space-y-3">
               {schedules.map(schedule => (
@@ -471,12 +508,14 @@ export default function TourOperatorDashboard() {
                       <h3 className="text-white font-bold mb-1">
                         {schedule.tourTitle}
                       </h3>
-                      <p className="text-gray-400 text-sm mb-2">
-                        📅 {new Date(schedule.startDate).toLocaleDateString('ru-RU')} 
+                      <p className="text-gray-400 text-sm mb-2 flex items-center gap-1">
+                        <Calendar className="w-4 h-4" />
+                        {new Date(schedule.startDate).toLocaleDateString('ru-RU')} 
                         {' '}{schedule.departureTime} - {schedule.returnTime}
                       </p>
-                      <p className="text-gray-400 text-sm">
-                        📍 {schedule.meetingPoint}
+                      <p className="text-gray-400 text-sm flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        {schedule.meetingPoint}
                       </p>
                     </div>
                     <div className="text-right">
@@ -497,8 +536,9 @@ export default function TourOperatorDashboard() {
                   </div>
                   {schedule.bookingsCount > 0 && (
                     <div className="mt-3 pt-3 border-t border-gray-700">
-                      <p className="text-gray-400 text-sm">
-                        📊 Бронирований: {schedule.bookingsCount} 
+                        <p className="text-gray-400 text-sm flex items-center gap-1">
+                          <BarChart3 className="w-4 h-4" />
+                          Бронирований: {schedule.bookingsCount}
                         {' '} | Участников: {schedule.totalParticipants}
                         {' '} | Выручка: {(schedule.basePrice * schedule.totalParticipants).toLocaleString('ru-RU')} ₽
                       </p>
@@ -512,8 +552,9 @@ export default function TourOperatorDashboard() {
 
         {selectedTab === 'tours' && (
           <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">
-              🎒 Мои туры ({tours.length})
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <Backpack className="w-6 h-6 text-gold" />
+              Мои туры ({tours.length})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {tours.map(tour => (
@@ -525,7 +566,15 @@ export default function TourOperatorDashboard() {
                     <span className={`px-2 py-1 rounded text-xs ${
                       tour.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                     }`}>
-                      {tour.isActive ? '✅ Активен' : '❌ Неактивен'}
+                      {tour.isActive ? (
+                        <span className="flex items-center gap-1">
+                          <Check className="w-3 h-3" /> Активен
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1">
+                          <X className="w-3 h-3" /> Неактивен
+                        </span>
+                      )}
                     </span>
                   </div>
                   <p className="text-gray-400 text-sm mb-3 line-clamp-2">
@@ -560,8 +609,9 @@ export default function TourOperatorDashboard() {
                   <div className="flex justify-between items-center pt-3 border-t border-gray-700">
                     <div>
                       <p className="text-gray-500 text-xs">Рейтинг</p>
-                      <p className="text-gold">
-                        ⭐ {tour.rating.toFixed(1)} ({tour.reviewCount})
+                      <p className="text-gold flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-gold" />
+                        {tour.rating.toFixed(1)} ({tour.reviewCount})
                       </p>
                     </div>
                     <div className="text-right">

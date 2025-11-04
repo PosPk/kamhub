@@ -2,6 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Tour, Weather } from '@/types';
+import { 
+  BarChart3, Mountain, Calendar, UserSquare2, 
+  TrendingUp, CloudSun, DollarSign, Users,
+  Clock, Check, X, MapPin
+} from 'lucide-react';
 
 export default function OperatorDashboard() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -49,12 +54,12 @@ export default function OperatorDashboard() {
   };
 
   const tabs = [
-    { id: 'overview', name: 'Обзор', icon: '📊' },
-    { id: 'tours', name: 'Туры', icon: '🏔️' },
-    { id: 'bookings', name: 'Бронирования', icon: '📅' },
-    { id: 'guides', name: 'Гиды', icon: '👨‍🏫' },
-    { id: 'analytics', name: 'Аналитика', icon: '📈' },
-    { id: 'weather', name: 'Погода', icon: '🌤️' },
+    { id: 'overview', name: 'Обзор', Icon: BarChart3 },
+    { id: 'tours', name: 'Туры', Icon: Mountain },
+    { id: 'bookings', name: 'Бронирования', Icon: Calendar },
+    { id: 'guides', name: 'Гиды', Icon: UserSquare2 },
+    { id: 'analytics', name: 'Аналитика', Icon: TrendingUp },
+    { id: 'weather', name: 'Погода', Icon: CloudSun },
   ];
 
   const mockBookings = [
@@ -167,7 +172,7 @@ export default function OperatorDashboard() {
                   : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
+              <tab.Icon className="w-5 h-5" />
               <span className="font-medium">{tab.name}</span>
             </button>
           ))}
@@ -184,7 +189,7 @@ export default function OperatorDashboard() {
                     <p className="text-white/70 text-sm">Всего туров</p>
                     <p className="text-3xl font-bold text-white">{stats.totalTours}</p>
                   </div>
-                  <div className="text-3xl">🏔️</div>
+                  <Mountain className="w-10 h-10 text-premium-gold" />
                 </div>
               </div>
               
@@ -194,7 +199,7 @@ export default function OperatorDashboard() {
                     <p className="text-white/70 text-sm">Активные бронирования</p>
                     <p className="text-3xl font-bold text-white">{stats.activeBookings}</p>
                   </div>
-                  <div className="text-3xl">📅</div>
+                  <Calendar className="w-10 h-10 text-premium-gold" />
                 </div>
               </div>
               
@@ -204,7 +209,7 @@ export default function OperatorDashboard() {
                     <p className="text-white/70 text-sm">Доход за месяц</p>
                     <p className="text-3xl font-bold text-white">{stats.monthlyRevenue.toLocaleString()}₽</p>
                   </div>
-                  <div className="text-3xl">💰</div>
+                  <DollarSign className="w-10 h-10 text-premium-gold" />
                 </div>
               </div>
               
@@ -214,7 +219,7 @@ export default function OperatorDashboard() {
                     <p className="text-white/70 text-sm">Рейтинг</p>
                     <p className="text-3xl font-bold text-white">{stats.rating}</p>
                   </div>
-                  <div className="text-3xl">⭐</div>
+                  <Mountain className="w-10 h-10 text-premium-gold" />
                 </div>
               </div>
             </div>

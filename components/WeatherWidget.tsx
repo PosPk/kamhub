@@ -2,6 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Weather } from '@/types';
+import { 
+  Sun, Cloud, CloudRain, CloudSnow, CloudDrizzle, 
+  CloudFog, CloudLightning, Droplets, Wind, 
+  Gauge, Eye, CloudSun 
+} from 'lucide-react';
 
 interface WeatherWidgetProps {
   lat: number;
@@ -41,27 +46,28 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
   };
 
   const getWeatherIcon = (condition: string) => {
+    const iconClass = "w-12 h-12";
     switch (condition) {
       case 'clear':
-        return '☀️';
+        return <Sun className={iconClass + " text-yellow-500"} />;
       case 'mostly_clear':
-        return '🌤️';
+        return <CloudSun className={iconClass + " text-yellow-400"} />;
       case 'partly_cloudy':
-        return '⛅';
+        return <Cloud className={iconClass + " text-gray-400"} />;
       case 'overcast':
-        return '☁️';
+        return <Cloud className={iconClass + " text-gray-500"} />;
       case 'fog':
-        return '🌫️';
+        return <CloudFog className={iconClass + " text-gray-400"} />;
       case 'drizzle':
-        return '🌦️';
+        return <CloudDrizzle className={iconClass + " text-blue-400"} />;
       case 'rain':
-        return '🌧️';
+        return <CloudRain className={iconClass + " text-blue-500"} />;
       case 'snow':
-        return '❄️';
+        return <CloudSnow className={iconClass + " text-blue-200"} />;
       case 'thunderstorm':
-        return '⛈️';
+        return <CloudLightning className={iconClass + " text-purple-500"} />;
       default:
-        return '🌤️';
+        return <CloudSun className={iconClass + " text-yellow-400"} />;
     }
   };
 
@@ -131,7 +137,9 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
     return (
       <div className={`bg-white rounded-lg shadow-md p-4 ${className}`}>
         <div className="text-center text-gray-500">
-          <div className="text-2xl mb-2">🌤️</div>
+          <div className="mb-2 flex justify-center">
+            <CloudSun className="w-8 h-8 text-gray-400" />
+          </div>
           <div className="text-sm">{error}</div>
           <button
             onClick={fetchWeather}
@@ -160,7 +168,7 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
 
       {/* Текущая погода */}
       <div className="text-center mb-4">
-        <div className="text-4xl mb-2">
+        <div className="mb-2 flex justify-center">
           {getWeatherIcon(weather.condition)}
         </div>
         <div className="text-3xl font-bold text-gray-900 mb-1">
@@ -174,13 +182,13 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
       {/* Детали погоды */}
       <div className="grid grid-cols-2 gap-3 text-sm">
         <div className="flex items-center space-x-2">
-          <span>💧</span>
+          <Droplets className="w-4 h-4 text-blue-500" />
           <span className="text-gray-600">Влажность</span>
           <span className="font-medium">{weather.humidity}%</span>
         </div>
         
         <div className="flex items-center space-x-2">
-          <span>💨</span>
+          <Wind className="w-4 h-4 text-gray-500" />
           <span className="text-gray-600">Ветер</span>
           <span className="font-medium">
             {weather.windSpeed} км/ч {getWindDirection(weather.windDirection)}
@@ -188,19 +196,19 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
         </div>
         
         <div className="flex items-center space-x-2">
-          <span>📊</span>
+          <Gauge className="w-4 h-4 text-gray-500" />
           <span className="text-gray-600">Давление</span>
           <span className="font-medium">{weather.pressure} мм рт.ст.</span>
         </div>
         
         <div className="flex items-center space-x-2">
-          <span>👁️</span>
+          <Eye className="w-4 h-4 text-gray-500" />
           <span className="text-gray-600">Видимость</span>
           <span className="font-medium">{weather.visibility} км</span>
         </div>
         
         <div className="flex items-center space-x-2 col-span-2">
-          <span>☀️</span>
+          <Sun className="w-4 h-4 text-yellow-500" />
           <span className="text-gray-600">УФ-индекс</span>
           <span className={`font-medium ${getUVIndexColor(weather.uvIndex)}`}>
             {weather.uvIndex} ({getUVIndexText(weather.uvIndex)})

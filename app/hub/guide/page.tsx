@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Weather } from '@/types';
+import { 
+  Calendar, Users, DollarSign, CloudSun, 
+  UserCircle, Clock, Check, X, MapPin 
+} from 'lucide-react';
 
 export default function GuideDashboard() {
   const [weather, setWeather] = useState<Weather | null>(null);
@@ -27,11 +31,11 @@ export default function GuideDashboard() {
   };
 
   const tabs = [
-    { id: 'schedule', name: 'Расписание', icon: '📅' },
-    { id: 'groups', name: 'Группы', icon: '👥' },
-    { id: 'earnings', name: 'Доходы', icon: '💰' },
-    { id: 'weather', name: 'Погода', icon: '🌤️' },
-    { id: 'profile', name: 'Профиль', icon: '👤' },
+    { id: 'schedule', name: 'Расписание', Icon: Calendar },
+    { id: 'groups', name: 'Группы', Icon: Users },
+    { id: 'earnings', name: 'Доходы', Icon: DollarSign },
+    { id: 'weather', name: 'Погода', Icon: CloudSun },
+    { id: 'profile', name: 'Профиль', Icon: UserCircle },
   ];
 
   const mockSchedule = [
@@ -145,7 +149,7 @@ export default function GuideDashboard() {
                   : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
+              <tab.Icon className="w-5 h-5" />
               <span className="font-medium">{tab.name}</span>
             </button>
           ))}
