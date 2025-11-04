@@ -1,0 +1,96 @@
+name: Deploy to Timeweb VPS
+
+on:
+  push:
+    branches:
+      - main
+      - cursor/deep-repository-scan-05bf
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔨 Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: 🚀 Deploy to Timeweb VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 5.129.248.224
+          username: root
+          password: ${{ secrets.TIMEWEB_VPS_PASSWORD }}
+          script: |
+            echo "🚀 Starting deployment..."
+            
+            # Create directory
+            mkdir -p /var/www/kamhub
+            cd /var/www/kamhub
+            
+            # Clone or pull latest code
+            if [ -d ".git" ]; then
+              echo "📥 Pulling latest code..."
+              git fetch origin
+              git checkout ${{ github.ref_name }}
+              git pull origin ${{ github.ref_name }}
+            else
+              echo "📥 Cloning repository..."
+              git clone -b ${{ github.ref_name }} https://github.com/PosPk/kamhub.git .
+            fi
+            
+            # Install dependencies
+            echo "📦 Installing dependencies..."
+            npm install
+            
+            # Build application
+            echo "🔨 Building application..."
+            npm run build
+            
+            # Setup environment
+            if [ ! -f ".env.production" ]; then
+              echo "⚙️  Creating .env.production..."
+              cat > .env.production << 'ENVEOF'
+            DATABASE_URL=postgresql://kamhub:kamhub2024secure@localhost:5432/kamhub_production
+            DATABASE_SSL=false
+            DATABASE_MAX_CONNECTIONS=20
+            NODE_ENV=production
+            PORT=3000
+            NEXT_PUBLIC_APP_URL=http://5.129.248.224
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_EXPIRES_IN=7d
+            S3_ENDPOINT=https://s3.twcstorage.ru
+            S3_BUCKET=d9542536-676ee691-7f59-46bb-bf0e-ab64230eec50
+            S3_ACCESS_KEY=F2CP4X3X17GVQ1YH5I5D
+            S3_SECRET_KEY=72iAsYR4QQCIdaDI9e9AzXnzVvvP8bvPELmrBVzX
+            S3_REGION=ru-1
+            ENVEOF
+            fi
+            
+            # Restart with PM2
+            echo "🔄 Restarting application..."
+            pm2 delete kamhub 2>/dev/null || true
+            pm2 start ecosystem.config.js
+            pm2 save
+            
+            echo "✅ Deployment completed!"
+            pm2 status
+
+      - name: 🧪 Run health check
+        run: |
+          sleep 10
+          curl -f http://5.129.248.224/ || echo "Health check failed"
