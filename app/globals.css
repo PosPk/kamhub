@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Светлая тема - синие цвета */
+:root {
+  --ultramarine: #0047AB;
+  --deep-blue: #003366;
+  --light-blue: #4A90E2;
+  --sky-blue: #87CEEB;
+}
+
+/* Темная тема - золотые цвета */
+.dark {
+  --premium-gold: #D4AF37;
+}
+
 /* Import UI improvements */
 @import './ui-improvements.css';
 

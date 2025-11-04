@@ -84,21 +84,21 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-premium-black text-gray-900 dark:text-white transition-colors duration-300">
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl mx-6 mb-8 bg-gray-100 dark:bg-transparent">
+      <section className="relative overflow-hidden rounded-3xl mx-6 mb-8 bg-gradient-to-br from-sky-blue/20 to-ultramarine/10 dark:bg-transparent">
         <div className="absolute inset-0 -z-10">
-          <video 
-            className="w-full h-[48vh] object-cover" 
-            autoPlay 
-            muted 
-            loop 
-            playsInline 
+          <video
+            className="w-full h-[48vh] object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
             poster="https://images.unsplash.com/photo-1520496938500-76fd098ad75a?q=80&w=1920&auto=format&fit=crop"
           >
             <source src="https://cdn.coverr.co/videos/coverr-aurora-over-mountains-0157/1080p.mp4" type="video/mp4" />
           </video>
         </div>
-        <div className="absolute inset-0 gradient-gold-aurora animate-aurora"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-ultramarine/30 to-deep-blue/20 dark:gradient-gold-aurora animate-aurora"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-ultramarine/80 via-light-blue/30 to-transparent dark:from-black/70 dark:via-black/30 dark:to-transparent"></div>
         <div className="absolute inset-0 p-8 grid content-end gap-4">
           <h1 className="font-display text-4xl sm:text-6xl font-black leading-tight">
             Экосистема туризма Камчатки
@@ -142,10 +142,10 @@ export default function Home() {
       {/* Main Content */}
       <section className="px-6 py-6 grid gap-4">
         <div className="grid gap-1 text-center">
-          <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-gold gold-glow">
+          <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-ultramarine dark:text-gold">
             Камчатка.
           </div>
-          <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-gold gold-glow">
+          <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-deep-blue dark:text-gold">
             экосистема путешествий.
           </div>
         </div>
@@ -169,10 +169,10 @@ export default function Home() {
             <a 
               key={title} 
               href={href} 
-              className="rounded-2xl bg-white/5 border border-white/10 p-5 hover:bg-white/10 transition"
+              className="rounded-2xl bg-sky-blue/10 dark:bg-white/5 border-2 border-light-blue/30 dark:border-white/10 p-5 hover:bg-ultramarine/10 dark:hover:bg-white/10 hover:border-ultramarine dark:hover:border-white/20 transition"
             >
-              <div className="text-lg font-extrabold">{title}</div>
-              <div className="text-sm text-white/70">Персональные инструменты и витрины</div>
+              <div className="text-lg font-extrabold text-ultramarine dark:text-white">{title}</div>
+              <div className="text-sm text-gray-600 dark:text-white/70">Персональные инструменты и витрины</div>
             </a>
           ))}
         </div>
@@ -231,7 +231,7 @@ export default function Home() {
       <section className="px-6 py-6 grid gap-4 sm:grid-cols-3">
         <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-4 sm:grid-cols-2 sm:items-start">
           <div className="grid gap-4">
-            <div className="text-sm text-white/70">SOS и безопасность</div>
+            <div className="text-sm text-gray-600 dark:text-white/70">SOS и безопасность</div>
             <div className="grid gap-3">
               <a href="#" className="rounded-xl bg-premium-gold text-premium-black text-center py-3 font-bold">
                 SOS
@@ -257,7 +257,7 @@ export default function Home() {
         </div>
         
         <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-2">
-          <div className="text-sm text-white/70">Экология</div>
+          <div className="text-sm text-gray-600 dark:text-white/70">Экология</div>
           <div className="text-2xl font-black text-premium-gold">Eco‑points: 0</div>
           <div className="text-white/70 text-sm">Собирайте баллы за бережное поведение</div>
         </div>

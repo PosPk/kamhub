@@ -16,6 +16,11 @@ export default {
           ice: '#A2D2FF',
         },
         gold: '#E6C149',
+        // Светлая тема - синие цвета
+        'ultramarine': '#0047AB',
+        'deep-blue': '#003366',
+        'light-blue': '#4A90E2',
+        'sky-blue': '#87CEEB',
       },
       boxShadow: {
         gold: '0 8px 24px rgba(230,193,73,0.25)',
