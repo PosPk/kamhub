@@ -858,12 +858,3 @@ export async function confirmTourBooking(
     };
   }
 }
-
-// Экспорты
-export {
-  type TourBookingRequest,
-  type TourBookingResult,
-  type HoldResult,
-  type AvailabilityResult,
-  type ParticipantDetails
-};

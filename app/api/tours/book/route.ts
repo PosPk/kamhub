@@ -66,11 +66,11 @@ export async function POST(request: NextRequest) {
       validatedData = TourBookingRequestSchema.parse(body);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return NextResponse.json({
-          success: false,
-          error: 'Validation error',
-          details: error.errors
-        }, { status: 400 });
+    return NextResponse.json({
+      success: false,
+      error: 'Validation error',
+      details: error.issues
+    }, { status: 400 });
       }
       throw error;
     }

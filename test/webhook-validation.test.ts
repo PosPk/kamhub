@@ -136,6 +136,7 @@ describe('Test Webhook Creation', () => {
   it('должен создавать валидный тестовый webhook', () => {
     // Устанавливаем test environment
     const originalEnv = process.env.NODE_ENV;
+    // @ts-ignore - Test environment modification
     process.env.NODE_ENV = 'development';
     process.env.CLOUDPAYMENTS_API_SECRET = 'test-secret';
     
@@ -158,12 +159,14 @@ describe('Test Webhook Creation', () => {
       expect(isValid).toBe(true);
       
     } finally {
+      // @ts-ignore - Test environment restoration
       process.env.NODE_ENV = originalEnv;
     }
   });
   
   it('не должен работать в production', () => {
     const originalEnv = process.env.NODE_ENV;
+    // @ts-ignore - Test environment modification
     process.env.NODE_ENV = 'production';
     
     try {
@@ -171,6 +174,7 @@ describe('Test Webhook Creation', () => {
         createTestWebhook('booking-123', 1500);
       }).toThrow('Test webhooks not allowed in production');
     } finally {
+      // @ts-ignore - Test environment restoration
       process.env.NODE_ENV = originalEnv;
     }
   });
