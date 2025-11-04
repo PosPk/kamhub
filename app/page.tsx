@@ -1,271 +1,189 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Tour, Partner, Weather } from '@/types';
-import { TourCard } from '@/components/TourCard';
-import { PartnerCard } from '@/components/PartnerCard';
-import { WeatherWidget } from '@/components/WeatherWidget';
-import { EcoPointsWidget } from '@/components/EcoPointsWidget';
-import { AIChatWidget } from '@/components/AIChatWidget';
-import { Rocket, Lightbulb, Backpack, Building2, Map, Bus, Hotel, Gift, Tent, Car } from 'lucide-react';
+import { Rocket, Sparkles, TrendingUp, Zap, Star, ArrowRight, Play } from 'lucide-react';
 
-export default function Home() {
-  const [tours, setTours] = useState<Tour[]>([]);
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [weather, setWeather] = useState<Weather | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [showChat, setShowChat] = useState(false);
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [nearbyEcoPoints, setNearbyEcoPoints] = useState([]);
+export default function UltraModernHome() {
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    fetchData();
-    getUserLocation();
+    setMounted(true);
   }, []);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      
-      // Загружаем туры
-      const toursResponse = await fetch('/api/tours?limit=6');
-      const toursData = await toursResponse.json();
-      if (toursData.success && toursData.data?.data) {
-        setTours(toursData.data.data);
-      }
-
-      // Загружаем партнеров
-      const partnersResponse = await fetch('/api/partners?limit=6');
-      const partnersData = await partnersResponse.json();
-      if (partnersData.success && partnersData.data?.data) {
-        setPartners(partnersData.data.data);
-      }
-
-      // Загружаем eco-points
-      const ecoPointsResponse = await fetch('/api/eco-points?limit=10');
-      const ecoPointsData = await ecoPointsResponse.json();
-      if (ecoPointsData.success && ecoPointsData.data) {
-        setNearbyEcoPoints(ecoPointsData.data);
-      }
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-          setUserLocation({
-            lat: 53.0195,
-            lng: 158.6505,
-          });
-        }
-      );
-    } else {
-      setUserLocation({
-        lat: 53.0195,
-        lng: 158.6505,
-      });
-    }
-  };
+  if (!mounted) return null;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white via-sky-blue/5 to-ultramarine/5 dark:from-premium-black dark:via-premium-black dark:to-premium-black text-gray-900 dark:text-white transition-colors duration-300">
-      {/* Hero Section - Modern */}
-      <section className="relative overflow-hidden mx-6 mb-16 mt-8 rounded-[3rem] shadow-2xl animate-fade-in">
-        <div className="absolute inset-0 -z-10">
-          <video
-            className="w-full h-[60vh] object-cover"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="https://images.unsplash.com/photo-1520496938500-76fd098ad75a?q=80&w=1920&auto=format&fit=crop"
-          >
-            <source src="https://cdn.coverr.co/videos/coverr-aurora-over-mountains-0157/1080p.mp4" type="video/mp4" />
-          </video>
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-br from-ultramarine/40 via-light-blue/30 to-deep-blue/40 dark:from-premium-black/50 dark:via-premium-gold/20 dark:to-premium-black/60"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-ultramarine/90 via-ultramarine/40 to-transparent dark:from-black/90 dark:via-black/50 dark:to-transparent"></div>
-        
-        <div className="relative z-10 p-12 md:p-16 grid content-end gap-6 min-h-[60vh]">
-          <div className="animate-fade-in-up">
-            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black leading-tight text-white drop-shadow-2xl mb-4">
-              Камчатка
-            </h1>
-            <p className="text-2xl md:text-3xl font-bold text-white/95 drop-shadow-lg mb-2">
-              экосистема путешествий
-            </p>
-            <p className="max-w-3xl text-lg md:text-xl text-white/90 drop-shadow-md">
-              Туры, партнёры, CRM, бронирование, безопасность, рефералы и экология — в едином центре
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900">
+      {/* Animated Mesh Background */}
+      <div className="fixed inset-0 -z-10 animate-mesh opacity-30">
+        <div className="absolute inset-0" style={{ background: 'var(--gradient-mesh)' }} />
+      </div>
+
+      {/* Hero Section - Bento Style */}
+      <section className="container mx-auto px-4 pt-20 pb-12">
+        <div className="grid grid-cols-12 gap-4 lg:gap-6">
           
-          <div className="flex flex-col md:flex-row gap-4 items-stretch md:items-center animate-scale-in">
-            <input 
-              placeholder="🔍 Поиск: вулканы, океан, медведи..." 
-              className="flex-1 h-16 rounded-2xl px-6 text-lg text-gray-900 bg-white/95 backdrop-blur border-2 border-white/50 focus:border-white focus:outline-none focus:ring-4 focus:ring-white/30 shadow-xl transition-all"
-              name="q"
-            />
-            <a href="/demo" className="btn-primary whitespace-nowrap flex items-center gap-2">
-              <Rocket className="w-5 h-5" />
-              Попробовать демо
-            </a>
+          {/* Main Hero - spans 8 columns */}
+          <div className="col-span-12 lg:col-span-8 card-glass p-8 lg:p-12 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-6 animate-fade-in">
+                <Sparkles className="w-6 h-6 text-primary animate-glow" />
+                <span className="text-sm font-semibold text-primary dark:text-accent uppercase tracking-wider">
+                  Экосистема туризма будущего
+                </span>
+              </div>
+
+              <h1 className="text-5xl lg:text-7xl xl:text-8xl font-black mb-6 animate-fade-in-up">
+                <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  Камчатка
+                </span>
+                <br />
+                <span className="text-gray-900 dark:text-white">
+                  нового уровня
+                </span>
+              </h1>
+
+              <p className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl animate-fade-in">
+                AI-powered платформа для туризма с полным циклом: от планирования до безопасности
+              </p>
+
+              <div className="flex flex-wrap gap-4 animate-scale-in">
+                <button className="btn-primary group">
+                  <span className="flex items-center gap-2">
+                    <Rocket className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                    Начать путешествие
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </button>
+                
+                <button className="btn-glass group">
+                  <span className="flex items-center gap-2">
+                    <Play className="w-5 h-5" />
+                    Смотреть демо
+                  </span>
+                </button>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20 dark:border-white/10">
+                <div className="animate-float" style={{ animationDelay: '0s' }}>
+                  <div className="text-3xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                    500+
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Туров</div>
+                </div>
+                <div className="animate-float" style={{ animationDelay: '0.2s' }}>
+                  <div className="text-3xl font-black bg-gradient-to-r from-secondary to-accent bg-clip-text text-transparent">
+                    50K+
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Туристов</div>
+                </div>
+                <div className="animate-float" style={{ animationDelay: '0.4s' }}>
+                  <div className="text-3xl font-black bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                    4.9★
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Рейтинг</div>
+                </div>
+              </div>
+            </div>
           </div>
-          
-          <div className="flex flex-wrap gap-4 mt-4 animate-fade-in">
-            <a href="/auth/login" className="px-8 py-3 bg-white/95 backdrop-blur text-ultramarine dark:text-premium-gold border-2 border-white rounded-2xl hover:bg-white hover:scale-105 transition-all font-bold shadow-lg text-lg">
-              Войти
-            </a>
-            <a href="/auth/register" className="px-8 py-3 bg-white/20 backdrop-blur text-white border-2 border-white/50 rounded-2xl hover:bg-white/30 hover:border-white hover:scale-105 transition-all font-bold shadow-lg text-lg">
-              Регистрация
-            </a>
-            <div className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur rounded-2xl border border-white/30 text-white/90 text-sm">
-              <Lightbulb className="w-5 h-5" />
-              <span><strong>Демо-режим:</strong> без регистрации</span>
+
+          {/* Side Cards */}
+          <div className="col-span-12 lg:col-span-4 grid gap-4">
+            {/* Weather Widget */}
+            <div className="card-bento group cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-lg">Погода</h3>
+                <Sparkles className="w-5 h-5 text-accent group-hover:rotate-12 transition-transform" />
+              </div>
+              <div className="text-4xl font-black mb-2">+12°C</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Идеально для туров</div>
+            </div>
+
+            {/* Quick Action */}
+            <div className="card-bento bg-gradient-to-br from-primary to-secondary text-white group cursor-pointer">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-lg">AI Помощник</h3>
+                <Zap className="w-5 h-5 group-hover:scale-125 transition-transform" />
+              </div>
+              <p className="text-sm opacity-90">Подбор тура за 30 секунд</p>
+              <ArrowRight className="w-6 h-6 mt-4 group-hover:translate-x-2 transition-transform" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="px-6 py-12 grid gap-12">
-        <div className="text-center animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl font-black text-deep-blue dark:text-premium-gold mb-4">
-            Выберите свою роль
+      {/* Features Grid */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12 animate-fade-in-up">
+          <h2 className="text-4xl lg:text-6xl font-black mb-4">
+            <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Все в одном месте
+            </span>
           </h2>
-          <p className="text-lg text-gray-600 dark:text-white/70 max-w-2xl mx-auto">
-            Персонализированный опыт для каждого участника экосистемы туризма Камчатки
+          <p className="text-xl text-gray-600 dark:text-gray-400">
+            Современная экосистема для всех участников туризма
           </p>
         </div>
-        
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { title: 'Турист', href: '/hub/tourist', icon: Backpack, desc: 'Откройте для себя Камчатку' },
-            { title: 'Туроператор', href: '/hub/operator', icon: Building2, desc: 'Управляйте турами и клиентами' },
-            { title: 'Гид', href: '/hub/guide', icon: Map, desc: 'Проводите незабываемые экскурсии' },
-            { title: 'Трансфер', href: '/hub/transfer', icon: Bus, desc: 'Организуйте перевозки' },
-            { title: 'Размещение', href: '/hub/stay', icon: Hotel, desc: 'Предложите уютное жильё' },
-            { title: 'Сувениры', href: '/hub/souvenirs', icon: Gift, desc: 'Продавайте местные сувениры' },
-            { title: 'Снаряжение', href: '/hub/gear', icon: Tent, desc: 'Прокат туристического оборудования' },
-            { title: 'Авто', href: '/hub/cars', icon: Car, desc: 'Аренда автомобилей' },
-          ].map(({ title, href, icon: Icon, desc }, index) => (
-            <a 
-              key={title} 
-              href={href} 
-              className="card-modern p-6 group animate-scale-in"
+            { title: 'Турист', icon: '🎒', color: 'from-blue-500 to-cyan-500', desc: 'Найди свой идеальный тур' },
+            { title: 'Туроператор', icon: '🏢', color: 'from-purple-500 to-pink-500', desc: 'CRM и аналитика' },
+            { title: 'Гид', icon: '🗺️', color: 'from-orange-500 to-red-500', desc: 'Управляй экскурсиями' },
+            { title: 'Трансфер', icon: '🚐', color: 'from-green-500 to-teal-500', desc: 'Логистика и маршруты' },
+            { title: 'Размещение', icon: '🏨', color: 'from-indigo-500 to-purple-500', desc: 'Отели и базы' },
+            { title: 'Сувениры', icon: '🎁', color: 'from-pink-500 to-rose-500', desc: 'E-commerce' },
+            { title: 'Снаряжение', icon: '⛺', color: 'from-yellow-500 to-orange-500', desc: 'Аренда оборудования' },
+            { title: 'Авто', icon: '🚗', color: 'from-slate-500 to-gray-500', desc: 'Прокат машин' },
+          ].map((item, index) => (
+            <div
+              key={item.title}
+              className="card-glass p-6 group cursor-pointer animate-scale-in hover:shadow-2xl"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300 text-ultramarine dark:text-premium-gold">
-                <Icon className="w-12 h-12" strokeWidth={1.5} />
+              <div className={`text-5xl mb-4 group-hover:scale-125 transition-transform duration-500`}>
+                {item.icon}
               </div>
-              <h3 className="text-xl font-bold text-ultramarine dark:text-premium-gold mb-2 group-hover:text-light-blue dark:group-hover:text-yellow-400 transition-colors">
-                {title}
+              <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">
+                {item.title}
               </h3>
-              <p className="text-sm text-gray-600 dark:text-white/70">
-                {desc}
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {item.desc}
               </p>
-            </a>
+              <div className={`h-1 w-0 group-hover:w-full transition-all duration-500 bg-gradient-to-r ${item.color} rounded-full mt-4`} />
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Tours Section */}
-      <section className="px-6 py-12 bg-gradient-modern rounded-[3rem] mx-6 mb-12">
-        <div className="text-center mb-12 animate-fade-in-up">
-          <h2 className="text-4xl md:text-5xl font-black text-deep-blue dark:text-premium-gold mb-4">
-            Популярные туры
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-white/70 max-w-2xl mx-auto">
-            Исследуйте самые захватывающие маршруты Камчатки
-          </p>
-        </div>
-        {loading ? (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white/5 rounded-2xl h-80 animate-pulse"></div>
-            ))}
+      {/* CTA Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="card-glass p-12 lg:p-20 text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 animate-mesh opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          
+          <div className="relative z-10">
+            <Star className="w-16 h-16 mx-auto mb-6 text-primary animate-glow" />
+            <h2 className="text-4xl lg:text-6xl font-black mb-6">
+              <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                Готовы начать?
+              </span>
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+              Присоединяйтесь к экосистеме будущего прямо сейчас
+            </p>
+            <button className="btn-primary text-xl px-12 py-6">
+              <span className="flex items-center gap-3">
+                <TrendingUp className="w-6 h-6" />
+                Попробовать бесплатно
+                <ArrowRight className="w-6 h-6" />
+              </span>
+            </button>
           </div>
-        ) : tours.length > 0 ? (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {tours.map((tour) => (
-              <TourCard
-                key={tour.id}
-                tour={tour}
-                onClick={() => {
-                  console.log('Tour clicked:', tour.id);
-                }}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12 text-white/70">
-            Туры скоро появятся
-          </div>
-        )}
-      </section>
-
-      {/* Partners & Safety */}
-      <section className="px-6 py-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-4 sm:grid-cols-2 sm:items-start">
-          <div className="grid gap-4">
-            <div className="text-sm text-white/70">SOS и безопасность</div>
-            <div className="grid gap-3">
-              <a href="#" className="rounded-xl bg-premium-gold text-premium-black text-center py-3 font-bold">SOS</a>
-              <a href="#" className="rounded-xl bg-white/10 text-center py-3 font-bold">МЧС</a>
-              <a href="#" className="rounded-xl bg-white/10 text-center py-3 font-bold">Сейсмика</a>
-            </div>
-            <div className="text-white/70 text-xs">Тестовый режим: интеграции в процессе</div>
-          </div>
-          <div className="w-full h-72 rounded-2xl overflow-hidden border border-white/10 bg-black grid place-items-center cursor-pointer group">
-            <div className="w-[70%] sm:w-[80%]">
-              <a href="/hub/safety" target="_blank" rel="noopener noreferrer" className="group inline-block w-full max-w-[520px]">
-                <div className="rounded-2xl border border-white/10 bg-black grid place-items-center map-button-glow w-full">
-                  <img src="/graphics/kamchatka-button.svg" alt="Камчатка" className="kamchatka-button w-full h-auto" />
-                </div>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 grid gap-2">
-          <div className="text-sm text-white/70">Экология</div>
-          <div className="text-2xl font-black text-premium-gold">Eco‑points: 0</div>
-          <div className="text-white/70 text-sm">Собирайте баллы за бережное поведение</div>
         </div>
       </section>
-
-      {/* AI Chat */}
-      <section className="px-6 py-6">
-        <h2 className="text-xl font-extrabold mb-4">AI-Гид по Камчатке</h2>
-        <AIChatWidget userId="demo-user" />
-      </section>
-
-      {/* Quick Links */}
-      <section className="px-6 py-8 grid gap-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-extrabold">Быстрые переходы</h2>
-        </div>
-        <div className="grid gap-3 grid-cols-[repeat(auto-fill,minmax(160px,1fr))]">
-          <a href="/partners" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Каталог туров</a>
-          <a href="/search" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Поиск</a>
-          <a href="/premium" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Витрина Commerce</a>
-          <a href="/premium2" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Витрина Adventure</a>
-          <a href="/hub/stay" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Размещение</a>
-          <a href="/hub/safety" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Безопасность</a>
-          <a href="/hub/operator" className="text-center font-semibold border border-white/10 rounded-xl p-3 bg-white/5 hover:bg-white/10">Рефералы и бусты</a>
-        </div>
-      </section>
-    </main>
+    </div>
   );
 }
