@@ -56,7 +56,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
   return (
     <div
       className={cn(
-        'bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300 cursor-pointer',
+        'bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden hover:shadow-lg dark:hover:bg-white/10 transition-all duration-300 cursor-pointer',
         className
       )}
       onClick={onClick}
@@ -103,7 +103,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
       <div className="p-6">
         {/* Название и цена */}
         <div className="flex justify-between items-start mb-3">
-          <h3 className="text-lg font-bold text-white line-clamp-2">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-2">
             {tour.title}
           </h3>
           <div className="text-right ml-2">
@@ -115,20 +115,20 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         </div>
 
         {/* Описание */}
-        <p className="text-white/70 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-600 dark:text-white/70 text-sm mb-4 line-clamp-2">
           {tour.description}
         </p>
 
         {/* Детали тура */}
         <div className="space-y-2 mb-4">
           {/* Продолжительность */}
-          <div className="flex items-center text-sm text-white/70">
+          <div className="flex items-center text-sm text-gray-600 dark:text-white/70">
             <Clock className="w-4 h-4 mr-2" />
             <span>{tour.duration}</span>
           </div>
 
           {/* Размер группы */}
-          <div className="flex items-center text-sm text-white/70">
+          <div className="flex items-center text-sm text-gray-600 dark:text-white/70">
             <Users className="w-4 h-4 mr-2" />
             <span>
               {tour.minParticipants === tour.maxParticipants
@@ -139,7 +139,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
 
           {/* Сезон */}
           {tour.activity && (
-            <div className="flex items-center text-sm text-white/70">
+            <div className="flex items-center text-sm text-gray-600 dark:text-white/70">
               <Leaf className="w-4 h-4 mr-2" />
               <span>Круглый год</span>
             </div>
@@ -148,7 +148,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
 
         {/* Оператор */}
         {tour.operator && (
-          <div className="flex items-center text-sm text-white/70 mb-4">
+          <div className="flex items-center text-sm text-gray-600 dark:text-white/70 mb-4">
             <Building2 className="w-4 h-4 mr-2" />
             <span>{tour.operator.name}</span>
             {tour.operator.rating > 0 && (

@@ -90,13 +90,13 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
   return (
     <div
       className={cn(
-        'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer',
+        'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-100 dark:border-gray-700',
         className
       )}
       onClick={onClick}
     >
       {/* Логотип и категория */}
-      <div className="relative h-32 bg-gray-100">
+      <div className="relative h-32 bg-gray-100 dark:bg-gray-700">
         {partner.logo ? (
           <img
             src={partner.logo.url}
@@ -144,7 +144,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
       <div className="p-4">
         {/* Название и рейтинг */}
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-2">
             {partner.name}
           </h3>
           {partner.rating > 0 && (
@@ -157,7 +157,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
         </div>
 
         {/* Описание */}
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
           {partner.description}
         </p>
 
@@ -165,7 +165,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
         {partner.contact && (
           <div className="space-y-2 mb-4">
             {partner.contact.phone && (
-              <div className="flex items-center text-sm text-gray-600">
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                 <Phone className="w-4 h-4 mr-2" />
                 <span>{partner.contact.phone}</span>
               </div>

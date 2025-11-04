@@ -131,14 +131,14 @@ export default function OperatorDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-premium-black">
+    <div className="min-h-screen bg-gray-50 dark:bg-premium-black transition-colors duration-300">
       {/* Header */}
-      <div className="bg-gradient-to-r from-premium-black to-premium-gold/10 border-b border-premium-gold/20">
+      <div className="bg-gradient-to-r from-gray-100 dark:from-premium-black to-premium-gold/10 border-b border-gray-200 dark:border-premium-gold/20 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white">Панель оператора</h1>
-              <p className="text-white/70 mt-1">Управление турами и аналитика</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Панель оператора</h1>
+              <p className="text-gray-600 dark:text-white/70 mt-1">Управление турами и аналитика</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-right">
@@ -161,7 +161,7 @@ export default function OperatorDashboard() {
 
       {/* Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex space-x-1 bg-white/5 rounded-xl p-1 mb-8">
+        <div className="flex space-x-1 bg-gray-100 dark:bg-white/5 rounded-xl p-1 mb-8 transition-colors duration-300">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -169,7 +169,7 @@ export default function OperatorDashboard() {
               className={`flex-1 flex items-center justify-center space-x-2 py-3 px-4 rounded-lg transition-colors ${
                 selectedTab === tab.id
                   ? 'bg-premium-gold text-premium-black'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
+                  : 'text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-white/10'
               }`}
             >
               <tab.Icon className="w-5 h-5" />

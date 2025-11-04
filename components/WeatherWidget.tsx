@@ -120,7 +120,7 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
 
   if (loading) {
     return (
-      <div className={`bg-white rounded-lg shadow-md p-4 ${className}`}>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border border-gray-100 dark:border-gray-700 ${className}`}>
         <div className="animate-pulse">
           <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
           <div className="h-8 bg-gray-200 rounded w-1/2 mb-4"></div>
@@ -135,8 +135,8 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
 
   if (error) {
     return (
-      <div className={`bg-white rounded-lg shadow-md p-4 ${className}`}>
-        <div className="text-center text-gray-500">
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border border-gray-100 dark:border-gray-700 ${className}`}>
+        <div className="text-center text-gray-500 dark:text-gray-400">
           <div className="mb-2 flex justify-center">
             <CloudSun className="w-8 h-8 text-gray-400" />
           </div>
@@ -157,11 +157,11 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
   }
 
   return (
-    <div className={`bg-white rounded-lg shadow-md p-4 ${className}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border border-gray-100 dark:border-gray-700 ${className}`}>
       {/* Заголовок */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Погода</h3>
-        <div className="text-sm text-gray-500">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Погода</h3>
+        <div className="text-sm text-gray-500 dark:text-gray-400">
           {weather.location}
         </div>
       </div>
@@ -171,10 +171,10 @@ export function WeatherWidget({ lat, lng, location, className }: WeatherWidgetPr
         <div className="mb-2 flex justify-center">
           {getWeatherIcon(weather.condition)}
         </div>
-        <div className="text-3xl font-bold text-gray-900 mb-1">
+        <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
           {weather.temperature}°C
         </div>
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-gray-600 dark:text-gray-300">
           {getWeatherText(weather.condition)}
         </div>
       </div>

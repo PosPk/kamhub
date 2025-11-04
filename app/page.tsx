@@ -82,9 +82,9 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-premium-black text-white">
+    <main className="min-h-screen bg-white dark:bg-premium-black text-gray-900 dark:text-white transition-colors duration-300">
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-3xl mx-6 mb-8">
+      <section className="relative overflow-hidden rounded-3xl mx-6 mb-8 bg-gray-100 dark:bg-transparent">
         <div className="absolute inset-0 -z-10">
           <video 
             className="w-full h-[48vh] object-cover" 
