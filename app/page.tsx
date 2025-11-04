@@ -7,6 +7,7 @@ import { PartnerCard } from '@/components/PartnerCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { EcoPointsWidget } from '@/components/EcoPointsWidget';
 import { AIChatWidget } from '@/components/AIChatWidget';
+import { Rocket, Lightbulb, Backpack, Building2, Map, Bus, Hotel, Gift, Tent, Car } from 'lucide-react';
 
 export default function Home() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -117,8 +118,9 @@ export default function Home() {
               className="flex-1 h-16 rounded-2xl px-6 text-lg text-gray-900 bg-white/95 backdrop-blur border-2 border-white/50 focus:border-white focus:outline-none focus:ring-4 focus:ring-white/30 shadow-xl transition-all"
               name="q"
             />
-            <a href="/demo" className="btn-primary whitespace-nowrap">
-              🚀 Попробовать демо
+            <a href="/demo" className="btn-primary whitespace-nowrap flex items-center gap-2">
+              <Rocket className="w-5 h-5" />
+              Попробовать демо
             </a>
           </div>
           
@@ -130,7 +132,7 @@ export default function Home() {
               Регистрация
             </a>
             <div className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur rounded-2xl border border-white/30 text-white/90 text-sm">
-              <span className="text-2xl">💡</span>
+              <Lightbulb className="w-5 h-5" />
               <span><strong>Демо-режим:</strong> без регистрации</span>
             </div>
           </div>
@@ -150,23 +152,23 @@ export default function Home() {
         
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
           {[
-            { title: 'Турист', href: '/hub/tourist', icon: '🎒', desc: 'Откройте для себя Камчатку' },
-            { title: 'Туроператор', href: '/hub/operator', icon: '🏢', desc: 'Управляйте турами и клиентами' },
-            { title: 'Гид', href: '/hub/guide', icon: '🗺️', desc: 'Проводите незабываемые экскурсии' },
-            { title: 'Трансфер', href: '/hub/transfer', icon: '🚐', desc: 'Организуйте перевозки' },
-            { title: 'Размещение', href: '/hub/stay', icon: '🏨', desc: 'Предложите уютное жильё' },
-            { title: 'Сувениры', href: '/hub/souvenirs', icon: '🎁', desc: 'Продавайте местные сувениры' },
-            { title: 'Снаряжение', href: '/hub/gear', icon: '⛺', desc: 'Прокат туристического оборудования' },
-            { title: 'Авто', href: '/hub/cars', icon: '🚗', desc: 'Аренда автомобилей' },
-          ].map(({ title, href, icon, desc }, index) => (
+            { title: 'Турист', href: '/hub/tourist', icon: Backpack, desc: 'Откройте для себя Камчатку' },
+            { title: 'Туроператор', href: '/hub/operator', icon: Building2, desc: 'Управляйте турами и клиентами' },
+            { title: 'Гид', href: '/hub/guide', icon: Map, desc: 'Проводите незабываемые экскурсии' },
+            { title: 'Трансфер', href: '/hub/transfer', icon: Bus, desc: 'Организуйте перевозки' },
+            { title: 'Размещение', href: '/hub/stay', icon: Hotel, desc: 'Предложите уютное жильё' },
+            { title: 'Сувениры', href: '/hub/souvenirs', icon: Gift, desc: 'Продавайте местные сувениры' },
+            { title: 'Снаряжение', href: '/hub/gear', icon: Tent, desc: 'Прокат туристического оборудования' },
+            { title: 'Авто', href: '/hub/cars', icon: Car, desc: 'Аренда автомобилей' },
+          ].map(({ title, href, icon: Icon, desc }, index) => (
             <a 
               key={title} 
               href={href} 
               className="card-modern p-6 group animate-scale-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="text-5xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                {icon}
+              <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300 text-ultramarine dark:text-premium-gold">
+                <Icon className="w-12 h-12" strokeWidth={1.5} />
               </div>
               <h3 className="text-xl font-bold text-ultramarine dark:text-premium-gold mb-2 group-hover:text-light-blue dark:group-hover:text-yellow-400 transition-colors">
                 {title}
