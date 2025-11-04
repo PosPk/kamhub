@@ -265,7 +265,7 @@ function TourCardModern({ tour }: { tour: Tour }) {
         {/* Цена */}
         <div className="flex items-baseline gap-2 pt-2">
           <span className="text-xl font-bold text-gray-900 dark:text-white">
-            {tour.price?.toLocaleString('ru-RU')} ₽
+            {(tour.priceFrom || 15000).toLocaleString('ru-RU')} ₽
           </span>
           <span className="text-sm text-gray-500">/ человек</span>
         </div>
