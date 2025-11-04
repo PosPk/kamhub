@@ -101,9 +101,9 @@ export default function TouristDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-premium-black transition-colors duration-300">
+    <div className="min-h-screen bg-premium-black">
       {/* Header */}
-      <div className="bg-gradient-to-r from-gray-100 dark:from-premium-black to-premium-gold/10 border-b border-gray-200 dark:border-premium-gold/20 transition-colors duration-300">
+      <div className="bg-gradient-to-r from-premium-black to-premium-gold/10 border-b border-premium-gold/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
@@ -127,7 +127,7 @@ export default function TouristDashboard() {
 
       {/* Tabs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex space-x-1 bg-gray-100 dark:bg-white/5 rounded-xl p-1 mb-8 transition-colors duration-300">
+        <div className="flex space-x-1 bg-white/5 rounded-xl p-1 mb-8">
           {tabs.map((tab) => (
             <button
               key={tab.id}
