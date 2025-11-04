@@ -19,6 +19,14 @@ export async function GET(request: NextRequest) {
       } as ApiResponse<null>, { status: 400 });
     }
 
+    // Для demo-пользователя возвращаем пустой чат
+    if (userId?.startsWith('demo-')) {
+      return NextResponse.json({
+        success: true,
+        data: null,
+      } as ApiResponse<ChatSession | null>);
+    }
+
     let chatQuery: string;
     let queryParams: any[];
 

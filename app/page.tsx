@@ -29,21 +29,21 @@ export default function Home() {
       // Загружаем туры
       const toursResponse = await fetch('/api/tours?limit=6');
       const toursData = await toursResponse.json();
-      if (toursData.success) {
+      if (toursData.success && toursData.data?.data) {
         setTours(toursData.data.data);
       }
 
       // Загружаем партнеров
       const partnersResponse = await fetch('/api/partners?limit=6');
       const partnersData = await partnersResponse.json();
-      if (partnersData.success) {
+      if (partnersData.success && partnersData.data?.data) {
         setPartners(partnersData.data.data);
       }
 
       // Загружаем eco-points
       const ecoPointsResponse = await fetch('/api/eco-points?limit=10');
       const ecoPointsData = await ecoPointsResponse.json();
-      if (ecoPointsData.success) {
+      if (ecoPointsData.success && ecoPointsData.data) {
         setNearbyEcoPoints(ecoPointsData.data);
       }
 

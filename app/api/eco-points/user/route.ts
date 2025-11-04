@@ -17,6 +17,20 @@ export async function GET(request: NextRequest) {
       } as ApiResponse<null>, { status: 400 });
     }
 
+    // Для demo-пользователя возвращаем mock данные
+    if (userId.startsWith('demo-')) {
+      return NextResponse.json({
+        success: true,
+        data: {
+          userId,
+          totalPoints: 0,
+          level: 1,
+          achievements: [],
+          lastActivity: new Date(),
+        } as UserEcoPoints,
+      } as ApiResponse<UserEcoPoints>);
+    }
+
     // Получаем данные пользователя
     const userQuery = `
       SELECT 
