@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Mountain, Waves, Droplets, ArrowRight, X } from 'lucide-react';
+import { Flame, Bird, Fish, Waves, Droplets, TreePine, ArrowRight, X, MapPin, Mountain } from 'lucide-react';
 import './MapPanel.css';
 
 interface MapPanelProps {
@@ -21,11 +21,11 @@ const activities = [
 ];
 
 const categoryIconComponents: Record<string, React.ElementType> = {
-  volcano: Mountain,
-  wildlife: Mountain,
-  nature: Mountain,
-  ocean: Waves,
-  'hot-springs': Droplets
+  volcano: Flame,      // 🔥 Вулканы
+  wildlife: Bird,      // 🦅 Дикая природа
+  nature: TreePine,    // 🌲 Природа
+  ocean: Waves,        // 🌊 Океан
+  'hot-springs': Droplets // 💧 Термальные источники
 };
 
 export function MapPanel({ isOpen, onClose }: MapPanelProps) {
@@ -37,7 +37,7 @@ export function MapPanel({ isOpen, onClose }: MapPanelProps) {
       <div className="map-panel">
         <div className="map-panel-header">
           <div className="map-panel-title">
-            <img src="/icons/kam-button.svg" alt="Карта" width="24" height="24" />
+            <MapPin size={24} />
             <h3>Карта активностей</h3>
           </div>
           <button className="map-panel-close" onClick={onClose}>

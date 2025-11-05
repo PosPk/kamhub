@@ -27,18 +27,33 @@ import {
   Sparkles,
   Zap,
   Utensils,
-  Car
+  Car,
+  Flame,
+  Bird,
+  TreePine,
+  CircleDot,
+  Plane,
+  Ship,
+  Bike,
+  User,
+  UsersRound,
+  Footprints,
+  Award,
+  Gift,
+  Bell,
+  Leaf,
+  CloudSun
 } from 'lucide-react';
 import './samsung-elegant.css';
 
-// Категории с иконками
+// Категории с настоящими иконками
 const CATEGORY_ICONS = {
-  volcano: Mountain,
-  wildlife: Mountain,
-  fishing: Fish,
-  'hot-springs': Droplets,
-  ocean: Waves,
-  nature: Mountain
+  volcano: Flame,           // 🔥 Вулканы - огонь
+  wildlife: Bird,           // 🦅 Дикая природа/медведи - птица
+  fishing: Fish,            // 🐟 Рыбалка
+  'hot-springs': Droplets,  // 💧 Термальные источники
+  ocean: Waves,             // 🌊 Океан
+  nature: TreePine          // 🌲 Природа - дерево
 };
 
 // Популярные поисковые запросы
@@ -432,14 +447,14 @@ export default function ElegantHomePage() {
               {showFilters && (
                 <div className="filters-panel-elegant-fw glass-card">
                   <div className="filter-group">
-                    <label><Mountain size={14} /> Категория</label>
+                    <label><Sparkles size={14} /> Категория</label>
                     <select value={filters.category} onChange={(e) => setFilters({...filters, category: e.target.value})}>
                       <option value="all">Все</option>
-                      <option value="volcano">Вулканы</option>
-                      <option value="wildlife">Медведи и природа</option>
-                      <option value="fishing">Рыбалка</option>
-                      <option value="hot-springs">Термальные источники</option>
-                      <option value="ocean">Океан и побережье</option>
+                      <option value="volcano">🔥 Вулканы</option>
+                      <option value="wildlife">🦅 Медведи и природа</option>
+                      <option value="fishing">🐟 Рыбалка</option>
+                      <option value="hot-springs">💧 Термальные источники</option>
+                      <option value="ocean">🌊 Океан и побережье</option>
                     </select>
                   </div>
 
@@ -464,44 +479,44 @@ export default function ElegantHomePage() {
                   </div>
 
                   <div className="filter-group">
-                    <label><Zap size={14} /> Сложность</label>
+                    <label><Award size={14} /> Сложность</label>
                     <select value={filters.difficulty} onChange={(e) => setFilters({...filters, difficulty: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="easy">Легкая</option>
-                      <option value="medium">Средняя</option>
-                      <option value="hard">Сложная</option>
+                      <option value="easy">🟢 Легкая</option>
+                      <option value="medium">🟡 Средняя</option>
+                      <option value="hard">🔴 Сложная</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label><Sun size={14} /> Сезон</label>
+                    <label><CloudSun size={14} /> Сезон</label>
                     <select value={filters.season} onChange={(e) => setFilters({...filters, season: e.target.value})}>
                       <option value="all">Любой</option>
-                      <option value="summer">Лето</option>
-                      <option value="winter">Зима</option>
-                      <option value="spring">Весна</option>
-                      <option value="autumn">Осень</option>
+                      <option value="summer">☀️ Лето</option>
+                      <option value="winter">❄️ Зима</option>
+                      <option value="spring">🌸 Весна</option>
+                      <option value="autumn">🍂 Осень</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label><Users size={14} /> Группа</label>
+                    <label><UsersRound size={14} /> Группа</label>
                     <select value={filters.groupSize} onChange={(e) => setFilters({...filters, groupSize: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="solo">Индивидуально</option>
-                      <option value="small">Малая (2-6)</option>
-                      <option value="large">Большая (7+)</option>
+                      <option value="solo">👤 Индивидуально</option>
+                      <option value="small">👥 Малая (2-6)</option>
+                      <option value="large">👨‍👩‍👧‍👦 Большая (7+)</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label><Car size={14} /> Транспорт</label>
+                    <label><Plane size={14} /> Транспорт</label>
                     <select value={filters.transportation} onChange={(e) => setFilters({...filters, transportation: e.target.value})}>
                       <option value="all">Любой</option>
-                      <option value="helicopter">Вертолет</option>
-                      <option value="car">Авто</option>
-                      <option value="boat">Катер</option>
-                      <option value="hiking">Пеший</option>
+                      <option value="helicopter">🚁 Вертолет</option>
+                      <option value="car">🚙 Авто</option>
+                      <option value="boat">🚤 Катер</option>
+                      <option value="hiking">🥾 Пеший</option>
                     </select>
                   </div>
 
