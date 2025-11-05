@@ -1,17 +1,64 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Tour, Partner } from '@/types';
+import { Tour } from '@/types';
 import { FloatingNav } from '@/components/FloatingNav';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import Link from 'next/link';
+import { 
+  Mountain, 
+  Fish, 
+  Waves, 
+  Droplets, 
+  Sun, 
+  Moon, 
+  Cloud, 
+  CloudRain, 
+  CloudSnow,
+  Wind,
+  Thermometer,
+  Calendar,
+  Users,
+  DollarSign,
+  Search,
+  TrendingUp,
+  MapPin,
+  Clock,
+  Star,
+  Sparkles,
+  Zap,
+  Utensils,
+  Car
+} from 'lucide-react';
 import './samsung-elegant.css';
+
+// Категории с иконками
+const CATEGORY_ICONS = {
+  volcano: Mountain,
+  wildlife: Mountain,
+  fishing: Fish,
+  'hot-springs': Droplets,
+  ocean: Waves,
+  nature: Mountain
+};
+
+// Популярные поисковые запросы
+const POPULAR_SEARCHES = [
+  'Восхождение на вулкан',
+  'Долина гейзеров',
+  'Наблюдение за медведями',
+  'Рыбалка на Камчатке',
+  'Термальные источники',
+  'Вертолётная экскурсия'
+];
 
 export default function ElegantHomePage() {
   const [stats, setStats] = useState({ tours: 0, partners: 0, tourists: 0, rating: 0 });
   const [tours, setTours] = useState<Tour[]>([]);
   const [particles, setParticles] = useState<Array<{id: number; left: number; delay: number; duration: number; size: number}>>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     category: 'all',
@@ -24,14 +71,22 @@ export default function ElegantHomePage() {
     meals: 'all'
   });
   const [weatherData, setWeatherData] = useState<any>(null);
+  const [weatherDetails, setWeatherDetails] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const statsRef = useRef<HTMLDivElement>(null);
+  const searchDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     fetchData();
     fetchWeather();
     createParticles();
     setTimeout(() => animateStats(), 500);
+    
+    // Load search history from localStorage
+    const history = localStorage.getItem('searchHistory');
+    if (history) {
+      setSearchHistory(JSON.parse(history));
+    }
     
     // Update time every minute
     const timeInterval = setInterval(() => {
@@ -40,6 +95,33 @@ export default function ElegantHomePage() {
     
     return () => clearInterval(timeInterval);
   }, []);
+
+  // Smart search with debounce
+  useEffect(() => {
+    if (searchDebounceRef.current) {
+      clearTimeout(searchDebounceRef.current);
+    }
+
+    if (searchQuery.trim().length > 0) {
+      searchDebounceRef.current = setTimeout(() => {
+        // Filter suggestions based on query
+        const filtered = POPULAR_SEARCHES.filter(s => 
+          s.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setSearchSuggestions(filtered);
+        setShowSuggestions(true);
+      }, 300);
+    } else {
+      setSearchSuggestions([]);
+      setShowSuggestions(false);
+    }
+
+    return () => {
+      if (searchDebounceRef.current) {
+        clearTimeout(searchDebounceRef.current);
+      }
+    };
+  }, [searchQuery]);
 
   const fetchData = async () => {
     try {
@@ -58,12 +140,38 @@ export default function ElegantHomePage() {
       // Petropavlovsk-Kamchatsky coordinates
       const lat = 53.0241;
       const lon = 158.6445;
-      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,is_day&timezone=auto`);
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode,is_day,wind_speed_10m,relative_humidity_2m,apparent_temperature&daily=temperature_2m_max,temperature_2m_min&timezone=auto`);
       const data = await res.json();
       setWeatherData(data.current);
+      setWeatherDetails({
+        windSpeed: data.current.wind_speed_10m,
+        humidity: data.current.relative_humidity_2m,
+        feelsLike: data.current.apparent_temperature,
+        maxTemp: data.daily.temperature_2m_max[0],
+        minTemp: data.daily.temperature_2m_min[0]
+      });
     } catch (error) {
       console.error('Weather error:', error);
     }
+  };
+
+  const getWeatherDescription = (code: number) => {
+    if (code === 0) return 'Ясно';
+    if (code >= 1 && code <= 3) return 'Облачно';
+    if (code >= 45 && code <= 48) return 'Туман';
+    if (code >= 51 && code <= 67) return 'Дождь';
+    if (code >= 71 && code <= 77) return 'Снег';
+    if (code >= 80) return 'Ливень';
+    return 'Неизвестно';
+  };
+
+  const getWeatherIcon = (code: number, isDay: boolean) => {
+    if (code === 0) return isDay ? Sun : Moon;
+    if (code >= 1 && code <= 3) return Cloud;
+    if (code >= 51 && code <= 67) return CloudRain;
+    if (code >= 71 && code <= 77) return CloudSnow;
+    if (code >= 80) return CloudRain;
+    return Cloud;
   };
 
   const getThemeFromWeatherAndTime = () => {
@@ -71,13 +179,6 @@ export default function ElegantHomePage() {
     
     const isDay = weatherData.is_day === 1;
     const code = weatherData.weathercode;
-    
-    // 0 - Clear
-    // 1-3 - Partly cloudy
-    // 45,48 - Fog
-    // 51-67 - Rain/Drizzle
-    // 71-77 - Snow
-    // 80-99 - Rain showers/Thunderstorm
     
     if (code >= 71 && code <= 77) {
       return 'snow';
@@ -145,11 +246,25 @@ export default function ElegantHomePage() {
     }, duration / frames);
   };
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+  const handleSearch = (query?: string) => {
+    const searchTerm = query || searchQuery;
+    if (searchTerm.trim()) {
+      // Save to history
+      const newHistory = [searchTerm, ...searchHistory.filter(s => s !== searchTerm)].slice(0, 5);
+      setSearchHistory(newHistory);
+      localStorage.setItem('searchHistory', JSON.stringify(newHistory));
+      
+      window.location.href = `/search?q=${encodeURIComponent(searchTerm)}`;
     }
   };
+
+  const selectSuggestion = (suggestion: string) => {
+    setSearchQuery(suggestion);
+    setShowSuggestions(false);
+    handleSearch(suggestion);
+  };
+
+  const WeatherIcon = weatherData ? getWeatherIcon(weatherData.weathercode, weatherData.is_day === 1) : Cloud;
 
   return (
     <>
@@ -190,134 +305,213 @@ export default function ElegantHomePage() {
               Туры, трансферы, размещение — всё для вашего путешествия в одном месте
             </p>
 
-            {/* WEATHER DEBUG */}
-            {weatherData && (
-              <div style={{ 
-                background: 'rgba(0,0,0,0.5)', 
-                padding: '10px', 
-                borderRadius: '10px', 
-                fontSize: '12px',
-                marginBottom: '20px'
-              }}>
-                🌤️ Погода: {weatherData.temperature_2m}°C | 
-                Код: {weatherData.weathercode} | 
-                День: {weatherData.is_day ? 'Да' : 'Нет'} | 
-                Тема: {currentTheme}
+            {/* ACTUAL WEATHER WIDGET */}
+            {weatherData && weatherDetails && (
+              <div className="weather-widget-elegant glass-card">
+                <div className="weather-main">
+                  <div className="weather-icon-large">
+                    <WeatherIcon size={48} strokeWidth={1.5} />
+                  </div>
+                  <div className="weather-temp-main">
+                    <div className="weather-temp-large">{Math.round(weatherData.temperature_2m)}°</div>
+                    <div className="weather-location">
+                      <MapPin size={14} />
+                      <span>Петропавловск-Камчатский</span>
+                    </div>
+                  </div>
+                  <div className="weather-description">
+                    {getWeatherDescription(weatherData.weathercode)}
+                  </div>
+                </div>
+                
+                <div className="weather-details-grid">
+                  <div className="weather-detail-item">
+                    <Thermometer size={16} />
+                    <span className="detail-label">Ощущается</span>
+                    <span className="detail-value">{Math.round(weatherDetails.feelsLike)}°</span>
+                  </div>
+                  <div className="weather-detail-item">
+                    <Wind size={16} />
+                    <span className="detail-label">Ветер</span>
+                    <span className="detail-value">{Math.round(weatherDetails.windSpeed)} км/ч</span>
+                  </div>
+                  <div className="weather-detail-item">
+                    <Droplets size={16} />
+                    <span className="detail-label">Влажность</span>
+                    <span className="detail-value">{weatherDetails.humidity}%</span>
+                  </div>
+                  <div className="weather-detail-item">
+                    <TrendingUp size={16} />
+                    <span className="detail-label">Макс/Мин</span>
+                    <span className="detail-value">{Math.round(weatherDetails.maxTemp)}° / {Math.round(weatherDetails.minTemp)}°</span>
+                  </div>
+                </div>
               </div>
             )}
 
-            <div className="search-elegant">
-              <div className="search-box-elegant glass-card">
-                <input
-                  type="text"
-                  className="search-input-elegant"
-                  placeholder="Куда вы хотите отправиться?"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
+            {/* SMART SEARCH - FULL WIDTH */}
+            <div className="search-elegant-fullwidth">
+              <div className="search-box-elegant-fw glass-card">
+                <div className="search-input-wrapper">
+                  <Search size={20} className="search-icon-fw" />
+                  <input
+                    type="text"
+                    className="search-input-elegant-fw"
+                    placeholder="Куда вы хотите отправиться? (Вулканы, гейзеры, медведи...)"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    onFocus={() => searchQuery.length > 0 && setShowSuggestions(true)}
+                  />
+                  {searchQuery && (
+                    <button 
+                      className="search-clear-btn"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setShowSuggestions(false);
+                      }}
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
                 <button 
-                  className="filter-btn-elegant"
+                  className="filter-btn-elegant-fw"
                   onClick={() => setShowFilters(!showFilters)}
+                  title="Фильтры"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <line x1="4" y1="21" x2="4" y2="14"/>
-                    <line x1="4" y1="10" x2="4" y2="3"/>
-                    <line x1="12" y1="21" x2="12" y2="12"/>
-                    <line x1="12" y1="8" x2="12" y2="3"/>
-                    <line x1="20" y1="21" x2="20" y2="16"/>
-                    <line x1="20" y1="12" x2="20" y2="3"/>
-                    <line x1="1" y1="14" x2="7" y2="14"/>
-                    <line x1="9" y1="8" x2="15" y2="8"/>
-                    <line x1="17" y1="16" x2="23" y2="16"/>
-                  </svg>
+                  <Sparkles size={18} />
                   Фильтры
                 </button>
               </div>
 
+              {/* SMART SUGGESTIONS */}
+              {showSuggestions && (searchSuggestions.length > 0 || searchHistory.length > 0) && (
+                <div className="search-suggestions glass-card">
+                  {searchSuggestions.length > 0 && (
+                    <div className="suggestions-section">
+                      <div className="suggestions-header">
+                        <Search size={14} />
+                        <span>Популярные запросы</span>
+                      </div>
+                      {searchSuggestions.map((suggestion, i) => (
+                        <button
+                          key={i}
+                          className="suggestion-item"
+                          onClick={() => selectSuggestion(suggestion)}
+                        >
+                          <TrendingUp size={14} />
+                          <span>{suggestion}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {searchQuery.length === 0 && searchHistory.length > 0 && (
+                    <div className="suggestions-section">
+                      <div className="suggestions-header">
+                        <Clock size={14} />
+                        <span>Недавние поиски</span>
+                      </div>
+                      {searchHistory.map((item, i) => (
+                        <button
+                          key={i}
+                          className="suggestion-item"
+                          onClick={() => selectSuggestion(item)}
+                        >
+                          <Clock size={14} />
+                          <span>{item}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* FILTERS PANEL */}
               {showFilters && (
-                <div className="filters-panel-elegant glass-card">
+                <div className="filters-panel-elegant-fw glass-card">
                   <div className="filter-group">
-                    <label>Категория</label>
+                    <label><Mountain size={14} /> Категория</label>
                     <select value={filters.category} onChange={(e) => setFilters({...filters, category: e.target.value})}>
                       <option value="all">Все</option>
-                      <option value="volcano">🌋 Вулканы</option>
-                      <option value="wildlife">🐻 Медведи и природа</option>
-                      <option value="fishing">🎣 Рыбалка</option>
-                      <option value="hot-springs">♨️ Термальные источники</option>
-                      <option value="ocean">🌊 Океан и побережье</option>
+                      <option value="volcano">Вулканы</option>
+                      <option value="wildlife">Медведи и природа</option>
+                      <option value="fishing">Рыбалка</option>
+                      <option value="hot-springs">Термальные источники</option>
+                      <option value="ocean">Океан и побережье</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Цена</label>
+                    <label><DollarSign size={14} /> Цена</label>
                     <select value={filters.priceRange} onChange={(e) => setFilters({...filters, priceRange: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="budget">💰 До 10 000 ₽</option>
-                      <option value="mid">💎 10 000 - 30 000 ₽</option>
-                      <option value="premium">👑 От 30 000 ₽</option>
+                      <option value="budget">До 10 000 ₽</option>
+                      <option value="mid">10 000 - 30 000 ₽</option>
+                      <option value="premium">От 30 000 ₽</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Длительность</label>
+                    <label><Calendar size={14} /> Длительность</label>
                     <select value={filters.duration} onChange={(e) => setFilters({...filters, duration: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="1">⏱️ 1 день</option>
-                      <option value="2-3">📅 2-3 дня</option>
-                      <option value="week">📆 Неделя+</option>
+                      <option value="1">1 день</option>
+                      <option value="2-3">2-3 дня</option>
+                      <option value="week">Неделя+</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Сложность</label>
+                    <label><Zap size={14} /> Сложность</label>
                     <select value={filters.difficulty} onChange={(e) => setFilters({...filters, difficulty: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="easy">🟢 Легкая</option>
-                      <option value="medium">🟡 Средняя</option>
-                      <option value="hard">🔴 Сложная</option>
+                      <option value="easy">Легкая</option>
+                      <option value="medium">Средняя</option>
+                      <option value="hard">Сложная</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Сезон</label>
+                    <label><Sun size={14} /> Сезон</label>
                     <select value={filters.season} onChange={(e) => setFilters({...filters, season: e.target.value})}>
                       <option value="all">Любой</option>
-                      <option value="summer">☀️ Лето</option>
-                      <option value="winter">❄️ Зима</option>
-                      <option value="spring">🌸 Весна</option>
-                      <option value="autumn">🍂 Осень</option>
+                      <option value="summer">Лето</option>
+                      <option value="winter">Зима</option>
+                      <option value="spring">Весна</option>
+                      <option value="autumn">Осень</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Группа</label>
+                    <label><Users size={14} /> Группа</label>
                     <select value={filters.groupSize} onChange={(e) => setFilters({...filters, groupSize: e.target.value})}>
                       <option value="all">Любая</option>
-                      <option value="solo">👤 Индивидуально</option>
-                      <option value="small">👥 Малая (2-6)</option>
-                      <option value="large">👨‍👩‍👧‍👦 Большая (7+)</option>
+                      <option value="solo">Индивидуально</option>
+                      <option value="small">Малая (2-6)</option>
+                      <option value="large">Большая (7+)</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Транспорт</label>
+                    <label><Car size={14} /> Транспорт</label>
                     <select value={filters.transportation} onChange={(e) => setFilters({...filters, transportation: e.target.value})}>
                       <option value="all">Любой</option>
-                      <option value="helicopter">🚁 Вертолет</option>
-                      <option value="car">🚙 Авто</option>
-                      <option value="boat">🚤 Катер</option>
-                      <option value="hiking">🥾 Пеший</option>
+                      <option value="helicopter">Вертолет</option>
+                      <option value="car">Авто</option>
+                      <option value="boat">Катер</option>
+                      <option value="hiking">Пеший</option>
                     </select>
                   </div>
 
                   <div className="filter-group">
-                    <label>Питание</label>
+                    <label><Utensils size={14} /> Питание</label>
                     <select value={filters.meals} onChange={(e) => setFilters({...filters, meals: e.target.value})}>
                       <option value="all">Любое</option>
-                      <option value="included">🍱 Включено</option>
-                      <option value="partial">🥪 Частично</option>
-                      <option value="none">❌ Не включено</option>
+                      <option value="included">Включено</option>
+                      <option value="partial">Частично</option>
+                      <option value="none">Не включено</option>
                     </select>
                   </div>
                 </div>
@@ -467,7 +661,7 @@ export default function ElegantHomePage() {
                       <img src={tour.images[0] || '/placeholder-tour.jpg'} alt={tour.title} />
                       <div className="tour-badge-elegant">Популярный</div>
                       <div className="tour-rating-elegant">
-                        <img src="/icons/star.svg" alt="rating" width="14" height="14" />
+                        <Star size={14} fill="currentColor" />
                         {tour.rating}
                       </div>
                     </div>
@@ -493,7 +687,7 @@ export default function ElegantHomePage() {
                       <div className="tour-image-elegant" style={{ background: tour.gradient }}>
                         <div className="tour-badge-elegant">Хит</div>
                         <div className="tour-rating-elegant">
-                          <img src="/icons/star.svg" alt="rating" width="14" height="14" />
+                          <Star size={14} fill="currentColor" />
                           4.9
                         </div>
                       </div>

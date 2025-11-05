@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Mountain, Waves, Droplets, ArrowRight, X } from 'lucide-react';
 import './MapPanel.css';
 
 interface MapPanelProps {
@@ -19,12 +20,12 @@ const activities = [
   { id: 7, name: 'Паратунка', lat: 52.9500, lng: 158.2500, category: 'hot-springs', tours: 6 }
 ];
 
-const categoryIcons: Record<string, string> = {
-  volcano: '🌋',
-  wildlife: '🐻',
-  nature: '🏔️',
-  ocean: '🌊',
-  'hot-springs': '♨️'
+const categoryIconComponents: Record<string, React.ElementType> = {
+  volcano: Mountain,
+  wildlife: Mountain,
+  nature: Mountain,
+  ocean: Waves,
+  'hot-springs': Droplets
 };
 
 export function MapPanel({ isOpen, onClose }: MapPanelProps) {
@@ -39,7 +40,9 @@ export function MapPanel({ isOpen, onClose }: MapPanelProps) {
             <img src="/icons/kam-button.svg" alt="Карта" width="24" height="24" />
             <h3>Карта активностей</h3>
           </div>
-          <button className="map-panel-close" onClick={onClose}>×</button>
+          <button className="map-panel-close" onClick={onClose}>
+            <X size={20} />
+          </button>
         </div>
 
         <div className="map-panel-content">
@@ -58,22 +61,27 @@ export function MapPanel({ isOpen, onClose }: MapPanelProps) {
           {/* СПИСОК АКТИВНОСТЕЙ */}
           <div className="activities-list">
             <h4>Точки на карте ({activities.length})</h4>
-            {activities.map((activity) => (
-              <div key={activity.id} className="activity-item">
-                <div className="activity-icon">
-                  {categoryIcons[activity.category]}
-                </div>
-                <div className="activity-info">
-                  <div className="activity-name">{activity.name}</div>
-                  <div className="activity-meta">
-                    <span>{activity.tours} туров</span>
-                    <span>•</span>
-                    <span className="activity-category">{activity.category}</span>
+            {activities.map((activity) => {
+              const IconComponent = categoryIconComponents[activity.category] || Mountain;
+              return (
+                <div key={activity.id} className="activity-item">
+                  <div className="activity-icon">
+                    <IconComponent size={20} />
                   </div>
+                  <div className="activity-info">
+                    <div className="activity-name">{activity.name}</div>
+                    <div className="activity-meta">
+                      <span>{activity.tours} туров</span>
+                      <span>•</span>
+                      <span className="activity-category">{activity.category}</span>
+                    </div>
+                  </div>
+                  <button className="activity-view">
+                    <ArrowRight size={16} />
+                  </button>
                 </div>
-                <button className="activity-view">→</button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
