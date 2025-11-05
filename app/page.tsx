@@ -1,22 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, Clock, Wind, Droplets, Eye, Sun, Moon, Cloud, CloudRain, CloudSnow, Sunrise, Sunset } from 'lucide-react';
+import { MapPin, Clock, Wind, Droplets, Eye, Sun, Moon, Cloud, CloudRain, CloudSnow, Sunrise, Sunset, Search, SlidersHorizontal } from 'lucide-react';
+import './samsung-elegant.css';
 
 // Петропавловск-Камчатский
 const KAMCHATKA_LAT = 53.0195;
 const KAMCHATKA_LNG = 158.6505;
 
-export default function Home() {
+export default function SamsungWeatherHomePage() {
   const [weather, setWeather] = useState<any>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     fetchWeather();
     
-    // Обновляем время каждую минуту
     const interval = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
@@ -26,132 +26,136 @@ export default function Home() {
 
   const fetchWeather = async () => {
     try {
-      const response = await fetch(`/api/weather?lat=${KAMCHATKA_LAT}&lng=${KAMCHATKA_LNG}&location=Петропавловск-Камчатский`);
-      const data = await response.json();
-      if (data.success) {
-        setWeather(data.data);
-      }
+      const lat = KAMCHATKA_LAT;
+      const lon = KAMCHATKA_LNG;
+      const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,wind_speed_10m,relative_humidity_2m&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=5`);
+      const data = await res.json();
+      
+      setWeather({
+        temperature: Math.round(data.current.temperature_2m),
+        weatherCode: data.current.weather_code,
+        isDay: data.current.is_day === 1,
+        windSpeed: Math.round(data.current.wind_speed_10m),
+        humidity: data.current.relative_humidity_2m,
+        forecast: data.daily
+      });
     } catch (error) {
       console.error('Weather error:', error);
     }
   };
 
-  // Определяем время суток
-  const getTimeOfDay = () => {
+  const getThemeGradient = () => {
+    if (!weather) return 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)';
+    
+    const { weatherCode, isDay } = weather;
     const hour = currentTime.getHours();
-    if (hour >= 5 && hour < 7) return 'dawn'; // Рассвет
-    if (hour >= 7 && hour < 18) return 'day'; // День
-    if (hour >= 18 && hour < 20) return 'sunset'; // Закат
-    return 'night'; // Ночь
-  };
-
-  // Определяем сезон
-  const getSeason = () => {
-    const month = currentTime.getMonth();
-    if (month >= 2 && month <= 4) return 'spring';
-    if (month >= 5 && month <= 7) return 'summer';
-    if (month >= 8 && month <= 10) return 'autumn';
-    return 'winter';
-  };
-
-  // Получаем градиент фона как у Samsung Weather
-  const getBackgroundGradient = () => {
-    const timeOfDay = getTimeOfDay();
-    const season = getSeason();
-    const condition = weather?.condition || 'clear';
-
-    // Samsung Weather градиенты
-    if (condition.includes('rain') || condition.includes('drizzle')) {
-      if (timeOfDay === 'night') return 'from-slate-900 via-gray-800 to-slate-900';
-      return 'from-gray-600 via-gray-500 to-gray-600';
+    
+    // Снег
+    if (weatherCode >= 71 && weatherCode <= 77) {
+      return 'linear-gradient(135deg, #e0f2fe 0%, #bae6fd 30%, #7dd3fc 60%, #bae6fd 100%)';
     }
     
-    if (condition.includes('snow')) {
-      return 'from-slate-200 via-blue-100 to-slate-300';
+    // Дождь
+    if (weatherCode >= 51 && weatherCode <= 67 || weatherCode >= 80) {
+      if (!isDay) return 'linear-gradient(135deg, #334155 0%, #475569 50%, #334155 100%)';
+      return 'linear-gradient(135deg, #64748b 0%, #94a3b8 50%, #64748b 100%)';
     }
-
-    if (condition.includes('cloud') || condition.includes('overcast')) {
-      if (timeOfDay === 'night') return 'from-slate-800 via-gray-700 to-slate-800';
-      return 'from-gray-400 via-gray-300 to-blue-200';
+    
+    // Облачно
+    if (weatherCode >= 1 && weatherCode <= 3) {
+      if (!isDay) return 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%)';
+      return 'linear-gradient(135deg, #cbd5e1 0%, #e2e8f0 50%, #cbd5e1 100%)';
     }
-
-    // Ясная погода
-    if (timeOfDay === 'dawn') return 'from-orange-300 via-pink-300 to-purple-400';
-    if (timeOfDay === 'day') {
-      if (season === 'summer') return 'from-sky-400 via-blue-400 to-blue-500';
-      if (season === 'winter') return 'from-sky-300 via-blue-200 to-blue-300';
-      return 'from-sky-400 via-blue-300 to-blue-400';
+    
+    // Ясно
+    if (weatherCode === 0) {
+      // Рассвет
+      if (hour >= 5 && hour < 7) {
+        return 'linear-gradient(135deg, #fbbf24 0%, #fb923c 30%, #f97316 60%, #fbbf24 100%)';
+      }
+      // Закат
+      if (hour >= 18 && hour < 20) {
+        return 'linear-gradient(135deg, #fb923c 0%, #f97316 30%, #dc2626 60%, #fb923c 100%)';
+      }
+      // День
+      if (isDay) {
+        return 'linear-gradient(135deg, #38bdf8 0%, #0ea5e9 30%, #0284c7 60%, #38bdf8 100%)';
+      }
+      // Ночь
+      return 'linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #312e81 100%)';
     }
-    if (timeOfDay === 'sunset') return 'from-orange-400 via-red-400 to-purple-500';
-    if (timeOfDay === 'night') return 'from-indigo-900 via-purple-900 to-slate-900';
-
-    return 'from-sky-400 via-blue-400 to-blue-500';
+    
+    return 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)';
   };
 
-  // Иконка погоды
   const getWeatherIcon = () => {
-    const condition = weather?.condition || 'clear';
-    const timeOfDay = getTimeOfDay();
-    const iconClass = "w-32 h-32 md:w-40 md:h-40";
-
-    if (condition.includes('rain')) return <CloudRain className={iconClass + " text-white"} />;
-    if (condition.includes('snow')) return <CloudSnow className={iconClass + " text-white"} />;
-    if (condition.includes('cloud')) return <Cloud className={iconClass + " text-white"} />;
+    if (!weather) return <Cloud className="w-32 h-32 md:w-40 md:h-40 text-white/80" />;
     
-    if (timeOfDay === 'dawn') return <Sunrise className={iconClass + " text-orange-200"} />;
-    if (timeOfDay === 'sunset') return <Sunset className={iconClass + " text-orange-200"} />;
-    if (timeOfDay === 'night') return <Moon className={iconClass + " text-yellow-100"} />;
+    const { weatherCode, isDay } = weather;
+    const hour = currentTime.getHours();
+    const iconClass = "w-32 h-32 md:w-40 md:h-40 animate-float";
     
-    return <Sun className={iconClass + " text-yellow-100"} />;
+    if (weatherCode >= 71 && weatherCode <= 77) return <CloudSnow className={`${iconClass} text-white`} />;
+    if (weatherCode >= 51) return <CloudRain className={`${iconClass} text-white/90`} />;
+    if (weatherCode >= 1 && weatherCode <= 3) return <Cloud className={`${iconClass} text-white/80`} />;
+    
+    if (hour >= 5 && hour < 7) return <Sunrise className={`${iconClass} text-orange-200`} />;
+    if (hour >= 18 && hour < 20) return <Sunset className={`${iconClass} text-orange-200`} />;
+    if (!isDay) return <Moon className={`${iconClass} text-yellow-100`} />;
+    
+    return <Sun className={`${iconClass} text-yellow-100`} />;
   };
 
-  // Текст погоды на русском
   const getWeatherText = () => {
-    const condition = weather?.condition || 'clear';
-    if (condition === 'clear') return 'Ясно';
-    if (condition === 'mostly_clear') return 'Малооблачно';
-    if (condition === 'partly_cloudy') return 'Облачно';
-    if (condition === 'overcast') return 'Пасмурно';
-    if (condition === 'rain') return 'Дождь';
-    if (condition === 'snow') return 'Снег';
-    if (condition === 'fog') return 'Туман';
+    if (!weather) return 'Загрузка...';
+    
+    const code = weather.weatherCode;
+    if (code === 0) return 'Ясно';
+    if (code >= 1 && code <= 3) return 'Облачно';
+    if (code >= 51 && code <= 67) return 'Дождь';
+    if (code >= 71 && code <= 77) return 'Снег';
+    if (code >= 80) return 'Ливень';
     return 'Переменная облачность';
   };
 
-  if (!mounted) return null;
-
-  const gradient = getBackgroundGradient();
+  const gradient = getThemeGradient();
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${gradient} transition-all duration-1000 relative overflow-hidden`}>
+    <div className="weather-background" style={{ background: gradient }}>
       
-      {/* Анимированный фон - частицы погоды */}
-      {weather?.condition?.includes('rain') && (
-        <div className="absolute inset-0 pointer-events-none">
+      {/* Погодные частицы */}
+      {weather?.weatherCode >= 51 && weather?.weatherCode <= 67 && (
+        <div className="weather-particles">
           {[...Array(50)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-px h-12 bg-white/30"
+              className="particle"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `-${Math.random() * 20}%`,
+                width: '2px',
+                height: '20px',
                 animation: `fall ${1 + Math.random() * 2}s linear infinite`,
                 animationDelay: `${Math.random() * 2}s`,
+                borderRadius: '50%',
+                background: 'rgba(255, 255, 255, 0.5)'
               }}
             />
           ))}
         </div>
       )}
 
-      {weather?.condition?.includes('snow') && (
-        <div className="absolute inset-0 pointer-events-none">
+      {weather?.weatherCode >= 71 && weather?.weatherCode <= 77 && (
+        <div className="weather-particles">
           {[...Array(50)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-2 h-2 bg-white rounded-full opacity-80"
+              className="particle"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `-${Math.random() * 20}%`,
+                width: '8px',
+                height: '8px',
                 animation: `fall ${3 + Math.random() * 3}s linear infinite`,
                 animationDelay: `${Math.random() * 3}s`,
               }}
@@ -160,92 +164,149 @@ export default function Home() {
         </div>
       )}
 
-      {/* Основной контент */}
+      {/* Контент */}
       <div className="relative z-10 min-h-screen flex flex-col">
         
-        {/* Верхняя панель */}
-        <div className="p-6 flex items-center justify-between text-white/90">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-5 h-5" />
-            <span className="font-medium">Петропавловск-Камчатский</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-5 h-5" />
-            <span className="font-medium">
-              {currentTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-            </span>
+        {/* Хедер */}
+        <div className="hero-elegant">
+          <div className="hero-content-elegant">
+            
+            {/* Локация и время */}
+            <div className="flex items-center justify-between mb-8 text-white/70 text-sm">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span>Петропавловск-Камчатский</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>{currentTime.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            </div>
+
+            {/* Погода */}
+            {weather && (
+              <>
+                <div className="mb-6">
+                  {getWeatherIcon()}
+                </div>
+
+                <div className="hero-title-elegant mb-4">
+                  {weather.temperature}°
+                </div>
+
+                <div className="hero-subtitle-elegant mb-8">
+                  {getWeatherText()}
+                </div>
+
+                {/* Детали */}
+                <div className="grid grid-cols-3 gap-8 max-w-md mx-auto mb-12">
+                  <div className="text-center">
+                    <Wind className="w-6 h-6 text-white/60 mx-auto mb-2" />
+                    <div className="text-xl font-light text-white">{weather.windSpeed}</div>
+                    <div className="text-xs text-white/50">км/ч</div>
+                  </div>
+                  <div className="text-center">
+                    <Droplets className="w-6 h-6 text-white/60 mx-auto mb-2" />
+                    <div className="text-xl font-light text-white">{weather.humidity}</div>
+                    <div className="text-xs text-white/50">%</div>
+                  </div>
+                  <div className="text-center">
+                    <Eye className="w-6 h-6 text-white/60 mx-auto mb-2" />
+                    <div className="text-xl font-light text-white">10</div>
+                    <div className="text-xs text-white/50">км</div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Поиск */}
+            <div className="search-elegant">
+              <div className="search-box-elegant">
+                <input
+                  type="text"
+                  placeholder="Поиск туров: вулканы, океан, медведи..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="search-input-elegant"
+                />
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="filter-btn-elegant"
+                >
+                  <SlidersHorizontal />
+                  Фильтры
+                </button>
+                <button className="filter-btn-elegant bg-purple-600/30 border-purple-500/50">
+                  <Search />
+                </button>
+              </div>
+
+              {showFilters && (
+                <div className="filters-panel-elegant">
+                  <div className="filter-group">
+                    <label>Категория</label>
+                    <select>
+                      <option>Все</option>
+                      <option>Вулканы</option>
+                      <option>Океан</option>
+                      <option>Медведи</option>
+                    </select>
+                  </div>
+                  <div className="filter-group">
+                    <label>Цена</label>
+                    <select>
+                      <option>Любая</option>
+                      <option>До 10000₽</option>
+                      <option>10000-50000₽</option>
+                      <option>50000₽+</option>
+                    </select>
+                  </div>
+                  <div className="filter-group">
+                    <label>Длительность</label>
+                    <select>
+                      <option>Любая</option>
+                      <option>1 день</option>
+                      <option>2-3 дня</option>
+                      <option>Неделя+</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* CTA */}
+            <div className="mt-12">
+              <a
+                href="/hub/tourist"
+                className="inline-block px-10 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-xl rounded-full text-white font-medium transition-all border border-white/20 hover:border-white/40 text-lg"
+              >
+                Посмотреть все туры →
+              </a>
+            </div>
+
           </div>
         </div>
 
-        {/* Центральная секция - погода */}
-        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-          
-          {weather ? (
-            <>
-              {/* Иконка погоды */}
-              <div className="mb-8 animate-float">
-                {getWeatherIcon()}
-              </div>
-
-              {/* Температура */}
-              <div className="text-8xl md:text-9xl font-thin text-white mb-4 tracking-tight">
-                {weather.temperature}°
-              </div>
-
-              {/* Описание */}
-              <div className="text-3xl md:text-4xl font-light text-white/90 mb-12">
-                {getWeatherText()}
-              </div>
-
-              {/* Дополнительные данные - горизонтально */}
-              <div className="grid grid-cols-3 gap-8 md:gap-16 max-w-2xl mx-auto">
-                
-                <div className="flex flex-col items-center">
-                  <Wind className="w-8 h-8 text-white/70 mb-2" />
-                  <div className="text-2xl font-light text-white">{weather.windSpeed}</div>
-                  <div className="text-sm text-white/60">км/ч</div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <Droplets className="w-8 h-8 text-white/70 mb-2" />
-                  <div className="text-2xl font-light text-white">{weather.humidity}</div>
-                  <div className="text-sm text-white/60">%</div>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <Eye className="w-8 h-8 text-white/70 mb-2" />
-                  <div className="text-2xl font-light text-white">{weather.visibility}</div>
-                  <div className="text-sm text-white/60">км</div>
-                </div>
-
-              </div>
-            </>
-          ) : (
-            <div className="text-white text-2xl">Загрузка погоды...</div>
-          )}
-
-        </div>
-
-        {/* Нижняя панель - прогноз */}
-        {weather?.forecast && weather.forecast.length > 1 && (
-          <div className="p-6">
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 max-w-4xl mx-auto border border-white/20">
-              <div className="text-white/70 text-sm font-medium mb-4">Прогноз на 5 дней</div>
+        {/* Прогноз */}
+        {weather?.forecast && (
+          <div className="px-6 pb-12">
+            <div className="glass-card max-w-4xl mx-auto p-8">
+              <div className="text-white/60 text-sm font-medium mb-6">Прогноз на 5 дней</div>
               
-              <div className="grid grid-cols-5 gap-4">
-                {weather.forecast.slice(0, 5).map((day: any, i: number) => (
+              <div className="grid grid-cols-5 gap-6">
+                {[0, 1, 2, 3, 4].map((i) => (
                   <div key={i} className="text-center">
-                    <div className="text-white/60 text-xs mb-2">
-                      {i === 0 ? 'Сегодня' : new Date(day.date).toLocaleDateString('ru-RU', { weekday: 'short' })}
+                    <div className="text-white/50 text-xs mb-3">
+                      {i === 0 ? 'Сегодня' : new Date(weather.forecast.time[i]).toLocaleDateString('ru-RU', { weekday: 'short' })}
                     </div>
-                    <div className="my-2">
-                      {day.condition?.includes('rain') ? <CloudRain className="w-8 h-8 text-white/70 mx-auto" /> :
-                       day.condition?.includes('snow') ? <CloudSnow className="w-8 h-8 text-white/70 mx-auto" /> :
-                       day.condition?.includes('cloud') ? <Cloud className="w-8 h-8 text-white/70 mx-auto" /> :
+                    <div className="my-3">
+                      {weather.forecast.weather_code[i] >= 71 ? <CloudSnow className="w-8 h-8 text-white/70 mx-auto" /> :
+                       weather.forecast.weather_code[i] >= 51 ? <CloudRain className="w-8 h-8 text-white/70 mx-auto" /> :
+                       weather.forecast.weather_code[i] >= 1 ? <Cloud className="w-8 h-8 text-white/70 mx-auto" /> :
                        <Sun className="w-8 h-8 text-white/70 mx-auto" />}
                     </div>
-                    <div className="text-white font-medium">{day.temperature?.max}°</div>
-                    <div className="text-white/50 text-sm">{day.temperature?.min}°</div>
+                    <div className="text-white font-medium text-lg">{Math.round(weather.forecast.temperature_2m_max[i])}°</div>
+                    <div className="text-white/40 text-sm">{Math.round(weather.forecast.temperature_2m_min[i])}°</div>
                   </div>
                 ))}
               </div>
@@ -253,38 +314,7 @@ export default function Home() {
           </div>
         )}
 
-        {/* Кнопка к турам */}
-        <div className="p-6 text-center">
-          <a 
-            href="/hub/tourist"
-            className="inline-block px-8 py-4 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-full text-white font-medium transition-all border border-white/30 hover:border-white/50"
-          >
-            Посмотреть туры →
-          </a>
-        </div>
-
       </div>
-
-      {/* CSS для анимаций */}
-      <style jsx>{`
-        @keyframes fall {
-          to {
-            transform: translateY(100vh);
-          }
-        }
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
-
     </div>
   );
 }
