@@ -14,7 +14,18 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [lastUserMessage, setLastUserMessage] = useState('');
+  const [lastAiMessage, setLastAiMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Создаем sessionId при первом рендере
+  useEffect(() => {
+    if (!sessionId) {
+      const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setSessionId(newSessionId);
+    }
+  }, []);
 
   useEffect(() => {
     if (userId) {
@@ -56,8 +67,11 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
     };
 
     setMessages(prev => [...prev, userMessage]);
+    setLastUserMessage(userMessage.content); // Сохраняем для метрик
     setInputMessage('');
     setIsLoading(true);
+    
+    const startTime = Date.now();
 
     try {
       const response = await fetch('/api/chat', {
@@ -77,12 +91,27 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
       });
 
       const data = await response.json();
+      const latency = Date.now() - startTime;
       
       if (data.success) {
-        setMessages(prev => [...prev, ...data.data.messages]);
+        const aiMessages = data.data.messages || [];
+        setMessages(prev => [...prev, ...aiMessages]);
+        
+        // Сохраняем последний ответ AI для метрик
+        const lastAi = aiMessages.find((m: ChatMessage) => m.role === 'assistant');
+        if (lastAi) {
+          setLastAiMessage(lastAi.content);
+        }
+        
         if (data.data.sessionId) {
           setSessionId(data.data.sessionId);
         }
+        
+        // Показываем кнопки обратной связи после ответа AI
+        setShowFeedback(true);
+        
+        // Автоматически скрываем через 30 секунд
+        setTimeout(() => setShowFeedback(false), 30000);
       } else {
         // Добавляем сообщение об ошибке
         const errorMessage: ChatMessage = {
@@ -106,6 +135,30 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Обработка обратной связи
+  const handleFeedback = async (feedbackType: 'helpful' | 'not_helpful') => {
+    if (!sessionId) return;
+    
+    try {
+      await fetch('/api/ai-metrics/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          userId,
+          feedbackType,
+          completed: feedbackType === 'helpful',
+          userMessage: lastUserMessage,
+          aiMessage: lastAiMessage,
+        }),
+      });
+      
+      setShowFeedback(false);
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
     }
   };
 
@@ -217,6 +270,33 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
         
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Обратная связь */}
+      {showFeedback && messages.length > 0 && (
+        <div className="px-6 py-3 border-t border-white/10 bg-white/5">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-white/70">Этот ответ был полезен?</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleFeedback('helpful')}
+                className="px-4 py-2 bg-green-500/20 text-green-400 border border-green-500/40 rounded-lg hover:bg-green-500/30 transition-colors text-sm font-medium flex items-center gap-1"
+                title="Помогло"
+              >
+                <span>👍</span>
+                <span>Да</span>
+              </button>
+              <button
+                onClick={() => handleFeedback('not_helpful')}
+                className="px-4 py-2 bg-red-500/20 text-red-400 border border-red-500/40 rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium flex items-center gap-1"
+                title="Не помогло"
+              >
+                <span>👎</span>
+                <span>Нет</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Поле ввода */}
       <div className="p-6 border-t border-white/10">
