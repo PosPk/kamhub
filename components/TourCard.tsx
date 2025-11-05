@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Tour } from '@/types';
-// import { formatCurrency, formatDuration, formatRating } from '@/lib/utils';
+import { Clock, Users, Leaf, Building2, Star, Mountain } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TourCardProps {
@@ -72,7 +72,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-green-100">
             <div className="text-center">
-              <div className="text-4xl mb-2">🏔️</div>
+              <Mountain className="w-16 h-16 mb-2 text-blue-600 mx-auto" />
               <div className="text-gray-600 text-sm">{tour.title}</div>
             </div>
           </div>
@@ -92,7 +92,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         {/* Рейтинг */}
         {tour.rating > 0 && (
           <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full flex items-center space-x-1">
-            <span className="text-premium-gold">⭐</span>
+            <Star className="w-4 h-4 text-premium-gold fill-premium-gold" />
             <span className="text-sm font-bold text-white">{tour.rating}</span>
             <span className="text-xs text-white/70">({tour.reviewsCount})</span>
           </div>
@@ -123,13 +123,13 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         <div className="space-y-2 mb-4">
           {/* Продолжительность */}
           <div className="flex items-center text-sm text-white/70">
-            <span className="mr-2">⏱️</span>
+            <Clock className="w-4 h-4 mr-2" />
             <span>{tour.duration}</span>
           </div>
 
           {/* Размер группы */}
           <div className="flex items-center text-sm text-white/70">
-            <span className="mr-2">👥</span>
+            <Users className="w-4 h-4 mr-2" />
             <span>
               {tour.minParticipants === tour.maxParticipants
                 ? `${tour.minParticipants} чел.`
@@ -140,7 +140,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
           {/* Сезон */}
           {tour.activity && (
             <div className="flex items-center text-sm text-white/70">
-              <span className="mr-2">🌿</span>
+              <Leaf className="w-4 h-4 mr-2" />
               <span>Круглый год</span>
             </div>
           )}
@@ -149,11 +149,12 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
         {/* Оператор */}
         {tour.operator && (
           <div className="flex items-center text-sm text-white/70 mb-4">
-            <span className="mr-2">🏢</span>
+            <Building2 className="w-4 h-4 mr-2" />
             <span>{tour.operator.name}</span>
             {tour.operator.rating > 0 && (
-              <span className="ml-2 text-premium-gold">
-                ⭐ {formatRating(tour.operator.rating)}
+              <span className="ml-2 text-premium-gold flex items-center gap-1">
+                <Star className="w-3 h-3 fill-premium-gold" />
+                {formatRating(tour.operator.rating)}
               </span>
             )}
           </div>

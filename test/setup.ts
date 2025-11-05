@@ -1,21 +1,60 @@
 import { beforeAll, afterAll, afterEach } from 'vitest';
 import { query } from '../lib/database';
+import * as dotenv from 'dotenv';
 
-// Мок для базы данных в тестах
+// Загружаем тестовую конфигурацию
+dotenv.config({ path: '.env.test' });
+
+// Флаг для проверки доступности БД
+let dbAvailable = false;
+
 beforeAll(async () => {
   // Настройка тестовой базы данных
-  // NODE_ENV устанавливается через vitest.config.ts, не изменяем здесь
-  if (!process.env.DATABASE_URL) {
-    process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://test:test@localhost:5432/kamchatour_hub_test';
+  console.log('🔧 Настройка тестового окружения...');
+  
+  // Проверяем подключение к БД
+  try {
+    const result = await query('SELECT NOW()');
+    dbAvailable = true;
+    console.log('✅ Подключение к тестовой БД установлено');
+  } catch (error) {
+    console.warn('⚠️  БД недоступна, тесты будут пропущены');
+    console.warn('   Запустите: npm run db:test:init для инициализации тестовой БД');
+    dbAvailable = false;
   }
 });
 
 afterEach(async () => {
   // Очистка данных после каждого теста
+  if (!dbAvailable) return;
+  
   try {
-    await query('TRUNCATE TABLE transfer_bookings CASCADE');
-    await query('TRUNCATE TABLE transfer_payments CASCADE');
-    await query('TRUNCATE TABLE loyalty_transactions CASCADE');
+    // Очищаем таблицы в правильном порядке (из-за внешних ключей)
+    const tables = [
+      'tour_weather_alerts',
+      'tour_cancellations', 
+      'tour_waitlist',
+      'tour_checkins',
+      'tour_participants',
+      'tour_bookings_v2',
+      'tour_seat_holds',
+      'transfer_payments',
+      'transfer_bookings',
+      'loyalty_transactions',
+      'reviews',
+      'bookings'
+    ];
+    
+    for (const table of tables) {
+      try {
+        await query(`TRUNCATE TABLE ${table} CASCADE`);
+      } catch (err: any) {
+        // Игнорируем если таблица не существует
+        if (!err.message.includes('does not exist')) {
+          console.warn(`Failed to truncate ${table}:`, err.message);
+        }
+      }
+    }
   } catch (error) {
     console.warn('Failed to clean up test data:', error);
   }
@@ -23,9 +62,17 @@ afterEach(async () => {
 
 afterAll(async () => {
   // Закрытие соединения с базой данных
+  if (!dbAvailable) return;
+  
   try {
-    // await query('DROP SCHEMA IF EXISTS test CASCADE');
+    // Закрываем пул соединений
+    const { closePool } = await import('../lib/database');
+    await closePool();
+    console.log('✅ Соединение с тестовой БД закрыто');
   } catch (error) {
-    console.warn('Failed to clean up test database:', error);
+    console.warn('Failed to close database connection:', error);
   }
 });
+
+// Экспортируем для использования в тестах
+export { dbAvailable };

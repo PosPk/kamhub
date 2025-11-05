@@ -1,0 +1,222 @@
+name: Deploy to Timeweb VPS
+
+on:
+  workflow_dispatch:  # Ручной запуск
+  push:
+    branches:
+      - main
+      - cursor/deep-repository-scan-05bf
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.TIMEWEB_SSH_KEY }}" > ~/.ssh/timeweb_key
+          chmod 600 ~/.ssh/timeweb_key
+          ssh-keyscan -H 5.129.248.224 >> ~/.ssh/known_hosts
+
+      - name: 🚀 Deploy to Timeweb VPS
+        env:
+          SERVER_IP: 5.129.248.224
+          SERVER_USER: root
+        run: |
+          ssh -i ~/.ssh/timeweb_key $SERVER_USER@$SERVER_IP << 'ENDSSH'
+            set -e
+            
+            echo "🚀 Начинаем деплой..."
+            
+            # 1. Установка Node.js
+            if ! command -v node &> /dev/null; then
+                echo "📦 Установка Node.js 20..."
+                curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+                apt-get install -y nodejs
+            fi
+            echo "✅ Node.js: $(node --version)"
+            
+            # 2. Установка PostgreSQL
+            if ! command -v psql &> /dev/null; then
+                echo "🗄️ Установка PostgreSQL..."
+                apt-get update -qq
+                apt-get install -y postgresql postgresql-contrib
+                systemctl enable postgresql
+                systemctl start postgresql
+            fi
+            echo "✅ PostgreSQL установлен"
+            
+            # 3. Создание БД
+            echo "🗄️ Создание базы данных..."
+            sudo -u postgres psql << 'EOF'
+DROP DATABASE IF EXISTS kamhub_production;
+DROP USER IF EXISTS kamhub;
+CREATE USER kamhub WITH PASSWORD 'kamhub2024secure';
+CREATE DATABASE kamhub_production OWNER kamhub;
+GRANT ALL PRIVILEGES ON DATABASE kamhub_production TO kamhub;
+\q
+EOF
+            echo "✅ База данных создана"
+            
+            # 4. Клонирование/обновление репозитория
+            echo "📥 Получение кода..."
+            apt-get install -y git
+            mkdir -p /var/www
+            cd /var/www
+            
+            if [ -d "kamhub" ]; then
+                cd kamhub
+                git fetch origin
+                git reset --hard origin/main
+                git pull origin main
+            else
+                git clone https://github.com/PosPk/kamhub.git kamhub
+                cd kamhub
+            fi
+            echo "✅ Код получен"
+            
+            # 5. Настройка переменных
+            echo "⚙️ Настройка переменных окружения..."
+            cat > .env.production << 'ENVEOF'
+DATABASE_URL=postgresql://kamhub:kamhub2024secure@localhost:5432/kamhub_production
+DATABASE_SSL=false
+DATABASE_MAX_CONNECTIONS=20
+NODE_ENV=production
+PORT=3000
+NEXT_PUBLIC_APP_URL=http://5.129.248.224
+JWT_SECRET=kamhub-jwt-secret-production-2024
+JWT_EXPIRES_IN=7d
+S3_ENDPOINT=https://s3.twcstorage.ru
+S3_BUCKET=d9542536-676ee691-7f59-46bb-bf0e-ab64230eec50
+S3_ACCESS_KEY=F2CP4X3X17GVQ1YH5I5D
+S3_SECRET_KEY=72iAsYR4QQCIdaDI9e9AzXnzVvvP8bvPELmrBVzX
+S3_REGION=ru-1
+ENVEOF
+            chmod 600 .env.production
+            echo "✅ Переменные настроены"
+            
+            # 6. Установка зависимостей
+            echo "📦 Установка зависимостей..."
+            npm install --production=false
+            echo "✅ Зависимости установлены"
+            
+            # 7. Сборка приложения
+            echo "🔨 Сборка приложения..."
+            npm run build
+            echo "✅ Приложение собрано"
+            
+            # 8. Применение схемы БД
+            echo "🗄️ Применение схемы базы данных..."
+            export PGPASSWORD='kamhub2024secure'
+            psql -h localhost -U kamhub -d kamhub_production -f lib/database/schema.sql || echo "Schema already exists"
+            psql -h localhost -U kamhub -d kamhub_production -f lib/database/tour_system_schema.sql || echo "Tour schema already exists"
+            psql -h localhost -U kamhub -d kamhub_production -f lib/database/user_roles_migration.sql || echo "User roles already migrated"
+            echo "✅ База данных готова"
+            
+            # 9. PM2
+            echo "🚀 Установка и настройка PM2..."
+            if ! command -v pm2 &> /dev/null; then
+                npm install -g pm2
+            fi
+            
+            pm2 delete kamhub 2>/dev/null || true
+            
+            cat > ecosystem.config.js << 'PM2EOF'
+module.exports = {
+  apps: [{
+    name: 'kamhub',
+    script: 'node_modules/next/dist/bin/next',
+    args: 'start',
+    cwd: '/var/www/kamhub',
+    instances: 'max',
+    exec_mode: 'cluster',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3000
+    },
+    autorestart: true,
+    max_memory_restart: '1G',
+    error_file: '/var/log/kamhub-error.log',
+    out_file: '/var/log/kamhub-out.log'
+  }]
+};
+PM2EOF
+            
+            pm2 start ecosystem.config.js
+            pm2 save
+            pm2 startup systemd -u root --hp /root
+            echo "✅ PM2 настроен и приложение запущено"
+            
+            # 10. Nginx
+            echo "🌐 Установка и настройка Nginx..."
+            if ! command -v nginx &> /dev/null; then
+                apt-get install -y nginx
+                systemctl enable nginx
+            fi
+            
+            cat > /etc/nginx/sites-available/kamhub << 'NGINXEOF'
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name 5.129.248.224;
+    
+    client_max_body_size 50M;
+    
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+}
+NGINXEOF
+            
+            ln -sf /etc/nginx/sites-available/kamhub /etc/nginx/sites-enabled/
+            rm -f /etc/nginx/sites-enabled/default
+            
+            nginx -t && systemctl restart nginx
+            echo "✅ Nginx настроен"
+            
+            # Финальная проверка
+            sleep 5
+            echo ""
+            echo "═══════════════════════════════════════════════════"
+            echo "🎉 ДЕПЛОЙ ЗАВЕРШЕН УСПЕШНО!"
+            echo "═══════════════════════════════════════════════════"
+            echo ""
+            echo "🌐 Сайт доступен: http://5.129.248.224"
+            echo ""
+            echo "📊 Проверка статуса:"
+            pm2 status
+            echo ""
+            echo "🔧 Управление:"
+            echo "  pm2 logs kamhub    - просмотр логов"
+            echo "  pm2 restart kamhub - перезапуск"
+            echo "  pm2 stop kamhub    - остановка"
+            echo ""
+          ENDSSH
+
+      - name: ✅ Deployment Complete
+        run: |
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║              ✅ ДЕПЛОЙ ЗАВЕРШЕН!                          ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "🌐 Сайт: http://5.129.248.224"
+          echo "📋 Следующие шаги:"
+          echo "   1. Откройте http://5.129.248.224"
+          echo "   2. Зарегистрируйтесь /auth/register-business"
+          echo "   3. Начните тестирование!"

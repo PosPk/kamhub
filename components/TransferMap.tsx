@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { yandexMaps, Coordinates, RoutePoint } from '@/lib/maps/yandex';
+import { Clock, Check, MapPin, Car, Truck, Bus } from 'lucide-react';
 
 interface TransferMapProps {
   route?: {
@@ -238,10 +239,10 @@ export function TransferMap({
   // Получение иконки бронирования
   const getBookingIcon = (status: string) => {
     switch (status) {
-      case 'pending': return '⏳';
-      case 'confirmed': return '✅';
-      case 'in_progress': return '🚌';
-      default: return '📋';
+      case 'pending': return 'pending';
+      case 'confirmed': return 'confirmed';
+      case 'in_progress': return 'in_progress';
+      default: return 'default';
     }
   };
 
@@ -295,15 +296,15 @@ export function TransferMap({
         {showVehicles && (
           <div className="space-y-1">
             <div className="flex items-center">
-              <span className="mr-2">🚗</span>
+              <Car className="w-4 h-4 mr-2 text-green-600" />
               <span>Доступен</span>
             </div>
             <div className="flex items-center">
-              <span className="mr-2">🚕</span>
+              <Truck className="w-4 h-4 mr-2 text-blue-600" />
               <span>Занят</span>
             </div>
             <div className="flex items-center">
-              <span className="mr-2">🚙</span>
+              <Car className="w-4 h-4 mr-2 text-gray-400" />
               <span>Офлайн</span>
             </div>
           </div>
@@ -311,15 +312,15 @@ export function TransferMap({
         {showBookings && (
           <div className="space-y-1 mt-2">
             <div className="flex items-center">
-              <span className="mr-2">⏳</span>
+              <Clock className="w-4 h-4 mr-2 text-yellow-600" />
               <span>Ожидает</span>
             </div>
             <div className="flex items-center">
-              <span className="mr-2">✅</span>
+              <Check className="w-4 h-4 mr-2 text-green-600" />
               <span>Подтверждено</span>
             </div>
             <div className="flex items-center">
-              <span className="mr-2">🚌</span>
+              <Bus className="w-4 h-4 mr-2 text-blue-600" />
               <span>В пути</span>
             </div>
           </div>
@@ -364,9 +365,10 @@ export function MapControls({ onCenterChange, onZoomChange, onLocationRequest }:
     <div className="flex space-x-2">
       <button
         onClick={requestUserLocation}
-        className="px-3 py-2 bg-premium-gold text-premium-black rounded-lg hover:bg-premium-gold/90 transition-colors"
+        className="px-3 py-2 bg-premium-gold text-premium-black rounded-lg hover:bg-premium-gold/90 transition-colors flex items-center gap-2"
       >
-        📍 Мое местоположение
+        <MapPin className="w-4 h-4" />
+        Мое местоположение
       </button>
     </div>
   );

@@ -2,6 +2,187 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Современная цветовая палитра 2025 */
+:root {
+  /* Главные цвета */
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --secondary: #ec4899;
+  --accent: #14b8a6;
+  
+  /* Градиенты */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, #667eea 0px, transparent 50%),
+                   radial-gradient(at 80% 0%, #764ba2 0px, transparent 50%),
+                   radial-gradient(at 0% 50%, #ec4899 0px, transparent 50%),
+                   radial-gradient(at 80% 50%, #14b8a6 0px, transparent 50%);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  
+  /* Неоморфизм */
+  --neo-light: #ffffff;
+  --neo-dark: #d1d5db;
+  --neo-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
+}
+
+.dark {
+  --glass-bg: rgba(0, 0, 0, 0.3);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --neo-light: #1f2937;
+  --neo-dark: #111827;
+  --neo-shadow: 20px 20px 60px #0a0a0a, -20px -20px 60px #2a2a2a;
+}
+
+/* Продвинутые анимации 2025 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes glow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.2); }
+}
+
+@keyframes meshMove {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-mesh {
+  background-size: 200% 200%;
+  animation: meshMove 15s ease infinite;
+}
+
+/* Glassmorphism карточки */
+.card-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  @apply rounded-3xl transition-all duration-500;
+}
+
+.card-glass:hover {
+  transform: translateY(-8px) scale(1.02);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 64px 0 rgba(31, 38, 135, 0.5);
+}
+
+/* Неоморфизм карточки */
+.card-neo {
+  background: var(--neo-light);
+  box-shadow: var(--neo-shadow);
+  @apply rounded-3xl transition-all duration-300;
+}
+
+.card-neo:hover {
+  box-shadow: inset 5px 5px 10px var(--neo-dark),
+              inset -5px -5px 10px var(--neo-light);
+}
+
+/* Bento Grid карточки */
+.card-bento {
+  @apply rounded-3xl p-6 transition-all duration-500;
+  @apply bg-gradient-to-br from-white/90 to-white/70;
+  @apply dark:from-gray-900/90 dark:to-gray-800/70;
+  @apply border border-gray-200/50 dark:border-white/10;
+  @apply backdrop-blur-xl;
+  @apply hover:scale-[1.02] hover:-translate-y-1;
+  @apply hover:shadow-2xl;
+}
+
+/* Старый стиль (совместимость) */
+.card-modern {
+  @apply card-glass;
+}
+
+/* Градиенты */
+.gradient-modern {
+  background: linear-gradient(135deg, 
+    rgba(0, 71, 171, 0.1) 0%, 
+    rgba(74, 144, 226, 0.05) 50%, 
+    rgba(135, 206, 235, 0.1) 100%);
+}
+
+.dark .gradient-modern {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.1) 0%, 
+    rgba(255, 215, 0, 0.05) 50%, 
+    rgba(184, 134, 11, 0.1) 100%);
+}
+
+/* Кнопки */
+.btn-primary {
+  @apply px-8 py-4 rounded-2xl font-bold text-lg;
+  @apply bg-gradient-to-r from-ultramarine to-light-blue dark:from-premium-gold dark:to-yellow-400;
+  @apply text-white dark:text-premium-black;
+  @apply shadow-lg shadow-ultramarine/30 dark:shadow-premium-gold/30;
+  @apply hover:shadow-xl hover:shadow-ultramarine/50 dark:hover:shadow-premium-gold/50;
+  @apply hover:scale-105 transition-all duration-300;
+  @apply active:scale-95;
+}
+
 /* Import UI improvements */
 @import './ui-improvements.css';
 

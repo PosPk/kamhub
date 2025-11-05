@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { Tour, Weather } from '@/types';
 import { AIChatWidget } from '@/components/AIChatWidget';
 import { TransferSearchWidget } from '@/components/TransferSearchWidget';
+import { 
+  Mountain, Bus, CloudSun, Bot, Heart
+} from 'lucide-react';
 
 export default function TouristDashboard() {
   const [tours, setTours] = useState<Tour[]>([]);
@@ -50,15 +53,8 @@ export default function TouristDashboard() {
   };
 
   const getActivityIcon = (activity: string) => {
-    const icons: { [key: string]: string } = {
-      hiking: '🥾',
-      sightseeing: '👁️',
-      wildlife: '🐻',
-      fishing: '🎣',
-      skiing: '🎿',
-      diving: '🤿',
-    };
-    return icons[activity] || '🏔️';
+    // Функция больше не используется, иконки заменены на SVG
+    return <Mountain className="inline-block w-5 h-5" />;
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -71,17 +67,8 @@ export default function TouristDashboard() {
   };
 
   const getWeatherIcon = (condition: string) => {
-    const icons: { [key: string]: string } = {
-      clear: '☀️',
-      mostly_clear: '🌤️',
-      partly_cloudy: '⛅',
-      overcast: '☁️',
-      rain: '🌧️',
-      snow: '❄️',
-      thunderstorm: '⛈️',
-      fog: '🌫️',
-    };
-    return icons[condition] || '🌤️';
+    // Функция больше не используется, иконки заменены на SVG
+    return <CloudSun className="inline-block w-12 h-12 text-yellow-400" />;
   };
 
   const getSafetyLevelColor = (level: string) => {
@@ -95,11 +82,11 @@ export default function TouristDashboard() {
   };
 
   const tabs = [
-    { id: 'tours', name: 'Туры', icon: '🏔️' },
-    { id: 'transfers', name: 'Трансферы', icon: '🚌' },
-    { id: 'weather', name: 'Погода', icon: '🌤️' },
-    { id: 'ai', name: 'AI-помощник', icon: '🤖' },
-    { id: 'favorites', name: 'Избранное', icon: '❤️' },
+    { id: 'tours', name: 'Туры', Icon: Mountain },
+    { id: 'transfers', name: 'Трансферы', Icon: Bus },
+    { id: 'weather', name: 'Погода', Icon: CloudSun },
+    { id: 'ai', name: 'AI-помощник', Icon: Bot },
+    { id: 'favorites', name: 'Избранное', Icon: Heart },
   ];
 
   if (loading) {
@@ -151,7 +138,7 @@ export default function TouristDashboard() {
                   : 'text-white/70 hover:text-white hover:bg-white/10'
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
+              <tab.Icon className="w-5 h-5" />
               <span className="font-medium">{tab.name}</span>
             </button>
           ))}
@@ -231,7 +218,7 @@ export default function TouristDashboard() {
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="text-xl font-bold text-white">{tour.title}</h3>
                       <div className="flex items-center space-x-1">
-                        <span className="text-premium-gold">⭐</span>
+                        <Mountain className="w-4 h-4 text-premium-gold fill-premium-gold" />
                         <span className="text-white font-bold">{tour.rating}</span>
                         <span className="text-white/50">({tour.reviewsCount})</span>
                       </div>

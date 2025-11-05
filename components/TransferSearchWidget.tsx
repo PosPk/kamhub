@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { TransferSearchRequest, TransferOption, TransferSearchResponse } from '@/types/transfer';
+import { Star } from 'lucide-react';
 
 interface TransferSearchWidgetProps {
   className?: string;
@@ -401,7 +402,7 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
           <span className="text-sm">{transfer.driver.name}</span>
         </div>
         <div className="flex items-center gap-2 text-white/80">
-          <span>⭐</span>
+          <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
           <span className="text-sm">{transfer.driver.rating}/5</span>
         </div>
       </div>

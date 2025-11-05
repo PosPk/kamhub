@@ -4,6 +4,11 @@ import React from 'react';
 import { Partner } from '@/types';
 import { formatRating, getInitials, generateAvatarColor } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import { 
+  Building2, UserSquare2, Car, Hotel, 
+  Gift, Backpack, Truck, UtensilsCrossed,
+  Phone, Mail, Globe, MessageCircle, Star, Check
+} from 'lucide-react';
 
 interface PartnerCardProps {
   partner: Partner;
@@ -13,25 +18,26 @@ interface PartnerCardProps {
 
 export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
   const getCategoryIcon = (category: string) => {
+    const iconClass = "w-4 h-4";
     switch (category) {
       case 'operator':
-        return '🏢';
+        return <Building2 className={iconClass} />;
       case 'guide':
-        return '👨‍🏫';
+        return <UserSquare2 className={iconClass} />;
       case 'transfer':
-        return '🚗';
+        return <Car className={iconClass} />;
       case 'stay':
-        return '🏨';
+        return <Hotel className={iconClass} />;
       case 'souvenir':
-        return '🎁';
+        return <Gift className={iconClass} />;
       case 'gear':
-        return '🎒';
+        return <Backpack className={iconClass} />;
       case 'cars':
-        return '🚙';
+        return <Truck className={iconClass} />;
       case 'restaurant':
-        return '🍽️';
+        return <UtensilsCrossed className={iconClass} />;
       default:
-        return '🏢';
+        return <Building2 className={iconClass} />;
     }
   };
 
@@ -118,7 +124,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
               getCategoryColor(partner.category)
             )}
           >
-            <span>{getCategoryIcon(partner.category)}</span>
+            {getCategoryIcon(partner.category)}
             <span>{getCategoryText(partner.category)}</span>
           </span>
         </div>
@@ -127,7 +133,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
         {partner.isVerified && (
           <div className="absolute top-3 right-3">
             <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
-              <span>✓</span>
+              <Check className="w-3 h-3" />
               <span>Проверен</span>
             </span>
           </div>
@@ -143,7 +149,7 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
           </h3>
           {partner.rating > 0 && (
             <div className="flex items-center space-x-1 ml-2">
-              <span className="text-yellow-500">⭐</span>
+              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
               <span className="text-sm font-medium">{formatRating(partner.rating)}</span>
               <span className="text-xs text-gray-500">({partner.reviewCount})</span>
             </div>
@@ -160,28 +166,28 @@ export function PartnerCard({ partner, className, onClick }: PartnerCardProps) {
           <div className="space-y-2 mb-4">
             {partner.contact.phone && (
               <div className="flex items-center text-sm text-gray-600">
-                <span className="mr-2">📞</span>
+                <Phone className="w-4 h-4 mr-2" />
                 <span>{partner.contact.phone}</span>
               </div>
             )}
             
             {partner.contact.email && (
               <div className="flex items-center text-sm text-gray-600">
-                <span className="mr-2">✉️</span>
+                <Mail className="w-4 h-4 mr-2" />
                 <span className="truncate">{partner.contact.email}</span>
               </div>
             )}
             
             {partner.contact.website && (
               <div className="flex items-center text-sm text-gray-600">
-                <span className="mr-2">🌐</span>
+                <Globe className="w-4 h-4 mr-2" />
                 <span className="truncate">{partner.contact.website}</span>
               </div>
             )}
             
             {partner.contact.telegram && (
               <div className="flex items-center text-sm text-gray-600">
-                <span className="mr-2">💬</span>
+                <MessageCircle className="w-4 h-4 mr-2" />
                 <span>{partner.contact.telegram}</span>
               </div>
             )}
