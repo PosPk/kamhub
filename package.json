@@ -25,7 +25,10 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "generate:jwt-secret": "tsx scripts/generate-jwt-secret.ts",
+    "backup:db": "bash scripts/backup-database.sh",
+    "restore:db": "bash scripts/restore-database.sh"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.4",
@@ -34,6 +37,7 @@
     "@next/swc-linux-x64-gnu": "^15.5.5",
     "@types/nodemailer": "^7.0.2",
     "clsx": "^2.0.0",
+    "ioredis": "^5.3.2",
     "next": "14.2.15",
     "nodemailer": "^7.0.9",
     "pg": "^8.11.5",
