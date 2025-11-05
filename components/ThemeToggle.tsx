@@ -1,50 +1,49 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext';
+import React, { useState, useEffect } from 'react';
+import './ThemeToggle.css';
 
-interface ThemeToggleProps {
-  className?: string;
-}
+export function ThemeToggle() {
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
-export function ThemeToggle({ className = '' }: ThemeToggleProps) {
-  const [mounted, setMounted] = useState(false);
-  
   useEffect(() => {
-    setMounted(true);
+    const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
+    if (saved) {
+      setTheme(saved);
+      document.documentElement.setAttribute('data-theme', saved);
+    }
   }, []);
 
-  const { theme, toggleTheme } = useTheme();
-
-  // Не рендерим до монтирования на клиенте
-  if (!mounted) {
-    return (
-      <div className={`w-14 h-7 rounded-full bg-gray-300 dark:bg-gray-700 ${className}`} />
-    );
-  }
-
-  const buttonClass = `relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-premium-gold/50 ${
-    theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
-  } ${className}`;
-  
-  const spanClass = `absolute top-0.5 left-0.5 w-6 h-6 rounded-full bg-white shadow-md transform transition-transform duration-300 flex items-center justify-center ${
-    theme === 'dark' ? 'translate-x-7' : 'translate-x-0'
-  }`;
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
 
   return (
-    <button
+    <button 
+      className="theme-toggle-floating" 
       onClick={toggleTheme}
-      className={buttonClass}
-      aria-label="Toggle theme"
+      title={theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}
     >
-      <span className={spanClass}>
-        {theme === 'dark' ? (
-          <Moon className="w-4 h-4 text-gray-700" />
-        ) : (
-          <Sun className="w-4 h-4 text-yellow-500" />
-        )}
-      </span>
+      {theme === 'light' ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      )}
     </button>
   );
 }
