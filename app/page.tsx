@@ -14,6 +14,7 @@ import { TopBar } from '@/components/home/TopBar';
 import { AISmartSearch } from '@/components/home/AISmartSearch';
 import { RolesSection, type Role } from '@/components/home/RolesSection';
 import { FeaturesSection, type Feature } from '@/components/home/FeaturesSection';
+import { AISearchResults } from '@/components/home/AISearchResults';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
@@ -28,6 +29,8 @@ export default function HomePage() {
   });
   const [showAIChat, setShowAIChat] = useState(false);
   const [aiSearchResults, setAiSearchResults] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -74,26 +77,60 @@ export default function HomePage() {
     };
   }, []);
 
-  // AI Search handler - ДОРАБОТАНО: теперь с UI для результатов
+  // AI Search handler - ГОТОВО: с полноценным UI
   const handleAISearch = useCallback(async (query: string) => {
+    setIsSearching(true);
+    setShowSearchResults(true);
+    setAiSearchResults([]);
+    
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `Найди туры на Камчатке по запросу: ${query}`,
+          message: `Найди туры на Камчатке по запросу: ${query}. Ответь в формате JSON массива с полями: title, description, price, duration, rating, category`,
           sessionId: `search_${Date.now()}`
         })
       });
       
       if (res.ok) {
         const data = await res.json();
-        // TODO: парсить и отобразить результаты
-        setAiSearchResults([data]);
-        console.log('AI Search results:', data);
+        
+        // Парсинг AI ответа - извлекаем туры из ответа
+        let results = [];
+        try {
+          // Попытка распарсить JSON из ответа
+          const jsonMatch = data.message?.match(/\[[\s\S]*\]/);
+          if (jsonMatch) {
+            results = JSON.parse(jsonMatch[0]);
+          } else {
+            // Фолбэк: создаем результат из текста
+            results = [{
+              title: query,
+              description: data.message || 'AI обрабатывает ваш запрос...',
+              category: 'Рекомендация AI'
+            }];
+          }
+        } catch (e) {
+          // Если парсинг не удался, показываем текстовый ответ
+          results = [{
+            title: `Результаты по запросу: ${query}`,
+            description: data.message || 'Ищем туры...',
+            category: 'AI Помощник'
+          }];
+        }
+        
+        setAiSearchResults(results);
       }
     } catch (error) {
       console.error('AI Search error:', error);
+      setAiSearchResults([{
+        title: 'Ошибка поиска',
+        description: 'Не удалось выполнить поиск. Попробуйте позже.',
+        category: 'Ошибка'
+      }]);
+    } finally {
+      setIsSearching(false);
     }
   }, []);
 
@@ -306,6 +343,18 @@ export default function HomePage() {
             <AIChatWidget />
           </div>
         </div>
+      )}
+
+      {/* AI Search Results Modal */}
+      {showSearchResults && (
+        <AISearchResults
+          results={aiSearchResults}
+          isLoading={isSearching}
+          onClose={() => {
+            setShowSearchResults(false);
+            setAiSearchResults([]);
+          }}
+        />
       )}
 
       {/* Hide scrollbar */}
