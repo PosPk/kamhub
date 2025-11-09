@@ -2,237 +2,307 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import UI improvements */
-@import './ui-improvements.css';
+/* Samsung Weather Style Design */
 
-/* Modern Light & Dark Theme */
+/* Dynamic backgrounds based on time */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 :root {
-  /* Light theme colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #e9ecef;
-  --text-primary: #212529;
-  --text-secondary: #495057;
-  --text-tertiary: #6c757d;
-  --border-color: #dee2e6;
-  --accent-primary: #0d6efd;
-  --accent-secondary: #0dcaf0;
-  --success: #198754;
-  --warning: #ffc107;
-  --danger: #dc3545;
+  /* Light theme - Morning */
+  --bg-gradient-start: #87CEEB;
+  --bg-gradient-end: #E0F6FF;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-tertiary: #8a8a8a;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(255, 255, 255, 0.3);
   --shadow: rgba(0, 0, 0, 0.1);
+  --accent: #2196F3;
 }
 
 .dark {
-  /* Dark theme colors */
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-tertiary: #0f1624;
-  --text-primary: #edf2f4;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
-  --border-color: #2d3748;
-  --accent-primary: #3b82f6;
-  --accent-secondary: #06b6d4;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  /* Dark theme - Night */
+  --bg-gradient-start: #0f2027;
+  --bg-gradient-end: #2c5364;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-tertiary: #a0a0a0;
+  --card-bg: rgba(255, 255, 255, 0.1);
+  --card-border: rgba(255, 255, 255, 0.2);
   --shadow: rgba(0, 0, 0, 0.5);
+  --accent: #64B5F6;
 }
 
 /* Base styles */
 body {
-  background-color: var(--bg-primary);
+  background: linear-gradient(-45deg, var(--bg-gradient-start), var(--bg-gradient-end), var(--bg-gradient-start), var(--bg-gradient-end));
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
   color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
+  min-height: 100vh;
 }
 
-/* Utility classes */
-.bg-primary {
-  background-color: var(--bg-primary);
-}
-
-.bg-secondary {
-  background-color: var(--bg-secondary);
-}
-
-.bg-tertiary {
-  background-color: var(--bg-tertiary);
-}
-
-.text-primary {
+/* Samsung Weather Typography */
+.weather-title {
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
   color: var(--text-primary);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
-.text-secondary {
+.weather-subtitle {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   color: var(--text-secondary);
 }
 
-.text-tertiary {
+.weather-text {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--text-tertiary);
 }
 
-.border-color {
-  border-color: var(--border-color);
+/* Glass Cards */
+.weather-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--card-border);
+  border-radius: 32px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px var(--shadow);
+  transition: all 0.3s ease;
 }
 
-.accent-primary {
-  color: var(--accent-primary);
+.weather-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px var(--shadow);
 }
 
-.bg-accent-primary {
-  background-color: var(--accent-primary);
+/* Large Weather Widget Style */
+.weather-hero {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.accent-secondary {
-  color: var(--accent-secondary);
+/* Animated floating elements */
+.float-element {
+  animation: float 6s ease-in-out infinite;
 }
 
-.bg-accent-secondary {
-  background-color: var(--accent-secondary);
-}
-
-/* Gradient backgrounds */
-.gradient-aurora {
-  background: linear-gradient(135deg, 
-    var(--accent-primary) 0%, 
-    var(--accent-secondary) 50%, 
-    var(--accent-primary) 100%);
-  opacity: 0.1;
-}
-
-.animate-aurora {
-  animation: aurora 8s ease-in-out infinite;
-}
-
-@keyframes aurora {
-  0%, 100% { opacity: 0.1; transform: scale(1); }
-  50% { opacity: 0.2; transform: scale(1.05); }
-}
-
-/* Glass morphism effects */
-.glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.dark .glass {
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Button styles */
-.btn-primary {
-  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200;
-  background-color: var(--accent-primary);
-  color: white;
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px var(--shadow);
-}
-
-.btn-secondary {
-  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200;
-  background-color: transparent;
-  border: 2px solid var(--border-color);
+/* Search bar Samsung style */
+.weather-search {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 1.5rem 2rem;
+  font-size: 1.25rem;
   color: var(--text-primary);
+  transition: all 0.3s ease;
+  width: 100%;
 }
 
-.btn-secondary:hover {
-  background-color: var(--bg-secondary);
-}
-
-/* Card styles */
-.card {
-  @apply rounded-2xl p-6 transition-all duration-300;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 6px var(--shadow);
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px var(--shadow);
-}
-
-/* Video hero overlay */
-.video-overlay {
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.3) 0%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
-}
-
-.dark .video-overlay {
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.5) 0%,
-    rgba(0, 0, 0, 0.7) 100%
-  );
-}
-
-/* Input styles */
-.input {
-  @apply w-full px-4 py-3 rounded-xl transition-all duration-200;
-  background-color: var(--bg-primary);
-  border: 2px solid var(--border-color);
-  color: var(--text-primary);
-}
-
-.input:focus {
+.weather-search:focus {
   outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 8px 32px var(--shadow);
+  transform: scale(1.02);
 }
 
-/* Theme toggle button */
+.weather-search::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Button Samsung style */
+.weather-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 24px;
+  padding: 1.5rem 3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.weather-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+}
+
+/* Icon containers */
+.weather-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+  transition: all 0.3s ease;
+}
+
+.weather-icon-wrapper:hover {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Header Samsung style */
+.weather-header {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--card-border);
+  transition: all 0.3s ease;
+}
+
+/* Theme toggle Samsung style */
 .theme-toggle {
-  @apply w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200;
-  background-color: var(--bg-secondary);
-  border: 2px solid var(--border-color);
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .theme-toggle:hover {
-  background-color: var(--bg-tertiary);
-  transform: rotate(180deg);
+  transform: scale(1.1) rotate(180deg);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
-/* Smooth transitions for theme change */
+/* Temperature display style */
+.temperature {
+  font-size: clamp(6rem, 15vw, 12rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.fade-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.fade-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.fade-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
+.fade-in-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--card-bg);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+  background-clip: padding-box;
+}
+
+/* Remove transitions for specific elements during load */
 * {
-  transition-property: background-color, border-color, color;
+  transition-property: transform, opacity, box-shadow, background-color;
   transition-duration: 0.3s;
   transition-timing-function: ease;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Grid layout for cards */
+.weather-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-.fade-in {
-  animation: fadeIn 0.6s ease-out;
+/* Large clickable areas */
+.weather-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: all 0.3s ease;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 10px;
+.weather-link:hover {
+  transform: scale(1.02);
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
+/* Responsive padding */
+.weather-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(1rem, 5vw, 4rem);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
-  border-radius: 5px;
+/* Time-based background variations */
+body.morning {
+  --bg-gradient-start: #ffeaa7;
+  --bg-gradient-end: #fab1a0;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-secondary);
+body.afternoon {
+  --bg-gradient-start: #74b9ff;
+  --bg-gradient-end: #a29bfe;
+}
+
+body.evening {
+  --bg-gradient-start: #fd79a8;
+  --bg-gradient-end: #fdcb6e;
+}
+
+body.night {
+  --bg-gradient-start: #2d3436;
+  --bg-gradient-end: #636e72;
+}
+
+/* Blur overlay for depth */
+.blur-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
