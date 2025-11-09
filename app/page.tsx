@@ -7,7 +7,7 @@ import {
   TrendingUp, Star, Award, Leaf, BarChart3,
   Phone, AlertTriangle, MapPin, Check, ArrowRight,
   Home, ShoppingBag, Calendar, DollarSign, Target,
-  Activity, Zap, Heart
+  Activity, Zap, Heart, Search
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -72,7 +72,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen w-full overflow-hidden">
       {/* HERO SECTION - Samsung Weather Style */}
-      <section className={`relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
+      <section className={`relative min-h-screen w-full flex flex-col overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
         
         {/* Weather Animation */}
         {weather.condition === 'snow' && (
@@ -113,68 +113,125 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Top Bar - Logo and Time/Account */}
+        <div className="relative z-20 w-full flex items-center justify-between px-4 py-2">
+          {/* Logo Left */}
+          <a href="/" className="flex items-center gap-1.5 group">
+            <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white font-bold text-sm group-hover:scale-110 transition-transform shadow-lg">
+              K
+            </div>
+            <div className="text-white hidden sm:block">
+              <div className="font-light text-xs">Kamchatour Hub</div>
+            </div>
+          </a>
+          
+          {/* Time and Account Right */}
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <div className="text-lg font-extralight text-white tracking-tight">
+                {hoursStr}:{minutes}
+              </div>
+            </div>
+            <a href="/auth/login" className="px-3 py-1 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white text-xs font-light hover:bg-white/30 transition-all shadow-lg">
+              Вход
+            </a>
+          </div>
+        </div>
+
         {/* Content */}
         <div className="relative z-10 w-full text-center flex-1 flex flex-col items-center justify-center px-4">
           {/* Приветствие */}
-          <div className="mb-6">
-            <p className="text-2xl md:text-3xl font-light text-white/90">
+          <div className="mb-4">
+            <p className="text-xl md:text-2xl font-light text-white/90">
               {getGreeting()}, Камчатка
             </p>
           </div>
 
+          {/* Smart Search Bar */}
+          <div className="w-full max-w-2xl mb-6">
+            <div className="relative group">
+              <input
+                type="text"
+                placeholder="Найдите идеальный тур: вулканы, рыбалка, сёрфинг..."
+                className="w-full px-5 py-2.5 pl-11 bg-white/40 backdrop-blur-3xl border border-white/40 rounded-full text-white placeholder-white/60 font-light text-sm focus:bg-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all shadow-xl"
+              />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" />
+              <button className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-white/80 hover:bg-white text-gray-800 rounded-full text-xs font-medium transition-all shadow-lg">
+                Найти
+              </button>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5 justify-center">
+              <button className="px-2.5 py-0.5 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white/80 text-xs font-light hover:bg-white/30 transition-all">
+                🌋 Вулканы
+              </button>
+              <button className="px-2.5 py-0.5 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white/80 text-xs font-light hover:bg-white/30 transition-all">
+                🎣 Рыбалка
+              </button>
+              <button className="px-2.5 py-0.5 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white/80 text-xs font-light hover:bg-white/30 transition-all">
+                🏄 Сёрфинг
+              </button>
+              <button className="px-2.5 py-0.5 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white/80 text-xs font-light hover:bg-white/30 transition-all">
+                🐻 Дикая природа
+              </button>
+              <button className="px-2.5 py-0.5 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white/80 text-xs font-light hover:bg-white/30 transition-all">
+                ♨️ Термальные источники
+              </button>
+            </div>
+          </div>
+
           {/* Weather Card - МИНИМАЛИСТИЧНАЯ */}
-          <div className="inline-flex items-center gap-6 px-8 py-4 bg-white/30 backdrop-blur-3xl rounded-full border border-white/30 mb-6 shadow-xl">
-            <div className="flex items-center gap-4">
-              <ThermometerSun className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center gap-3 px-5 py-2 bg-white/30 backdrop-blur-3xl rounded-full border border-white/30 mb-3 shadow-xl">
+            <div className="flex items-center gap-2">
+              <ThermometerSun className="w-5 h-5 text-white" />
               <div className="text-left">
-                <div className="text-5xl font-extralight text-white">{weather.temp}°</div>
+                <div className="text-2xl font-extralight text-white">{weather.temp}°</div>
               </div>
             </div>
-            <div className="w-px h-12 bg-white/30"></div>
-            <div className="flex items-center gap-6 text-left">
-              <div className="flex items-center gap-2">
-                <Wind className="w-5 h-5 text-white/80" />
-                <span className="text-lg font-light text-white/80">{weather.wind} м/с</span>
+            <div className="w-px h-6 bg-white/30"></div>
+            <div className="flex items-center gap-3 text-left">
+              <div className="flex items-center gap-1">
+                <Wind className="w-3.5 h-3.5 text-white/80" />
+                <span className="text-xs font-light text-white/80">{weather.wind} м/с</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Droplets className="w-5 h-5 text-white/80" />
-                <span className="text-lg font-light text-white/80">{weather.humidity}%</span>
+              <div className="flex items-center gap-1">
+                <Droplets className="w-3.5 h-3.5 text-white/80" />
+                <span className="text-xs font-light text-white/80">{weather.humidity}%</span>
               </div>
             </div>
           </div>
 
           {/* Location */}
-          <div className="flex items-center justify-center gap-2 text-white/80 text-lg mb-12 font-light">
-            <MapPin className="w-5 h-5" />
+          <div className="flex items-center justify-center gap-1 text-white/80 text-xs mb-6 font-light">
+            <MapPin className="w-3.5 h-3.5" />
             <span>Петропавловск-Камчатский</span>
           </div>
 
           {/* Title - ИЗЯЩНЫЙ */}
-          <h1 className="text-4xl md:text-6xl font-extralight text-white mb-3 tracking-tight">
+          <h1 className="text-3xl md:text-5xl font-extralight text-white mb-2 tracking-tight">
             Kamchatour Hub
           </h1>
-          <p className="text-lg md:text-xl font-light text-white/80 mb-10">
+          <p className="text-sm md:text-base font-light text-white/80 mb-6">
             Экосистема туризма Камчатки
           </p>
 
           {/* CTA Buttons - МИНИМАЛИСТИЧНЫЕ */}
-          <div className="flex flex-wrap gap-3 justify-center">
-            <a href="/hub/tourist" className="group flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-base hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
-              <Users className="w-4 h-4" />
+          <div className="flex flex-wrap gap-2 justify-center">
+            <a href="/hub/tourist" className="group flex items-center gap-1.5 px-4 py-1.5 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-xs hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
+              <Users className="w-3 h-3" />
               Я турист
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
             </a>
-            <a href="/hub/operator" className="group flex items-center gap-2 px-6 py-3 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-base border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
-              <Briefcase className="w-4 h-4" />
+            <a href="/hub/operator" className="group flex items-center gap-1.5 px-4 py-1.5 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-xs border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
+              <Briefcase className="w-3 h-3" />
               Я бизнес
-              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
             </a>
           </div>
 
           {/* Scroll Indicator */}
-          <div className="mt-24 animate-bounce">
-            <div className={`w-6 h-10 border-2 ${isNight ? 'border-white/40' : 'border-gray-400/40'} rounded-full flex items-start justify-center p-2 mx-auto`}>
-              <div className={`w-1 h-2 ${isNight ? 'bg-white/60' : 'bg-gray-600/60'} rounded-full animate-scroll`}></div>
+          <div className="mt-12 animate-bounce">
+            <div className={`w-5 h-8 border-2 ${isNight ? 'border-white/40' : 'border-gray-400/40'} rounded-full flex items-start justify-center p-1.5 mx-auto`}>
+              <div className={`w-1 h-1.5 ${isNight ? 'bg-white/60' : 'bg-gray-600/60'} rounded-full animate-scroll`}></div>
             </div>
           </div>
         </div>
@@ -182,155 +239,155 @@ export default function HomePage() {
 
       {/* ROLES SECTION */}
       <section className="w-full bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50">
-        <div className="w-full py-12 md:py-16">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-5xl font-extralight mb-3 text-gray-800">
+        <div className="w-full py-8 md:py-10">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-4xl font-extralight mb-2 text-gray-800">
               Экосистема для каждого
             </h2>
-            <p className="text-lg font-light text-gray-600">
+            <p className="text-sm font-light text-gray-600">
               Выберите свою роль и начните зарабатывать
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-0">
             {/* Tourist */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-6 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-400/80 to-cyan-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
-                  <Users className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-400/80 to-cyan-400/80 backdrop-blur-xl rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                  <Users className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-light mb-3 text-gray-800">Турист</h3>
-                <p className="text-gray-500 mb-6 font-light">Открой Камчатку</p>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">234+ актуальных тура</span>
+                <h3 className="text-xl font-light mb-2 text-gray-800">Турист</h3>
+                <p className="text-gray-500 mb-4 font-light text-sm">Открой Камчатку</p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">234+ актуальных тура</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">Прогноз погоды на 14 дней</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">Прогноз погоды на 14 дней</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">SOS безопасность 24/7</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">SOS безопасность 24/7</span>
                   </li>
                 </ul>
-                <a href="/hub/tourist" className="inline-flex items-center gap-2 text-blue-600 font-light group-hover:gap-3 transition-all">
+                <a href="/hub/tourist" className="inline-flex items-center gap-1.5 text-blue-600 text-sm font-light group-hover:gap-2 transition-all">
                   Начать путешествие
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
 
             {/* Operator */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-6 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-purple-400/80 to-pink-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
-                  <Briefcase className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-400/80 to-pink-400/80 backdrop-blur-xl rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                  <Briefcase className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-light mb-3 text-gray-800">Туроператор</h3>
-                <p className="text-gray-500 mb-6 font-light">Управляй профессионально</p>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">CRM с аналитикой</span>
+                <h3 className="text-xl font-light mb-2 text-gray-800">Туроператор</h3>
+                <p className="text-gray-500 mb-4 font-light text-sm">Управляй профессионально</p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">CRM с аналитикой</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">+47% к доходам в среднем</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">+47% к доходам в среднем</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-purple-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">Мгновенные бронирования</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">Мгновенные бронирования</span>
                   </li>
                 </ul>
-                <a href="/hub/operator" className="inline-flex items-center gap-2 text-purple-600 font-light group-hover:gap-3 transition-all">
+                <a href="/hub/operator" className="inline-flex items-center gap-1.5 text-purple-600 text-sm font-light group-hover:gap-2 transition-all">
                   Начать зарабатывать
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
 
             {/* Guide */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-6 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-green-400/80 to-emerald-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
-                  <Compass className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-green-400/80 to-emerald-400/80 backdrop-blur-xl rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                  <Compass className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-light mb-3 text-gray-800">Гид</h3>
-                <p className="text-gray-500 mb-6 font-light">Твоё время - твои деньги</p>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">Умный календарь</span>
+                <h3 className="text-xl font-light mb-2 text-gray-800">Гид</h3>
+                <p className="text-gray-500 mb-4 font-light text-sm">Твоё время - твои деньги</p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">Умный календарь</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">До 150к₽/месяц топ гиды</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">До 150к₽/месяц топ гиды</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">Система рейтингов</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">Система рейтингов</span>
                   </li>
                 </ul>
-                <a href="/hub/guide" className="inline-flex items-center gap-2 text-green-600 font-light group-hover:gap-3 transition-all">
+                <a href="/hub/guide" className="inline-flex items-center gap-1.5 text-green-600 text-sm font-light group-hover:gap-2 transition-all">
                   Стать гидом
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
 
             {/* Transfer */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-6 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-orange-400/80 to-red-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
-                  <Car className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-400/80 to-red-400/80 backdrop-blur-xl rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                  <Car className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-light mb-3 text-gray-800">Трансфер</h3>
-                <p className="text-gray-500 mb-6 font-light">Логистика нового уровня</p>
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">Умная маршрутизация</span>
+                <h3 className="text-xl font-light mb-2 text-gray-800">Трансфер</h3>
+                <p className="text-gray-500 mb-4 font-light text-sm">Логистика нового уровня</p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">Умная маршрутизация</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-orange-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600 font-light text-sm">95% загрузка транспорта</span>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-600 font-light text-xs">95% загрузка транспорта</span>
                   </li>
                 </ul>
-                <a href="/hub/transfer" className="inline-flex items-center gap-2 text-orange-600 font-light group-hover:gap-3 transition-all">
+                <a href="/hub/transfer" className="inline-flex items-center gap-1.5 text-orange-600 text-sm font-light group-hover:gap-2 transition-all">
                   Подключить транспорт
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
 
             {/* Stay */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-6 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-indigo-400/80 to-blue-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
-                  <Home className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-400/80 to-blue-400/80 backdrop-blur-xl rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                  <Home className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-light mb-3 text-gray-800">Размещение</h3>
-                <p className="text-gray-500 mb-6 font-light">Гостиницы и отели</p>
-                <a href="/hub/stay" className="inline-flex items-center gap-2 text-indigo-600 font-light group-hover:gap-3 transition-all">
+                <h3 className="text-xl font-light mb-2 text-gray-800">Размещение</h3>
+                <p className="text-gray-500 mb-4 font-light text-sm">Гостиницы и отели</p>
+                <a href="/hub/stay" className="inline-flex items-center gap-1.5 text-indigo-600 text-sm font-light group-hover:gap-2 transition-all">
                   Подробнее
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
 
             {/* Souvenirs */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-6 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-pink-400/80 to-rose-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
-                  <ShoppingBag className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-pink-400/80 to-rose-400/80 backdrop-blur-xl rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500 shadow-xl">
+                  <ShoppingBag className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-2xl font-light mb-3 text-gray-800">Сувениры</h3>
-                <p className="text-gray-500 mb-6 font-light">Магазины и мастера</p>
-                <a href="/hub/souvenirs" className="inline-flex items-center gap-2 text-pink-600 font-light group-hover:gap-3 transition-all">
+                <h3 className="text-xl font-light mb-2 text-gray-800">Сувениры</h3>
+                <p className="text-gray-500 mb-4 font-light text-sm">Магазины и мастера</p>
+                <a href="/hub/souvenirs" className="inline-flex items-center gap-1.5 text-pink-600 text-sm font-light group-hover:gap-2 transition-all">
                   Подробнее
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </a>
               </div>
             </div>
@@ -340,62 +397,62 @@ export default function HomePage() {
 
       {/* FEATURES SECTION */}
       <section className="w-full bg-gradient-to-br from-green-50/40 via-emerald-50/30 to-teal-50/40">
-        <div className="w-full py-20 md:py-28">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-extralight mb-4 text-gray-800">
+        <div className="w-full py-8 md:py-10">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-4xl font-extralight mb-2 text-gray-800">
               Уникальные возможности
             </h2>
-            <p className="text-xl font-light text-gray-600">
+            <p className="text-sm font-light text-gray-600">
               Технологии, которые делают путешествия лучше
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-0">
-            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
-              <ThermometerSun className="w-12 h-12 text-blue-500 mb-6" />
-              <h3 className="text-2xl font-light text-gray-800 mb-4">Метеослужба</h3>
-              <p className="text-gray-600 font-light mb-6 text-sm">
+            <div className="bg-white/50 backdrop-blur-[80px] p-6 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+              <ThermometerSun className="w-10 h-10 text-blue-500 mb-4" />
+              <h3 className="text-lg font-light text-gray-800 mb-3">Метеослужба</h3>
+              <p className="text-gray-600 font-light mb-4 text-xs">
                 Прогноз погоды на 14 дней
               </p>
-              <a href="/hub/tourist" className="inline-flex items-center gap-2 text-blue-600 font-light hover:gap-3 transition-all text-sm">
+              <a href="/hub/tourist" className="inline-flex items-center gap-1.5 text-blue-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3 h-3" />
               </a>
             </div>
 
-            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
-              <Shield className="w-12 h-12 text-red-500 mb-6" />
-              <h3 className="text-2xl font-light text-gray-800 mb-4">Безопасность 24/7</h3>
-              <p className="text-gray-600 font-light mb-6 text-sm">
+            <div className="bg-white/50 backdrop-blur-[80px] p-6 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+              <Shield className="w-10 h-10 text-red-500 mb-4" />
+              <h3 className="text-lg font-light text-gray-800 mb-3">Безопасность 24/7</h3>
+              <p className="text-gray-600 font-light mb-4 text-xs">
                 SOS с геолокацией
               </p>
-              <a href="/hub/safety" className="inline-flex items-center gap-2 text-red-600 font-light hover:gap-3 transition-all text-sm">
+              <a href="/hub/safety" className="inline-flex items-center gap-1.5 text-red-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3 h-3" />
               </a>
             </div>
 
-            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
-              <Leaf className="w-12 h-12 text-green-500 mb-6" />
-              <h3 className="text-2xl font-light text-gray-800 mb-4">Eco-Points</h3>
-              <p className="text-gray-600 font-light mb-6 text-sm">
+            <div className="bg-white/50 backdrop-blur-[80px] p-6 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+              <Leaf className="w-10 h-10 text-green-500 mb-4" />
+              <h3 className="text-lg font-light text-gray-800 mb-3">Eco-Points</h3>
+              <p className="text-gray-600 font-light mb-4 text-xs">
                 Зарабатывай баллы
               </p>
-              <a href="/hub/tourist" className="inline-flex items-center gap-2 text-green-600 font-light hover:gap-3 transition-all text-sm">
+              <a href="/hub/tourist" className="inline-flex items-center gap-1.5 text-green-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3 h-3" />
               </a>
             </div>
 
-            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
-              <BarChart3 className="w-12 h-12 text-purple-500 mb-6" />
-              <h3 className="text-2xl font-light text-gray-800 mb-4">Аналитика</h3>
-              <p className="text-gray-600 font-light mb-6 text-sm">
+            <div className="bg-white/50 backdrop-blur-[80px] p-6 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+              <BarChart3 className="w-10 h-10 text-purple-500 mb-4" />
+              <h3 className="text-lg font-light text-gray-800 mb-3">Аналитика</h3>
+              <p className="text-gray-600 font-light mb-4 text-xs">
                 Детальная статистика
               </p>
-              <a href="/hub/operator" className="inline-flex items-center gap-2 text-purple-600 font-light hover:gap-3 transition-all text-sm">
+              <a href="/hub/operator" className="inline-flex items-center gap-1.5 text-purple-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3 h-3" />
               </a>
             </div>
           </div>
@@ -404,22 +461,22 @@ export default function HomePage() {
 
       {/* FINAL CTA */}
       <section className={`w-full bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
-        <div className="w-full py-20 md:py-28 text-center">
-          <Target className={`w-16 h-16 mx-auto mb-8 ${isNight ? 'text-white/80' : 'text-gray-700'}`} />
-          <h2 className={`text-4xl md:text-6xl font-extralight ${textColor} mb-8`}>
+        <div className="w-full py-12 md:py-16 text-center">
+          <Target className={`w-12 h-12 mx-auto mb-6 ${isNight ? 'text-white/80' : 'text-gray-700'}`} />
+          <h2 className={`text-2xl md:text-4xl font-extralight ${textColor} mb-6`}>
             Готовы начать?
           </h2>
-          <p className={`text-xl font-light ${textSecondary} mb-16 max-w-2xl mx-auto`}>
+          <p className={`text-base font-light ${textSecondary} mb-10 max-w-2xl mx-auto px-4`}>
             Присоединяйтесь к экосистеме туризма Камчатки уже сегодня
           </p>
           
-          <div className="flex flex-wrap gap-4 justify-center">
-            <a href="/hub/tourist" className="flex items-center gap-3 px-10 py-4 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-lg hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
-              <Users className="w-6 h-6" />
+          <div className="flex flex-wrap gap-3 justify-center">
+            <a href="/hub/tourist" className="flex items-center gap-2 px-6 py-2.5 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-sm hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
+              <Users className="w-4 h-4" />
               Искать туры
             </a>
-            <a href="/hub/operator" className="flex items-center gap-3 px-10 py-4 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-lg border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
-              <Briefcase className="w-6 h-6" />
+            <a href="/hub/operator" className="flex items-center gap-2 px-6 py-2.5 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-sm border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
+              <Briefcase className="w-4 h-4" />
               Открыть CRM
             </a>
           </div>
