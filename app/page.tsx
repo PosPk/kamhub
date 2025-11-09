@@ -10,9 +10,10 @@ import {
   Home, ShoppingBag, Calendar, DollarSign, Target,
   Activity, Zap, Heart, Search, CloudRain, Stars,
   Sparkles, MessageCircle, Send, X, Flame, Fish, 
-  Waves, TreePine, Droplet, Bike, Camera, Plane,
-  Utensils, Ship, Dog, Footprints, Snowflake, Tent,
-  Palmtree, Anchor, Eye, Mountain as Peak, Sunrise
+  Waves, TreePine, Droplet, Camera, Tent,
+  Utensils, Ship, Dog, Footprints, Sunrise,
+  Binoculars, Snowflake, Helicopter, TentTree,
+  Truck, Sailboat, Cloudy, Timer, Wine, Navigation
 } from 'lucide-react';
 import { AIChatWidget } from '@/components/AIChatWidget';
 
@@ -174,30 +175,30 @@ export default function HomePage() {
     }
   ];
 
-  // Quick search categories БЕЗ ЭМОДЗИ - Активности Камчатки
+  // Quick search categories БЕЗ ЭМОДЗИ - Активности Камчатки (ПЕРЕСМОТРЕННЫЕ ИКОНКИ)
   const searchCategories = [
-    { icon: Flame, label: 'Вулканы' },
-    { icon: Fish, label: 'Рыбалка' },
-    { icon: Droplet, label: 'Термальные источники' },
-    { icon: Eye, label: 'Медведи' },
-    { icon: Snowflake, label: 'Хели-ски' },
-    { icon: Bike, label: 'Снегоходы' },
-    { icon: Waves, label: 'Каякинг' },
-    { icon: CloudSnow, label: 'Восхождения' },
-    { icon: Camera, label: 'Фототуры' },
-    { icon: Ship, label: 'Морские прогулки' },
-    { icon: Anchor, label: 'Наблюдение за китами' },
-    { icon: Dog, label: 'Собачьи упряжки' },
-    { icon: Plane, label: 'Вертолетные туры' },
-    { icon: Utensils, label: 'Гастротуры' },
-    { icon: Car, label: 'Джип-туры' },
-    { icon: Footprints, label: 'Этнотуры' },
-    { icon: TreePine, label: 'Экотуры' },
-    { icon: Tent, label: 'Кемпинг' },
-    { icon: Palmtree, label: 'Сёрфинг' },
-    { icon: Sunrise, label: 'Рассветы' },
-    { icon: Peak, label: 'Трекинг' },
-    { icon: Activity, label: 'Дайвинг' }
+    { icon: Flame, label: 'Вулканы' },              // ✅ Огонь - идеально для вулканов
+    { icon: Fish, label: 'Рыбалка' },               // ✅ Рыба - идеально
+    { icon: Droplet, label: 'Термальные источники' }, // ✅ Капля - подходит для воды
+    { icon: Binoculars, label: 'Медведи' },         // ✅ Бинокль - наблюдение за медведями
+    { icon: Helicopter, label: 'Хели-ски' },        // ✅ Вертолет - точное соответствие
+    { icon: Wind, label: 'Снегоходы' },             // ✅ Ветер - скорость и движение
+    { icon: Waves, label: 'Каякинг' },              // ✅ Волны - водный спорт
+    { icon: Mountain, label: 'Восхождения' },       // ✅ Гора - восхождения
+    { icon: Camera, label: 'Фототуры' },            // ✅ Камера - фотография
+    { icon: Ship, label: 'Морские прогулки' },      // ✅ Корабль - морские туры
+    { icon: Sailboat, label: 'Наблюдение за китами' }, // ✅ Парусник - наблюдение с лодки
+    { icon: Dog, label: 'Собачьи упряжки' },        // ✅ Собака - упряжки
+    { icon: Helicopter, label: 'Вертолетные туры' }, // ✅ Вертолет - точное соответствие
+    { icon: Utensils, label: 'Гастротуры' },        // ✅ Приборы - еда
+    { icon: Truck, label: 'Джип-туры' },            // ✅ Грузовик - внедорожник
+    { icon: Footprints, label: 'Этнотуры' },        // ✅ Следы - путешествие
+    { icon: TreePine, label: 'Экотуры' },           // ✅ Сосна - природа
+    { icon: Tent, label: 'Кемпинг' },               // ✅ Палатка - кемпинг
+    { icon: Waves, label: 'Сёрфинг' },              // ✅ Волны - серфинг
+    { icon: Sunrise, label: 'Рассветы' },           // ✅ Восход - рассвет
+    { icon: Navigation, label: 'Трекинг' },         // ✅ Навигация - походы
+    { icon: Cloudy, label: 'Дайвинг' }              // ✅ Облака/глубина - подводное
   ];
 
   return (
