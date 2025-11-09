@@ -114,60 +114,46 @@ export default function HomePage() {
         )}
 
         {/* Content */}
-        <div className="relative z-10 w-full text-center">
+        <div className="relative z-10 w-full text-center flex-1 flex flex-col items-center justify-center">
           {/* Приветствие */}
-          <div className="mb-4">
-            <p className={`text-2xl md:text-3xl font-light ${textSecondary}`}>
+          <div className="mb-8">
+            <p className="text-3xl md:text-4xl font-light text-white/90">
               {getGreeting()}, Камчатка
             </p>
           </div>
 
-          {/* Time Display - ИЗЯЩНЫЙ */}
-          <div className="mb-8">
-            <div className={`text-7xl md:text-8xl lg:text-9xl font-extralight ${textColor} tracking-tighter leading-none`}>
-              {hoursStr}<span className="text-gray-400">:</span>{minutes}
-            </div>
-            <div className={`text-lg md:text-xl font-light ${textSecondary} mt-4`}>
-              {currentTime.toLocaleDateString('ru-RU', { 
-                weekday: 'long', 
-                day: 'numeric',
-                month: 'long'
-              })}
-            </div>
-          </div>
-
           {/* Weather Card - МИНИМАЛИСТИЧНАЯ */}
-          <div className="inline-flex items-center gap-8 px-10 py-6 bg-white/40 backdrop-blur-3xl rounded-full border border-white/30 mb-12 shadow-xl">
+          <div className="inline-flex items-center gap-8 px-10 py-6 bg-white/30 backdrop-blur-3xl rounded-full border border-white/30 mb-8 shadow-xl">
             <div className="flex items-center gap-4">
-              <ThermometerSun className={`w-8 h-8 ${textColor}`} />
+              <ThermometerSun className="w-8 h-8 text-white" />
               <div className="text-left">
-                <div className={`text-5xl font-extralight ${textColor}`}>{weather.temp}°</div>
+                <div className="text-5xl font-extralight text-white">{weather.temp}°</div>
               </div>
             </div>
-            <div className="w-px h-12 bg-gray-300/50"></div>
+            <div className="w-px h-12 bg-white/30"></div>
             <div className="flex items-center gap-6 text-left">
               <div className="flex items-center gap-2">
-                <Wind className={`w-5 h-5 ${textSecondary}`} />
-                <span className={`text-lg font-light ${textSecondary}`}>{weather.wind} м/с</span>
+                <Wind className="w-5 h-5 text-white/80" />
+                <span className="text-lg font-light text-white/80">{weather.wind} м/с</span>
               </div>
               <div className="flex items-center gap-2">
-                <Droplets className={`w-5 h-5 ${textSecondary}`} />
-                <span className={`text-lg font-light ${textSecondary}`}>{weather.humidity}%</span>
+                <Droplets className="w-5 h-5 text-white/80" />
+                <span className="text-lg font-light text-white/80">{weather.humidity}%</span>
               </div>
             </div>
           </div>
 
           {/* Location */}
-          <div className={`flex items-center justify-center gap-2 ${textSecondary} text-lg mb-16 font-light`}>
+          <div className="flex items-center justify-center gap-2 text-white/80 text-lg mb-12 font-light">
             <MapPin className="w-5 h-5" />
             <span>Петропавловск-Камчатский</span>
           </div>
 
           {/* Title - ИЗЯЩНЫЙ */}
-          <h1 className={`text-5xl md:text-7xl font-extralight ${textColor} mb-4 tracking-tight`}>
+          <h1 className="text-5xl md:text-7xl font-extralight text-white mb-4 tracking-tight">
             Kamchatour Hub
           </h1>
-          <p className={`text-xl md:text-2xl font-light ${textSecondary} mb-16`}>
+          <p className="text-xl md:text-2xl font-light text-white/80 mb-16">
             Экосистема туризма Камчатки
           </p>
 
@@ -195,7 +181,7 @@ export default function HomePage() {
       </section>
 
       {/* ROLES SECTION */}
-      <section className="w-full bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      <section className="w-full bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50">
         <div className="w-full py-20 md:py-28">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-extralight mb-4 text-gray-800">
@@ -353,7 +339,7 @@ export default function HomePage() {
       </section>
 
       {/* FEATURES SECTION */}
-      <section className="w-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      <section className="w-full bg-gradient-to-br from-green-50/40 via-emerald-50/30 to-teal-50/40">
         <div className="w-full py-20 md:py-28">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-extralight mb-4 text-gray-800">
