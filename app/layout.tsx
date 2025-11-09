@@ -1,6 +1,9 @@
 export const metadata = {
   title: 'Kamchatour Hub - Экосистема туризма Камчатки',
   description: 'Туры, партнёры, CRM, бронирование, безопасность, рефералы и экология — в едином центре.',
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 import './globals.css'
