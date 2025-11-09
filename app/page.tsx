@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   Cloud, Sun, Wind, Droplets, ThermometerSun, Moon, CloudSnow,
   Mountain, Users, Compass, Car, Briefcase, Shield,
   TrendingUp, Star, Award, Leaf, BarChart3,
   Phone, AlertTriangle, MapPin, Check, ArrowRight,
   Home, ShoppingBag, Calendar, DollarSign, Target,
-  Activity, Zap, Heart, Search
+  Activity, Zap, Heart, Search, CloudRain, Stars
 } from 'lucide-react';
 
 export default function HomePage() {
@@ -15,16 +16,45 @@ export default function HomePage() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [weather, setWeather] = useState({
     temp: 8,
-    condition: 'snow', // 'snow', 'wind', 'rain', 'clear'
+    condition: 'clear', // 'snow', 'wind', 'rain', 'clear', 'clouds'
     wind: 12,
     humidity: 78,
-    feels_like: 5
+    feels_like: 5,
+    description: 'ясно'
   });
 
   useEffect(() => {
     setMounted(true);
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
+    
+    // Загрузка реальной погоды
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch('/api/weather?city=Petropavlovsk-Kamchatsky');
+        if (res.ok) {
+          const data = await res.json();
+          setWeather({
+            temp: Math.round(data.temp),
+            condition: data.condition,
+            wind: Math.round(data.wind_speed),
+            humidity: data.humidity,
+            feels_like: Math.round(data.feels_like),
+            description: data.description
+          });
+        }
+      } catch (error) {
+        console.error('Weather fetch error:', error);
+      }
+    };
+    
+    fetchWeather();
+    // Обновляем погоду каждые 5 минут
+    const weatherTimer = setInterval(fetchWeather, 5 * 60 * 1000);
+    
+    return () => {
+      clearInterval(timer);
+      clearInterval(weatherTimer);
+    };
   }, []);
 
   if (!mounted) {
@@ -75,6 +105,26 @@ export default function HomePage() {
       <section className={`relative min-h-screen w-full flex flex-col overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
         
         {/* Weather Animation */}
+        {/* Stars Animation for Clear Weather */}
+        {(weather.condition === 'clear' && isNight) && (
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(100)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-pulse"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  animationDelay: `${Math.random() * 3}s`,
+                  animationDuration: `${2 + Math.random() * 3}s`
+                }}
+              >
+                <div className="w-1 h-1 bg-white/80 rounded-full" />
+              </div>
+            ))}
+          </div>
+        )}
+
         {weather.condition === 'snow' && (
           <div className="absolute inset-0 pointer-events-none">
             {[...Array(50)].map((_, i) => (
@@ -94,7 +144,26 @@ export default function HomePage() {
           </div>
         )}
 
-        {weather.condition === 'wind' && (
+        {weather.condition === 'rain' && (
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(100)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-snow"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `-${Math.random() * 20}%`,
+                  animationDelay: `${Math.random() * 2}s`,
+                  animationDuration: `${1 + Math.random() * 2}s`
+                }}
+              >
+                <div className="w-0.5 h-4 bg-blue-400/40" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {(weather.condition === 'clouds' || weather.condition === 'wind') && (
           <div className="absolute inset-0 pointer-events-none">
             {[...Array(20)].map((_, i) => (
               <div
@@ -116,14 +185,14 @@ export default function HomePage() {
         {/* Top Bar - Logo and Time/Account */}
         <div className="relative z-20 w-full flex items-center justify-between px-4 py-2">
           {/* Logo Left */}
-          <a href="/" className="flex items-center gap-1.5 group">
+          <Link href="/" className="flex items-center gap-1.5 group">
             <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-xl border border-white/30 flex items-center justify-center text-white font-bold text-sm group-hover:scale-110 transition-transform shadow-lg">
               K
             </div>
             <div className="text-white hidden sm:block">
               <div className="font-light text-xs">Kamchatour Hub</div>
             </div>
-          </a>
+          </Link>
           
           {/* Time and Account Right */}
           <div className="flex items-center gap-2">
@@ -132,9 +201,9 @@ export default function HomePage() {
                 {hoursStr}:{minutes}
               </div>
             </div>
-            <a href="/auth/login" className="px-3 py-1 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white text-xs font-light hover:bg-white/30 transition-all shadow-lg">
+            <Link href="/auth/login" className="px-3 py-1 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full text-white text-xs font-light hover:bg-white/30 transition-all shadow-lg">
               Вход
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -216,16 +285,16 @@ export default function HomePage() {
 
           {/* CTA Buttons - МИНИМАЛИСТИЧНЫЕ */}
           <div className="flex flex-wrap gap-2 justify-center">
-            <a href="/hub/tourist" className="group flex items-center gap-1.5 px-4 py-1.5 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-xs hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
+            <Link href="/hub/tourist" className="group flex items-center gap-1.5 px-4 py-1.5 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-xs hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
               <Users className="w-3 h-3" />
               Я турист
               <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a href="/hub/operator" className="group flex items-center gap-1.5 px-4 py-1.5 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-xs border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
+            </Link>
+            <Link href="/hub/operator" className="group flex items-center gap-1.5 px-4 py-1.5 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-xs border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
               <Briefcase className="w-3 h-3" />
               Я бизнес
               <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
-            </a>
+            </Link>
           </div>
 
           {/* Scroll Indicator */}
@@ -272,10 +341,10 @@ export default function HomePage() {
                     <span className="text-gray-600 font-light text-xs">SOS безопасность 24/7</span>
                   </li>
                 </ul>
-                <a href="/hub/tourist" className="inline-flex items-center gap-1.5 text-blue-600 text-sm font-light group-hover:gap-2 transition-all">
+                <Link href="/hub/tourist" className="inline-flex items-center gap-1.5 text-blue-600 text-sm font-light group-hover:gap-2 transition-all">
                   Начать путешествие
                   <ArrowRight className="w-3.5 h-3.5" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -301,10 +370,10 @@ export default function HomePage() {
                     <span className="text-gray-600 font-light text-xs">Мгновенные бронирования</span>
                   </li>
                 </ul>
-                <a href="/hub/operator" className="inline-flex items-center gap-1.5 text-purple-600 text-sm font-light group-hover:gap-2 transition-all">
+                <Link href="/hub/operator" className="inline-flex items-center gap-1.5 text-purple-600 text-sm font-light group-hover:gap-2 transition-all">
                   Начать зарабатывать
                   <ArrowRight className="w-3.5 h-3.5" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -330,10 +399,10 @@ export default function HomePage() {
                     <span className="text-gray-600 font-light text-xs">Система рейтингов</span>
                   </li>
                 </ul>
-                <a href="/hub/guide" className="inline-flex items-center gap-1.5 text-green-600 text-sm font-light group-hover:gap-2 transition-all">
+                <Link href="/hub/guide" className="inline-flex items-center gap-1.5 text-green-600 text-sm font-light group-hover:gap-2 transition-all">
                   Стать гидом
                   <ArrowRight className="w-3.5 h-3.5" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -355,10 +424,10 @@ export default function HomePage() {
                     <span className="text-gray-600 font-light text-xs">95% загрузка транспорта</span>
                   </li>
                 </ul>
-                <a href="/hub/transfer" className="inline-flex items-center gap-1.5 text-orange-600 text-sm font-light group-hover:gap-2 transition-all">
+                <Link href="/hub/transfer" className="inline-flex items-center gap-1.5 text-orange-600 text-sm font-light group-hover:gap-2 transition-all">
                   Подключить транспорт
                   <ArrowRight className="w-3.5 h-3.5" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -370,10 +439,10 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-light mb-2 text-gray-800">Размещение</h3>
                 <p className="text-gray-500 mb-4 font-light text-sm">Гостиницы и отели</p>
-                <a href="/hub/stay" className="inline-flex items-center gap-1.5 text-indigo-600 text-sm font-light group-hover:gap-2 transition-all">
+                <Link href="/hub/stay" className="inline-flex items-center gap-1.5 text-indigo-600 text-sm font-light group-hover:gap-2 transition-all">
                   Подробнее
                   <ArrowRight className="w-3.5 h-3.5" />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -385,10 +454,10 @@ export default function HomePage() {
                 </div>
                 <h3 className="text-xl font-light mb-2 text-gray-800">Сувениры</h3>
                 <p className="text-gray-500 mb-4 font-light text-sm">Магазины и мастера</p>
-                <a href="/hub/souvenirs" className="inline-flex items-center gap-1.5 text-pink-600 text-sm font-light group-hover:gap-2 transition-all">
+                <Link href="/hub/souvenirs" className="inline-flex items-center gap-1.5 text-pink-600 text-sm font-light group-hover:gap-2 transition-all">
                   Подробнее
                   <ArrowRight className="w-3.5 h-3.5" />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -414,10 +483,10 @@ export default function HomePage() {
               <p className="text-gray-600 font-light mb-4 text-xs">
                 Прогноз погоды на 14 дней
               </p>
-              <a href="/hub/tourist" className="inline-flex items-center gap-1.5 text-blue-600 text-xs font-light hover:gap-2 transition-all">
+              <Link href="/hub/tourist" className="inline-flex items-center gap-1.5 text-blue-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
                 <ArrowRight className="w-3 h-3" />
-              </a>
+              </Link>
             </div>
 
             <div className="bg-white/50 backdrop-blur-[80px] p-6 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
@@ -426,10 +495,10 @@ export default function HomePage() {
               <p className="text-gray-600 font-light mb-4 text-xs">
                 SOS с геолокацией
               </p>
-              <a href="/hub/safety" className="inline-flex items-center gap-1.5 text-red-600 text-xs font-light hover:gap-2 transition-all">
+              <Link href="/hub/safety" className="inline-flex items-center gap-1.5 text-red-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
                 <ArrowRight className="w-3 h-3" />
-              </a>
+              </Link>
             </div>
 
             <div className="bg-white/50 backdrop-blur-[80px] p-6 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
@@ -438,10 +507,10 @@ export default function HomePage() {
               <p className="text-gray-600 font-light mb-4 text-xs">
                 Зарабатывай баллы
               </p>
-              <a href="/hub/tourist" className="inline-flex items-center gap-1.5 text-green-600 text-xs font-light hover:gap-2 transition-all">
+              <Link href="/hub/tourist" className="inline-flex items-center gap-1.5 text-green-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
                 <ArrowRight className="w-3 h-3" />
-              </a>
+              </Link>
             </div>
 
             <div className="bg-white/50 backdrop-blur-[80px] p-6 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
@@ -450,10 +519,10 @@ export default function HomePage() {
               <p className="text-gray-600 font-light mb-4 text-xs">
                 Детальная статистика
               </p>
-              <a href="/hub/operator" className="inline-flex items-center gap-1.5 text-purple-600 text-xs font-light hover:gap-2 transition-all">
+              <Link href="/hub/operator" className="inline-flex items-center gap-1.5 text-purple-600 text-xs font-light hover:gap-2 transition-all">
                 Подробнее
                 <ArrowRight className="w-3 h-3" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -471,14 +540,14 @@ export default function HomePage() {
           </p>
           
           <div className="flex flex-wrap gap-3 justify-center">
-            <a href="/hub/tourist" className="flex items-center gap-2 px-6 py-2.5 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-sm hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
+            <Link href="/hub/tourist" className="flex items-center gap-2 px-6 py-2.5 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-sm hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
               <Users className="w-4 h-4" />
               Искать туры
-            </a>
-            <a href="/hub/operator" className="flex items-center gap-2 px-6 py-2.5 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-sm border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
+            </Link>
+            <Link href="/hub/operator" className="flex items-center gap-2 px-6 py-2.5 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-sm border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
               <Briefcase className="w-4 h-4" />
               Открыть CRM
-            </a>
+            </Link>
           </div>
         </div>
       </section>
