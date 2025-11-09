@@ -10,7 +10,9 @@ import {
   Home, ShoppingBag, Calendar, DollarSign, Target,
   Activity, Zap, Heart, Search, CloudRain, Stars,
   Sparkles, MessageCircle, Send, X, Flame, Fish, 
-  Waves, TreePine, Droplet
+  Waves, TreePine, Droplet, Bike, Camera, Plane,
+  Utensils, Ship, Dog, Footprints, Snowflake, Tent,
+  Palmtree, Anchor, Eye, Mountain as Peak, Sunrise
 } from 'lucide-react';
 import { AIChatWidget } from '@/components/AIChatWidget';
 
@@ -172,13 +174,30 @@ export default function HomePage() {
     }
   ];
 
-  // Quick search categories БЕЗ ЭМОДЗИ
+  // Quick search categories БЕЗ ЭМОДЗИ - Активности Камчатки
   const searchCategories = [
     { icon: Flame, label: 'Вулканы' },
     { icon: Fish, label: 'Рыбалка' },
-    { icon: Waves, label: 'Сёрфинг' },
-    { icon: TreePine, label: 'Природа' },
-    { icon: Droplet, label: 'Термальные источники' }
+    { icon: Droplet, label: 'Термальные источники' },
+    { icon: Eye, label: 'Медведи' },
+    { icon: Snowflake, label: 'Хели-ски' },
+    { icon: Bike, label: 'Снегоходы' },
+    { icon: Waves, label: 'Каякинг' },
+    { icon: CloudSnow, label: 'Восхождения' },
+    { icon: Camera, label: 'Фототуры' },
+    { icon: Ship, label: 'Морские прогулки' },
+    { icon: Anchor, label: 'Наблюдение за китами' },
+    { icon: Dog, label: 'Собачьи упряжки' },
+    { icon: Plane, label: 'Вертолетные туры' },
+    { icon: Utensils, label: 'Гастротуры' },
+    { icon: Car, label: 'Джип-туры' },
+    { icon: Footprints, label: 'Этнотуры' },
+    { icon: TreePine, label: 'Экотуры' },
+    { icon: Tent, label: 'Кемпинг' },
+    { icon: Palmtree, label: 'Сёрфинг' },
+    { icon: Sunrise, label: 'Рассветы' },
+    { icon: Peak, label: 'Трекинг' },
+    { icon: Activity, label: 'Дайвинг' }
   ];
 
   return (
