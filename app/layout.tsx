@@ -14,6 +14,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { OrdersProvider } from '@/contexts/OrdersContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ThemeToggle } from '@/components/ThemeToggle'
+import { MobileBottomNav } from '@/components/MobileBottomNav'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <RoleProvider>
               <OrdersProvider>
                 {children}
+                <MobileBottomNav />
               </OrdersProvider>
             </RoleProvider>
           </AuthProvider>
