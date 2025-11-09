@@ -181,13 +181,13 @@ export default function Home() {
               <h3 className="text-2xl font-bold">Безопасность</h3>
             </div>
             <div className="space-y-3">
-              <a href="#" className="weather-button w-full text-center block bg-gradient-to-r from-red-400 to-rose-400">
+              <a href="/hub/safety" className="weather-button w-full text-center block bg-gradient-to-r from-red-400 to-rose-400">
                 SOS Экстренная помощь
               </a>
-              <a href="#" className="weather-card block text-center py-3 hover:scale-105 transition-transform">
+              <a href="/hub/safety" className="weather-card block text-center py-3 hover:scale-105 transition-transform">
                 МЧС Камчатки
               </a>
-              <a href="#" className="weather-card block text-center py-3 hover:scale-105 transition-transform">
+              <a href="/hub/safety" className="weather-card block text-center py-3 hover:scale-105 transition-transform">
                 Сейсмическая активность
               </a>
             </div>
