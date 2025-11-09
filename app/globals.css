@@ -133,7 +133,7 @@
 }
 
 :root {
-  /* Light theme - Morning */
+  /* Light theme - Morning with Ultramarine */
   --bg-gradient-start: #87CEEB;
   --bg-gradient-end: #E0F6FF;
   --text-primary: #1a1a1a;
@@ -143,10 +143,13 @@
   --card-border: rgba(255, 255, 255, 0.3);
   --shadow: rgba(0, 0, 0, 0.1);
   --accent: #2196F3;
+  --ultramarine: #120A8F;
+  --ultramarine-light: #4169E1;
+  --ultramarine-lighter: #6495ED;
 }
 
 .dark {
-  /* Dark theme - Night */
+  /* Dark theme - Night with Ultramarine */
   --bg-gradient-start: #0f2027;
   --bg-gradient-end: #2c5364;
   --text-primary: #ffffff;
@@ -156,6 +159,9 @@
   --card-border: rgba(255, 255, 255, 0.2);
   --shadow: rgba(0, 0, 0, 0.5);
   --accent: #64B5F6;
+  --ultramarine: #6495ED;
+  --ultramarine-light: #87CEEB;
+  --ultramarine-lighter: #B0E0E6;
 }
 
 /* Base styles */
@@ -390,25 +396,29 @@ body {
   padding: clamp(1rem, 5vw, 4rem);
 }
 
-/* Time-based background variations */
+/* Time-based background variations with Ultramarine */
 body.morning {
-  --bg-gradient-start: #ffeaa7;
-  --bg-gradient-end: #fab1a0;
+  --bg-gradient-start: #87CEEB;
+  --bg-gradient-end: #B0E0E6;
+  --ultramarine: #4169E1;
 }
 
 body.afternoon {
-  --bg-gradient-start: #74b9ff;
-  --bg-gradient-end: #a29bfe;
+  --bg-gradient-start: #6495ED;
+  --bg-gradient-end: #87CEEB;
+  --ultramarine: #120A8F;
 }
 
 body.evening {
-  --bg-gradient-start: #fd79a8;
-  --bg-gradient-end: #fdcb6e;
+  --bg-gradient-start: #4169E1;
+  --bg-gradient-end: #9370DB;
+  --ultramarine: #120A8F;
 }
 
 body.night {
-  --bg-gradient-start: #2d3436;
-  --bg-gradient-end: #636e72;
+  --bg-gradient-start: #0f1f3f;
+  --bg-gradient-end: #1a2f4f;
+  --ultramarine: #4169E1;
 }
 
 /* Blur overlay for depth */
