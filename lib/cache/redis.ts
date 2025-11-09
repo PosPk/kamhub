@@ -48,15 +48,15 @@ class RedisCache {
   private initialize() {
     try {
       // Проверяем что Redis настроен
-      if (!config.cache.enabled) {
+      const redisUrl = config.cache.redis.url;
+      if (!redisUrl || redisUrl === 'redis://localhost:6379') {
         console.log('ℹ️  Redis кэширование отключено (используется in-memory)');
         return;
       }
 
-      this.client = new Redis({
-        host: config.cache.host,
-        port: config.cache.port,
-        password: config.cache.password || undefined,
+      this.client = new Redis(redisUrl, {
+        password: config.cache.redis.password || undefined,
+        db: config.cache.redis.db,
         retryStrategy: (times) => {
           const delay = Math.min(times * 50, 2000);
           return delay;
