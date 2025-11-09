@@ -114,16 +114,16 @@ export default function HomePage() {
         )}
 
         {/* Content */}
-        <div className="relative z-10 w-full text-center flex-1 flex flex-col items-center justify-center">
+        <div className="relative z-10 w-full text-center flex-1 flex flex-col items-center justify-center px-4">
           {/* Приветствие */}
-          <div className="mb-8">
-            <p className="text-3xl md:text-4xl font-light text-white/90">
+          <div className="mb-6">
+            <p className="text-2xl md:text-3xl font-light text-white/90">
               {getGreeting()}, Камчатка
             </p>
           </div>
 
           {/* Weather Card - МИНИМАЛИСТИЧНАЯ */}
-          <div className="inline-flex items-center gap-8 px-10 py-6 bg-white/30 backdrop-blur-3xl rounded-full border border-white/30 mb-8 shadow-xl">
+          <div className="inline-flex items-center gap-6 px-8 py-4 bg-white/30 backdrop-blur-3xl rounded-full border border-white/30 mb-6 shadow-xl">
             <div className="flex items-center gap-4">
               <ThermometerSun className="w-8 h-8 text-white" />
               <div className="text-left">
@@ -150,24 +150,24 @@ export default function HomePage() {
           </div>
 
           {/* Title - ИЗЯЩНЫЙ */}
-          <h1 className="text-5xl md:text-7xl font-extralight text-white mb-4 tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-extralight text-white mb-3 tracking-tight">
             Kamchatour Hub
           </h1>
-          <p className="text-xl md:text-2xl font-light text-white/80 mb-16">
+          <p className="text-lg md:text-xl font-light text-white/80 mb-10">
             Экосистема туризма Камчатки
           </p>
 
           {/* CTA Buttons - МИНИМАЛИСТИЧНЫЕ */}
-          <div className="flex flex-wrap gap-4 justify-center">
-            <a href="/hub/tourist" className="group flex items-center gap-3 px-8 py-4 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-lg hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
-              <Users className="w-5 h-5" />
+          <div className="flex flex-wrap gap-3 justify-center">
+            <a href="/hub/tourist" className="group flex items-center gap-2 px-6 py-3 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-base hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
+              <Users className="w-4 h-4" />
               Я турист
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
             </a>
-            <a href="/hub/operator" className="group flex items-center gap-3 px-8 py-4 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-lg border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
-              <Briefcase className="w-5 h-5" />
+            <a href="/hub/operator" className="group flex items-center gap-2 px-6 py-3 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-base border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
+              <Briefcase className="w-4 h-4" />
               Я бизнес
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
             </a>
           </div>
 
@@ -182,19 +182,19 @@ export default function HomePage() {
 
       {/* ROLES SECTION */}
       <section className="w-full bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50">
-        <div className="w-full py-20 md:py-28">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-extralight mb-4 text-gray-800">
+        <div className="w-full py-12 md:py-16">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-5xl font-extralight mb-3 text-gray-800">
               Экосистема для каждого
             </h2>
-            <p className="text-xl font-light text-gray-600">
-              Выберите свою роль и начните зарабатывать уже сегодня
+            <p className="text-lg font-light text-gray-600">
+              Выберите свою роль и начните зарабатывать
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-0">
             {/* Tourist */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
                 <div className="w-14 h-14 bg-gradient-to-br from-blue-400/80 to-cyan-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Users className="w-7 h-7 text-white" />
@@ -223,7 +223,7 @@ export default function HomePage() {
             </div>
 
             {/* Operator */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
                 <div className="w-14 h-14 bg-gradient-to-br from-purple-400/80 to-pink-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Briefcase className="w-7 h-7 text-white" />
@@ -252,7 +252,7 @@ export default function HomePage() {
             </div>
 
             {/* Guide */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
                 <div className="w-14 h-14 bg-gradient-to-br from-green-400/80 to-emerald-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Compass className="w-7 h-7 text-white" />
@@ -281,7 +281,7 @@ export default function HomePage() {
             </div>
 
             {/* Transfer */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
                 <div className="w-14 h-14 bg-gradient-to-br from-orange-400/80 to-red-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Car className="w-7 h-7 text-white" />
@@ -306,7 +306,7 @@ export default function HomePage() {
             </div>
 
             {/* Stay */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
                 <div className="w-14 h-14 bg-gradient-to-br from-indigo-400/80 to-blue-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Home className="w-7 h-7 text-white" />
@@ -321,7 +321,7 @@ export default function HomePage() {
             </div>
 
             {/* Souvenirs */}
-            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-8 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
                 <div className="w-14 h-14 bg-gradient-to-br from-pink-400/80 to-rose-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <ShoppingBag className="w-7 h-7 text-white" />
