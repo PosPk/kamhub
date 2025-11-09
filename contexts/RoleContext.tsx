@@ -20,6 +20,10 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const loadRoles = () => {
       try {
+        if (typeof window === 'undefined') {
+          setIsLoading(false);
+          return;
+        }
         const savedRoles = localStorage.getItem('user_roles');
         if (savedRoles) {
           const parsedRoles = JSON.parse(savedRoles) as AppRole[];
@@ -36,7 +40,7 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && typeof window !== 'undefined') {
       try {
         localStorage.setItem('user_roles', JSON.stringify(roles));
       } catch (error) {

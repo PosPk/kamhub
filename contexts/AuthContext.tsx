@@ -59,6 +59,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserFromStorage = async () => {
     try {
+      if (typeof window === 'undefined') {
+        setIsLoading(false);
+        return;
+      }
       const userData = localStorage.getItem('user');
       if (userData) {
         const parsedUser = JSON.parse(userData);
@@ -76,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const saveUserToStorage = async (userData: User | null) => {
     try {
+      if (typeof window === 'undefined') return;
       if (userData) {
         localStorage.setItem('user', JSON.stringify(userData));
       } else {
