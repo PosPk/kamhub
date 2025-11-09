@@ -36,6 +36,31 @@
   100% { transform: translateY(10px); opacity: 0; }
 }
 
+@keyframes snow {
+  0% { 
+    transform: translateY(0) translateX(0) rotate(0deg); 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(100vh) translateX(100px) rotate(360deg); 
+    opacity: 0.3;
+  }
+}
+
+@keyframes wind {
+  0% { 
+    transform: translateX(0) translateY(0); 
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(120vw) translateY(50px); 
+    opacity: 0;
+  }
+}
+
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient 15s ease infinite;
@@ -51,6 +76,14 @@
 
 .animate-scroll {
   animation: scroll 2s ease-in-out infinite;
+}
+
+.animate-snow {
+  animation: snow linear infinite;
+}
+
+.animate-wind {
+  animation: wind linear infinite;
 }
 
 :root {
