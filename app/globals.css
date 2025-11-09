@@ -61,6 +61,44 @@
   }
 }
 
+@keyframes wind-flow {
+  0% { 
+    transform: translateX(0) translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% { 
+    transform: translateX(120vw) translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes wind-particle {
+  0% { 
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(50vw) translateY(-30px) rotate(180deg) scale(1.2);
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% { 
+    transform: translateX(110vw) translateY(20px) rotate(360deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient 15s ease infinite;
@@ -84,6 +122,14 @@
 
 .animate-wind {
   animation: wind linear infinite;
+}
+
+.animate-wind-flow {
+  animation: wind-flow linear infinite;
+}
+
+.animate-wind-particle {
+  animation: wind-particle linear infinite;
 }
 
 :root {

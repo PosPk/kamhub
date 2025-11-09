@@ -236,16 +236,46 @@ export default function HomePage() {
         )}
 
         {(weather.condition === 'clouds' || weather.condition === 'wind') && (
-          <div className="absolute inset-0 pointer-events-none">
-            {[...Array(20)].map((_, i) => (
-              <div key={i} className="absolute animate-wind"
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {/* Оригинальные волнистые линии ветра */}
+            {[...Array(15)].map((_, i) => (
+              <div key={i} className="absolute animate-wind-flow"
+                   style={{
+                     top: `${10 + i * 6}%`,
+                     left: `-20%`,
+                     width: '150%',
+                     height: '2px',
+                     animationDelay: `${i * 0.3}s`,
+                     animationDuration: `${4 + Math.random() * 2}s`
+                   }}>
+                <svg width="100%" height="100%" className="opacity-20">
+                  <path
+                    d={`M 0 0 Q ${50 + Math.random() * 100} ${-10 + Math.random() * 20}, ${100 + Math.random() * 100} 0 T ${200 + Math.random() * 100} 0`}
+                    stroke={isNight ? 'rgba(255,255,255,0.3)' : 'rgba(100,100,100,0.3)'}
+                    strokeWidth="2"
+                    fill="none"
+                    strokeDasharray="5,10"
+                  />
+                </svg>
+              </div>
+            ))}
+            
+            {/* Частицы пыли/листьев */}
+            {[...Array(30)].map((_, i) => (
+              <div key={`particle-${i}`} className="absolute animate-wind-particle"
                    style={{
                      top: `${Math.random() * 100}%`,
-                     left: `-10%`,
-                     animationDelay: `${Math.random() * 3}s`,
-                     animationDuration: `${2 + Math.random() * 2}s`
+                     left: `-5%`,
+                     animationDelay: `${Math.random() * 5}s`,
+                     animationDuration: `${3 + Math.random() * 3}s`
                    }}>
-                <Wind className="w-6 h-6 text-gray-400/40" />
+                <div 
+                  className="w-1 h-1 rounded-full opacity-40"
+                  style={{
+                    background: isNight ? 'rgba(255,255,255,0.6)' : 'rgba(120,120,120,0.6)',
+                    transform: `rotate(${Math.random() * 360}deg)`
+                  }}
+                />
               </div>
             ))}
           </div>
@@ -383,39 +413,51 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ROLES - Элегантный horizontal scroll */}
-      <section className="w-full bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 py-12 overflow-hidden">
-        <div className="text-center mb-8 px-4">
-          <h2 className="text-2xl md:text-4xl font-extralight mb-2 text-gray-800">
+      {/* ROLES - Компактный стильный scroll */}
+      <section className="w-full bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 py-8 overflow-hidden">
+        <div className="text-center mb-6 px-4">
+          <h2 className="text-xl md:text-3xl font-extralight mb-1 text-gray-800">
             Выберите свою роль
           </h2>
-          <p className="text-sm font-light text-gray-600">
+          <p className="text-xs font-light text-gray-600">
             Каждая роль открывает уникальные возможности
           </p>
         </div>
 
-        <div className="flex gap-4 px-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+        <div className="flex gap-3 px-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
           {roles.map((role) => (
             <Link 
               key={role.id}
               href={role.href}
-              className="group flex-shrink-0 w-72 snap-center"
+              className="group flex-shrink-0 w-48 snap-center relative"
             >
-              <div className="relative bg-white/70 backdrop-blur-2xl rounded-3xl p-8 border border-white/50 hover:bg-white/90 hover:scale-105 transition-all duration-500 shadow-xl hover:shadow-2xl h-full">
+              {/* Ripple effect background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/20 group-hover:to-transparent rounded-2xl transition-all duration-700"></div>
+              
+              <div className="relative bg-white/60 backdrop-blur-xl rounded-2xl p-4 border border-white/40 hover:bg-white/80 hover:scale-110 hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-2xl h-full overflow-hidden">
+                {/* Shine effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-0 -left-full w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000"></div>
+                </div>
+                
                 {/* Icon */}
-                <div className={`w-16 h-16 bg-gradient-to-br ${role.color} backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-xl`}>
-                  <role.icon className="w-8 h-8 text-white" />
+                <div className={`w-12 h-12 bg-gradient-to-br ${role.color} backdrop-blur-xl rounded-xl flex items-center justify-center mb-3 group-hover:scale-125 group-hover:rotate-6 transition-all duration-300 shadow-lg relative`}>
+                  <role.icon className="w-6 h-6 text-white" />
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/20 rounded-xl transition-all duration-300"></div>
                 </div>
                 
                 {/* Content */}
-                <h3 className="text-2xl font-light mb-2 text-gray-800">{role.title}</h3>
-                <p className="text-gray-500 mb-6 font-light text-sm">{role.subtitle}</p>
+                <h3 className="text-lg font-light mb-1 text-gray-800 group-hover:text-gray-900 transition-colors">{role.title}</h3>
+                <p className="text-gray-500 mb-2 font-light text-xs">{role.subtitle}</p>
                 
-                {/* Arrow */}
-                <div className="flex items-center gap-2 text-blue-600 font-light group-hover:gap-3 transition-all text-sm">
-                  Узнать больше
-                  <ArrowRight className="w-4 h-4" />
+                {/* Arrow with pulse */}
+                <div className="flex items-center gap-1 text-blue-600 font-light group-hover:gap-2 transition-all text-xs">
+                  <span className="group-hover:font-medium transition-all">Открыть</span>
+                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 group-hover:scale-125 transition-all" />
                 </div>
+                
+                {/* Corner accent */}
+                <div className={`absolute top-2 right-2 w-2 h-2 bg-gradient-to-br ${role.color} rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-300`}></div>
               </div>
             </Link>
           ))}
