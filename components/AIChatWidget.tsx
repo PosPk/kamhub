@@ -189,8 +189,8 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
       {/* Заголовок */}
       <div className="flex items-center justify-between p-6 border-b border-white/10">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-premium-gold rounded-full flex items-center justify-center">
-            <span className="text-premium-black text-sm font-black">AI</span>
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full flex items-center justify-center">
+            <span className="text-gray-900 text-sm font-black">AI</span>
           </div>
           <div>
             <h3 className="text-lg font-bold text-white">AI-гид</h3>
@@ -239,14 +239,14 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
               <div
                 className={`max-w-xs lg:max-w-md px-4 py-3 rounded-xl ${
                   message.role === 'user'
-                    ? 'bg-premium-gold text-premium-black'
+                    ? 'bg-gradient-to-r from-blue-400 to-cyan-400 text-gray-900'
                     : 'bg-white/10 text-white'
                 }`}
               >
                 <div className="text-sm whitespace-pre-wrap">{message.content}</div>
                 <div
                   className={`text-xs mt-1 ${
-                    message.role === 'user' ? 'text-premium-black/70' : 'text-white/50'
+                    message.role === 'user' ? 'text-gray-900/70' : 'text-white/50'
                   }`}
                 >
                   {formatTime(message.timestamp)}
@@ -260,9 +260,9 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
           <div className="flex justify-start">
             <div className="bg-white/10 text-white px-4 py-3 rounded-xl">
               <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-premium-gold rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-premium-gold rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-premium-gold rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
               </div>
             </div>
           </div>
@@ -307,13 +307,13 @@ export function AIChatWidget({ userId, className, onClose }: AIChatWidgetProps) 
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Задайте вопрос о Камчатке..."
-            className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-premium-gold focus:border-transparent text-sm text-white placeholder-white/50"
+            className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm text-white placeholder-white/50"
             disabled={isLoading}
           />
           <button
             onClick={sendMessage}
             disabled={!inputMessage.trim() || isLoading}
-            className="px-6 py-3 bg-premium-gold text-premium-black rounded-xl hover:bg-premium-gold/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-bold"
+            className="px-6 py-3 bg-gradient-to-r from-blue-400 to-cyan-400 text-gray-900 rounded-xl hover:bg-gradient-to-r from-blue-400 to-cyan-400/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm font-bold"
           >
             Отправить
           </button>

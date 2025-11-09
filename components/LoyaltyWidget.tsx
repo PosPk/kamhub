@@ -72,12 +72,12 @@ export function LoyaltyWidget({ userId, className }: LoyaltyWidgetProps) {
 
   if (loading) {
     return (
-      <div className={`bg-premium-black/90 backdrop-blur-sm rounded-2xl p-6 border border-premium-gold/20 ${className}`}>
+      <div className={`bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 ${className}`}>
         <div className="animate-pulse">
-          <div className="h-6 bg-premium-gold/20 rounded mb-4"></div>
-          <div className="h-4 bg-premium-gold/10 rounded mb-2"></div>
-          <div className="h-4 bg-premium-gold/10 rounded mb-2"></div>
-          <div className="h-4 bg-premium-gold/10 rounded"></div>
+          <div className="h-6 bg-gradient-to-r from-blue-400 to-cyan-400/20 rounded mb-4"></div>
+          <div className="h-4 bg-gradient-to-r from-blue-400 to-cyan-400/10 rounded mb-2"></div>
+          <div className="h-4 bg-gradient-to-r from-blue-400 to-cyan-400/10 rounded mb-2"></div>
+          <div className="h-4 bg-gradient-to-r from-blue-400 to-cyan-400/10 rounded"></div>
         </div>
       </div>
     );
@@ -85,7 +85,7 @@ export function LoyaltyWidget({ userId, className }: LoyaltyWidgetProps) {
 
   if (error || !stats) {
     return (
-      <div className={`bg-premium-black/90 backdrop-blur-sm rounded-2xl p-6 border border-premium-gold/20 ${className}`}>
+      <div className={`bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 ${className}`}>
         <div className="text-center text-white/70">
           <p>Ошибка загрузки данных лояльности</p>
         </div>
@@ -94,7 +94,7 @@ export function LoyaltyWidget({ userId, className }: LoyaltyWidgetProps) {
   }
 
   return (
-    <div className={`bg-premium-black/90 backdrop-blur-sm rounded-2xl p-6 border border-premium-gold/20 ${className}`}>
+    <div className={`bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 ${className}`}>
       {/* Заголовок */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-white">Система лояльности</h3>
@@ -108,14 +108,14 @@ export function LoyaltyWidget({ userId, className }: LoyaltyWidgetProps) {
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
           <span className="text-white/70">Текущий уровень</span>
-          <span className="text-premium-gold font-bold">{stats.currentLevel.name}</span>
+          <span className="text-blue-400 font-bold">{stats.currentLevel.name}</span>
         </div>
         
         {stats.nextLevel && (
           <>
             <div className="w-full bg-white/10 rounded-full h-2 mb-2">
               <div 
-                className="bg-premium-gold h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-blue-400 to-cyan-400 h-2 rounded-full transition-all duration-300"
                 style={{ 
                   width: `${Math.min(100, (stats.totalPoints / stats.nextLevel.minSpent) * 100)}%` 
                 }}
@@ -132,7 +132,7 @@ export function LoyaltyWidget({ userId, className }: LoyaltyWidgetProps) {
       {/* Баллы */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-white/5 rounded-xl p-4">
-          <div className="text-2xl font-bold text-premium-gold">{stats.availablePoints}</div>
+          <div className="text-2xl font-bold text-blue-400">{stats.availablePoints}</div>
           <div className="text-sm text-white/70">Доступно баллов</div>
         </div>
         <div className="bg-white/5 rounded-xl p-4">
@@ -147,7 +147,7 @@ export function LoyaltyWidget({ userId, className }: LoyaltyWidgetProps) {
         <div className="space-y-2">
           {stats.currentLevel.benefits.map((benefit, index) => (
             <div key={index} className="flex items-center text-white/70">
-              <div className="w-2 h-2 bg-premium-gold rounded-full mr-3"></div>
+              <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full mr-3"></div>
               <span className="text-sm">{benefit}</span>
             </div>
           ))}
@@ -163,11 +163,11 @@ export function LoyaltyWidget({ userId, className }: LoyaltyWidgetProps) {
             value={promoCode}
             onChange={(e) => setPromoCode(e.target.value)}
             placeholder="Введите промокод"
-            className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-premium-gold"
+            className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:border-blue-400"
           />
           <button
             type="submit"
-            className="px-6 py-2 bg-premium-gold text-premium-black font-bold rounded-lg hover:bg-premium-gold/90 transition-colors"
+            className="px-6 py-2 bg-gradient-to-r from-blue-400 to-cyan-400 text-gray-900 font-bold rounded-lg hover:bg-gradient-to-r from-blue-400 to-cyan-400/90 transition-colors"
           >
             Применить
           </button>
@@ -240,10 +240,10 @@ export function LoyaltyLevels({ className }: { className?: string }) {
 
   if (loading) {
     return (
-      <div className={`bg-premium-black/90 backdrop-blur-sm rounded-2xl p-6 border border-premium-gold/20 ${className}`}>
+      <div className={`bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 ${className}`}>
         <div className="animate-pulse space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-16 bg-premium-gold/10 rounded"></div>
+            <div key={i} className="h-16 bg-gradient-to-r from-blue-400 to-cyan-400/10 rounded"></div>
           ))}
         </div>
       </div>
@@ -251,7 +251,7 @@ export function LoyaltyLevels({ className }: { className?: string }) {
   }
 
   return (
-    <div className={`bg-premium-black/90 backdrop-blur-sm rounded-2xl p-6 border border-premium-gold/20 ${className}`}>
+    <div className={`bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 ${className}`}>
       <h3 className="text-xl font-bold text-white mb-6">Уровни лояльности</h3>
       
       <div className="space-y-4">
@@ -272,7 +272,7 @@ export function LoyaltyLevels({ className }: { className?: string }) {
             </div>
             
             <div className="text-right">
-              <div className="text-premium-gold font-bold">
+              <div className="text-blue-400 font-bold">
                 {level.discount * 100}% скидка
               </div>
               <div className="text-white/70 text-sm">
