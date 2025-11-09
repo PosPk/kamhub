@@ -122,18 +122,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* AI Assistant */}
-      <section className="weather-container mb-16">
-        <div className="weather-card max-w-4xl mx-auto text-center p-8">
-          <h3 className="text-3xl font-bold mb-4">AI-Гид Камчатки</h3>
-          <p className="text-lg opacity-80 mb-6">Ваш персональный помощник</p>
-          <input
-            type="text"
-            placeholder="Спросите что-то о Камчатке..."
-            className="weather-search"
-          />
-        </div>
-      </section>
+      {/* AI Assistant - REMOVED FOR TESTING */}
     </main>
   );
 }
