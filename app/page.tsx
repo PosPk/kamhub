@@ -16,44 +16,55 @@ export default function Home() {
     wind: 15
   });
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const toursResponse = await fetch('/api/tours?limit=6');
+        const toursData = await toursResponse.json();
+        if (toursData.success) {
+          setTours(toursData.data.data);
+        }
+
+        // Fetch real weather
+        const weatherResponse = await fetch('/api/weather');
+        const weatherData = await weatherResponse.json();
+        if (weatherData.success) {
+          setWeather({
+            temp: Math.round(weatherData.data.temp),
+            condition: weatherData.data.description,
+            location: weatherData.data.location,
+            humidity: weatherData.data.humidity,
+            wind: weatherData.data.windSpeed
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchData();
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const toursResponse = await fetch('/api/tours?limit=6');
-      const toursData = await toursResponse.json();
-      if (toursData.success) {
-        setTours(toursData.data.data);
-      }
-
-      // Fetch real weather
-      const weatherResponse = await fetch('/api/weather');
-      const weatherData = await weatherResponse.json();
-      if (weatherData.success) {
-        setWeather({
-          temp: Math.round(weatherData.data.temp),
-          condition: weatherData.data.description,
-          location: weatherData.data.location,
-          humidity: weatherData.data.humidity,
-          wind: weatherData.data.windSpeed
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const hour = currentTime.getHours();
   const greeting = hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
   const timeOfDay = hour < 6 ? 'night' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : hour < 21 ? 'evening' : 'night';
+
+  if (!mounted) {
+    return (
+      <main className="min-h-screen relative flex items-center justify-center">
+        <div className="text-2xl opacity-50">Загрузка...</div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen relative">
