@@ -148,20 +148,31 @@ export default function HomePage() {
   const timeString = `${hoursStr}:${minutes}`;
 
   const getGreeting = () => {
-    if (hours >= 6 && hours < 12) return 'Доброе утро';
+    if (hours >= 5 && hours < 7) return 'Доброе утро, рассвет';
+    if (hours >= 7 && hours < 12) return 'Доброе утро';
     if (hours >= 12 && hours < 18) return 'Добрый день';
-    if (hours >= 18 && hours < 23) return 'Добрый вечер';
+    if (hours >= 18 && hours < 21) return 'Добрый вечер';
+    if (hours >= 21 && hours < 23) return 'Вечереет';
     return 'Доброй ночи';
   };
 
   const getBackgroundGradient = () => {
-    if (hours >= 6 && hours < 12) return 'from-sky-100 via-blue-50 to-indigo-100';
+    // 🌅 Рассвет (5:00-7:00): розово-оранжевые теплые тона
+    if (hours >= 5 && hours < 7) return 'from-rose-200 via-orange-100 to-amber-100';
+    // ☀️ Утро (7:00-12:00): светлый голубой
+    if (hours >= 7 && hours < 12) return 'from-sky-100 via-blue-50 to-indigo-100';
+    // 🌞 День (12:00-18:00): яркий голубой
     if (hours >= 12 && hours < 18) return 'from-blue-100 via-sky-50 to-cyan-100';
-    if (hours >= 18 && hours < 23) return 'from-orange-100 via-pink-100 to-purple-200';
+    // 🌆 Вечер (18:00-21:00): оранжево-розовый закат
+    if (hours >= 18 && hours < 21) return 'from-orange-100 via-pink-100 to-purple-200';
+    // 🌃 Поздний вечер (21:00-23:00): темнеющее небо
+    if (hours >= 21 && hours < 23) return 'from-indigo-300 via-purple-200 to-pink-200';
+    // 🌙 Ночь (23:00-5:00): темное небо
     return 'from-slate-800 via-blue-900 to-indigo-900';
   };
 
-  const isNight = hours >= 23 || hours < 6;
+  const isNight = hours >= 23 || hours < 5;
+  const isDawn = hours >= 5 && hours < 7;
   const textColor = isNight ? 'text-white' : 'text-gray-800';
   const textSecondary = isNight ? 'text-white/70' : 'text-gray-600';
 
@@ -201,7 +212,7 @@ export default function HomePage() {
       <section className={`relative min-h-screen lg:h-[50vh] w-full flex flex-col overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
         
         {/* Weather Animations - ОПТИМИЗИРОВАНО: мемоизация в компоненте */}
-        <WeatherAnimations condition={weather.condition} isNight={isNight} />
+        <WeatherAnimations condition={weather.condition} isNight={isNight} isDawn={isDawn} />
 
         {/* Top Bar */}
         <TopBar time={timeString} isNight={isNight} />

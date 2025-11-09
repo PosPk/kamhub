@@ -1,17 +1,64 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { CloudSnow } from 'lucide-react';
+import { CloudSnow, Sunrise } from 'lucide-react';
 
 interface WeatherAnimationsProps {
   condition: string;
   isNight: boolean;
+  isDawn?: boolean;
 }
 
-export function WeatherAnimations({ condition, isNight }: WeatherAnimationsProps) {
+export function WeatherAnimations({ condition, isNight, isDawn = false }: WeatherAnimationsProps) {
   // Мемоизация анимаций - создаются только при смене погоды
   const animations = useMemo(() => {
     // ОПТИМИЗИРОВАНО: уменьшено количество элементов
+    
+    // 🌅 РАССВЕТ (5:00-7:00): восходящее солнце
+    if (isDawn && condition === 'clear') {
+      return (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Восходящее солнце */}
+          <div 
+            className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 animate-sunrise"
+            style={{ width: '200px', height: '200px' }}
+          >
+            <div className="relative w-full h-full">
+              {/* Солнце */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-300 via-yellow-200 to-pink-200 animate-dawn-glow"></div>
+              {/* Лучи */}
+              {[...Array(12)].map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute top-1/2 left-1/2 w-1 h-20 bg-gradient-to-t from-orange-200/40 to-transparent origin-bottom"
+                  style={{
+                    transform: `translate(-50%, -50%) rotate(${i * 30}deg)`,
+                    animation: `pulse ${2 + Math.random()}s ease-in-out infinite`,
+                    animationDelay: `${i * 0.1}s`
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+          
+          {/* Розовые облака рассвета */}
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute opacity-30 animate-float-delayed"
+              style={{
+                left: `${10 + i * 20}%`,
+                top: `${20 + Math.random() * 30}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${8 + Math.random() * 4}s`
+              }}
+            >
+              <div className="w-32 h-12 bg-gradient-to-r from-pink-200/50 via-orange-100/50 to-rose-200/50 rounded-full blur-xl"></div>
+            </div>
+          ))}
+        </div>
+      );
+    }
     
     // Звезды (ясная ночь) - 40 вместо 100
     if (condition === 'clear' && isNight) {

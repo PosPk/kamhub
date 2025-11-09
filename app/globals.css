@@ -36,6 +36,42 @@
   100% { transform: translateY(10px); opacity: 0; }
 }
 
+@keyframes sunrise {
+  0% { 
+    transform: translateY(50px) scale(0.8); 
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(-10px) scale(1.1); 
+    opacity: 0.9;
+  }
+}
+
+@keyframes dawn-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.4),
+                0 0 40px rgba(255, 182, 193, 0.3),
+                0 0 60px rgba(255, 182, 193, 0.2);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(255, 182, 193, 0.6),
+                0 0 60px rgba(255, 182, 193, 0.4),
+                0 0 90px rgba(255, 182, 193, 0.3);
+  }
+}
+
+.animate-sunrise {
+  animation: sunrise 4s ease-in-out infinite;
+}
+
+.animate-dawn-glow {
+  animation: dawn-glow 3s ease-in-out infinite;
+}
+
 @keyframes snow {
   0% { 
     transform: translateY(0) translateX(0) rotate(0deg); 
@@ -397,25 +433,45 @@ body {
 }
 
 /* Time-based background variations with Ultramarine */
+body.dawn {
+  /* 🌅 Рассвет (5:00-7:00): розово-оранжевые теплые тона */
+  --bg-gradient-start: #FFB6C1;
+  --bg-gradient-end: #FFD4A3;
+  --ultramarine: #FF6B9D;
+  --text-primary: #4a3020;
+  --text-secondary: #6a4030;
+}
+
 body.morning {
+  /* ☀️ Утро (7:00-12:00): светлый голубой */
   --bg-gradient-start: #87CEEB;
   --bg-gradient-end: #B0E0E6;
   --ultramarine: #4169E1;
 }
 
 body.afternoon {
+  /* 🌞 День (12:00-18:00): яркий голубой */
   --bg-gradient-start: #6495ED;
   --bg-gradient-end: #87CEEB;
   --ultramarine: #120A8F;
 }
 
 body.evening {
-  --bg-gradient-start: #4169E1;
-  --bg-gradient-end: #9370DB;
-  --ultramarine: #120A8F;
+  /* 🌆 Вечер (18:00-21:00): оранжево-розовый закат */
+  --bg-gradient-start: #FFA07A;
+  --bg-gradient-end: #DDA0DD;
+  --ultramarine: #FF6B9D;
+}
+
+body.late-evening {
+  /* 🌃 Поздний вечер (21:00-23:00): темнеющее небо */
+  --bg-gradient-start: #9370DB;
+  --bg-gradient-end: #DDA0DD;
+  --ultramarine: #BA55D3;
 }
 
 body.night {
+  /* 🌙 Ночь (23:00-5:00): темное небо */
   --bg-gradient-start: #0f1f3f;
   --bg-gradient-end: #1a2f4f;
   --ultramarine: #4169E1;
