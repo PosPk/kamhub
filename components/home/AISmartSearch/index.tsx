@@ -12,11 +12,18 @@ interface SearchCategory {
 interface AISmartSearchProps {
   categories: SearchCategory[];
   onSearch: (query: string) => Promise<void>;
+  isNight: boolean;
 }
 
-export function AISmartSearch({ categories, onSearch }: AISmartSearchProps) {
+export function AISmartSearch({ categories, onSearch, isNight }: AISmartSearchProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  
+  // Динамические цвета для категорий
+  const categoryBg = isNight ? 'bg-white/30' : 'bg-gray-800/30';
+  const categoryBorder = isNight ? 'border-white/40' : 'border-gray-800/40';
+  const categoryText = isNight ? 'text-white' : 'text-gray-800';
+  const categoryHover = isNight ? 'hover:bg-white/50' : 'hover:bg-gray-800/50';
 
   const handleSearch = async () => {
     if (!searchQuery.trim() || isSearching) return;
@@ -72,7 +79,7 @@ export function AISmartSearch({ categories, onSearch }: AISmartSearchProps) {
             key={i}
             onClick={() => handleCategoryClick(cat.label)}
             disabled={isSearching}
-            className="px-3 py-1 bg-white/30 backdrop-blur-xl border border-white/40 rounded-full text-white text-xs font-light hover:bg-white/50 transition-all flex items-center gap-1.5 shadow-lg disabled:opacity-50"
+            className={`px-3 py-1 ${categoryBg} backdrop-blur-xl border ${categoryBorder} rounded-full ${categoryText} text-xs font-light ${categoryHover} transition-all flex items-center gap-1.5 shadow-lg disabled:opacity-50`}
           >
             <cat.icon className="w-3 h-3" />
             {cat.label}
@@ -80,7 +87,7 @@ export function AISmartSearch({ categories, onSearch }: AISmartSearchProps) {
         ))}
         {categories.length > 8 && (
           <button 
-            className="px-3 py-1 bg-white/40 backdrop-blur-xl border border-white/50 rounded-full text-white text-xs font-medium hover:bg-white/60 transition-all shadow-lg"
+            className={`px-3 py-1 ${isNight ? 'bg-white/40 border-white/50 hover:bg-white/60' : 'bg-gray-800/40 border-gray-800/50 hover:bg-gray-800/60'} backdrop-blur-xl border rounded-full ${categoryText} text-xs font-medium transition-all shadow-lg`}
             title="Показать все активности"
           >
             +{categories.length - 8} ещё
