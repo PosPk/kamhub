@@ -5,40 +5,100 @@
 /* Import UI improvements */
 @import './ui-improvements.css';
 
-/* Premium Black & Gold Theme */
+/* Modern Light & Dark Theme */
 :root {
-  --premium-black: #0a0a0a;
-  --premium-gold: #d4af37;
-  --gold-gradient: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
+  /* Light theme colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-tertiary: #6c757d;
+  --border-color: #dee2e6;
+  --accent-primary: #0d6efd;
+  --accent-secondary: #0dcaf0;
+  --success: #198754;
+  --warning: #ffc107;
+  --danger: #dc3545;
+  --shadow: rgba(0, 0, 0, 0.1);
 }
 
-.bg-premium-black {
-  background-color: var(--premium-black);
+.dark {
+  /* Dark theme colors */
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #0f1624;
+  --text-primary: #edf2f4;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --border-color: #2d3748;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #06b6d4;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --shadow: rgba(0, 0, 0, 0.5);
 }
 
-.text-premium-gold {
-  color: var(--premium-gold);
+/* Base styles */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.bg-premium-gold {
-  background-color: var(--premium-gold);
+/* Utility classes */
+.bg-primary {
+  background-color: var(--bg-primary);
 }
 
-.text-premium-black {
-  color: var(--premium-black);
+.bg-secondary {
+  background-color: var(--bg-secondary);
 }
 
-.bg-gold-gradient {
-  background: var(--gold-gradient);
+.bg-tertiary {
+  background-color: var(--bg-tertiary);
 }
 
-.gradient-gold-aurora {
-  background: linear-gradient(45deg, 
-    rgba(212, 175, 55, 0.1) 0%, 
-    rgba(255, 215, 0, 0.2) 25%, 
-    rgba(184, 134, 11, 0.1) 50%, 
-    rgba(212, 175, 55, 0.2) 75%, 
-    rgba(255, 215, 0, 0.1) 100%);
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.border-color {
+  border-color: var(--border-color);
+}
+
+.accent-primary {
+  color: var(--accent-primary);
+}
+
+.bg-accent-primary {
+  background-color: var(--accent-primary);
+}
+
+.accent-secondary {
+  color: var(--accent-secondary);
+}
+
+.bg-accent-secondary {
+  background-color: var(--accent-secondary);
+}
+
+/* Gradient backgrounds */
+.gradient-aurora {
+  background: linear-gradient(135deg, 
+    var(--accent-primary) 0%, 
+    var(--accent-secondary) 50%, 
+    var(--accent-primary) 100%);
+  opacity: 0.1;
 }
 
 .animate-aurora {
@@ -46,92 +106,133 @@
 }
 
 @keyframes aurora {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.2; transform: scale(1.05); }
 }
 
-.text-gold {
-  color: var(--premium-gold);
+/* Glass morphism effects */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.gold-glow {
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+.dark .glass {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.button-gold {
-  @apply bg-premium-gold text-premium-black px-4 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors;
+/* Button styles */
+.btn-primary {
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200;
+  background-color: var(--accent-primary);
+  color: white;
 }
 
-.map-button-glow {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
-  transition: all 0.3s ease;
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px var(--shadow);
 }
 
-.map-button-glow:hover {
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
-  transform: scale(1.02);
+.btn-secondary {
+  @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200;
+  background-color: transparent;
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
 }
 
-.kamchatka-button {
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+.btn-secondary:hover {
+  background-color: var(--bg-secondary);
 }
 
-/* Floating UI Styles */
-
-:root {
-  --gold: #E6C149;
-  --black: #000000;
+/* Card styles */
+.card {
+  @apply rounded-2xl p-6 transition-all duration-300;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px var(--shadow);
 }
 
-html, body {
-  background: var(--black);
-  color: #ffffff;
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px var(--shadow);
 }
 
-.button-gold {
-  @apply bg-[color:var(--gold)] text-black font-bold rounded-lg px-4 py-2 shadow-gold;
+/* Video hero overlay */
+.video-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
 }
 
-.card-dark {
-  @apply bg-neutral-900 border border-neutral-800 rounded-xl;
+.dark .video-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
 }
 
-/* Custom classes for the full site */
-.gradient-gold-aurora {
-  background: radial-gradient(1200px 600px at 20% 80%, rgba(230,193,73,0.18), transparent 60%), 
-              radial-gradient(1000px 500px at 80% 20%, rgba(162,210,255,0.12), transparent 60%);
+/* Input styles */
+.input {
+  @apply w-full px-4 py-3 rounded-xl transition-all duration-200;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
 }
 
-.animate-aurora {
-  animation: aurora 20s ease-in-out infinite;
+.input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-@keyframes aurora {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
+/* Theme toggle button */
+.theme-toggle {
+  @apply w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200;
+  background-color: var(--bg-secondary);
+  border: 2px solid var(--border-color);
 }
 
-.text-gold {
-  color: var(--gold);
+.theme-toggle:hover {
+  background-color: var(--bg-tertiary);
+  transform: rotate(180deg);
 }
 
-.gold-glow {
-  text-shadow: 0 0 20px rgba(230,193,73,0.5);
+/* Smooth transitions for theme change */
+* {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
 }
 
-.map-button-glow {
-  box-shadow: 0 0 40px rgba(230,193,73,0.25);
-  transition: box-shadow 0.3s ease;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.map-button-glow:hover {
-  box-shadow: 0 0 60px rgba(230,193,73,0.35);
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
 }
 
-.kamchatka-button {
-  transition: transform 0.3s ease;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-.kamchatka-button:hover {
-  transform: scale(1.05);
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
 }
