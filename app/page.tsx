@@ -195,9 +195,9 @@ export default function HomePage() {
       </section>
 
       {/* ROLES SECTION */}
-      <section className="w-full bg-white">
+      <section className="w-full bg-gradient-to-br from-gray-50 via-white to-gray-50">
         <div className="w-full py-20 md:py-28">
-          <div className="text-center mb-16 px-6">
+          <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-extralight mb-4 text-gray-800">
               Экосистема для каждого
             </h2>
@@ -206,11 +206,11 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-0 border-t border-l border-gray-100">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-0">
             {/* Tourist */}
-            <div className="group relative bg-white p-12 border-r border-b border-gray-100 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50 transition-all duration-500">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-400/80 to-cyan-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Users className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-light mb-3 text-gray-800">Турист</h3>
@@ -237,9 +237,9 @@ export default function HomePage() {
             </div>
 
             {/* Operator */}
-            <div className="group relative bg-white p-12 border-r border-b border-gray-100 hover:bg-gradient-to-br hover:from-purple-50 hover:to-pink-50 transition-all duration-500">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                <div className="w-14 h-14 bg-gradient-to-br from-purple-400/80 to-pink-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Briefcase className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-light mb-3 text-gray-800">Туроператор</h3>
@@ -266,9 +266,9 @@ export default function HomePage() {
             </div>
 
             {/* Guide */}
-            <div className="group relative bg-white p-12 border-r border-b border-gray-100 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50 transition-all duration-500">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                <div className="w-14 h-14 bg-gradient-to-br from-green-400/80 to-emerald-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Compass className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-light mb-3 text-gray-800">Гид</h3>
@@ -295,9 +295,9 @@ export default function HomePage() {
             </div>
 
             {/* Transfer */}
-            <div className="group relative bg-white p-12 border-r border-b border-gray-100 hover:bg-gradient-to-br hover:from-orange-50 hover:to-red-50 transition-all duration-500">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-orange-400 to-red-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                <div className="w-14 h-14 bg-gradient-to-br from-orange-400/80 to-red-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Car className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-light mb-3 text-gray-800">Трансфер</h3>
@@ -320,9 +320,9 @@ export default function HomePage() {
             </div>
 
             {/* Stay */}
-            <div className="group relative bg-white p-12 border-r border-b border-gray-100 hover:bg-gradient-to-br hover:from-indigo-50 hover:to-blue-50 transition-all duration-500">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-indigo-400 to-blue-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                <div className="w-14 h-14 bg-gradient-to-br from-indigo-400/80 to-blue-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <Home className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-light mb-3 text-gray-800">Размещение</h3>
@@ -335,9 +335,9 @@ export default function HomePage() {
             </div>
 
             {/* Souvenirs */}
-            <div className="group relative bg-white p-12 border-r border-b border-gray-100 hover:bg-gradient-to-br hover:from-pink-50 hover:to-rose-50 transition-all duration-500">
+            <div className="group relative bg-white/60 backdrop-blur-3xl p-12 border border-white/40 hover:bg-white/80 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <div className="relative">
-                <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-rose-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                <div className="w-14 h-14 bg-gradient-to-br from-pink-400/80 to-rose-400/80 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-xl">
                   <ShoppingBag className="w-7 h-7 text-white" />
                 </div>
                 <h3 className="text-2xl font-light mb-3 text-gray-800">Сувениры</h3>
@@ -353,8 +353,8 @@ export default function HomePage() {
       </section>
 
       {/* FEATURES SECTION */}
-      <section className="w-full bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="w-full py-20 md:py-28 px-6">
+      <section className="w-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+        <div className="w-full py-20 md:py-28">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-6xl font-extralight mb-4 text-gray-800">
               Уникальные возможности
@@ -364,8 +364,8 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-10 border border-gray-200 hover:shadow-xl transition-all duration-500">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-0">
+            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <ThermometerSun className="w-12 h-12 text-blue-500 mb-6" />
               <h3 className="text-2xl font-light text-gray-800 mb-4">Метеослужба</h3>
               <p className="text-gray-600 font-light mb-6 text-sm">
@@ -377,7 +377,7 @@ export default function HomePage() {
               </a>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-10 border border-gray-200 hover:shadow-xl transition-all duration-500">
+            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <Shield className="w-12 h-12 text-red-500 mb-6" />
               <h3 className="text-2xl font-light text-gray-800 mb-4">Безопасность 24/7</h3>
               <p className="text-gray-600 font-light mb-6 text-sm">
@@ -389,7 +389,7 @@ export default function HomePage() {
               </a>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-10 border border-gray-200 hover:shadow-xl transition-all duration-500">
+            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <Leaf className="w-12 h-12 text-green-500 mb-6" />
               <h3 className="text-2xl font-light text-gray-800 mb-4">Eco-Points</h3>
               <p className="text-gray-600 font-light mb-6 text-sm">
@@ -401,7 +401,7 @@ export default function HomePage() {
               </a>
             </div>
 
-            <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-10 border border-gray-200 hover:shadow-xl transition-all duration-500">
+            <div className="bg-white/50 backdrop-blur-[80px] p-10 border border-white/30 hover:bg-white/70 hover:backdrop-blur-[100px] transition-all duration-700 shadow-lg hover:shadow-2xl">
               <BarChart3 className="w-12 h-12 text-purple-500 mb-6" />
               <h3 className="text-2xl font-light text-gray-800 mb-4">Аналитика</h3>
               <p className="text-gray-600 font-light mb-6 text-sm">
@@ -418,7 +418,7 @@ export default function HomePage() {
 
       {/* FINAL CTA */}
       <section className={`w-full bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
-        <div className="w-full py-20 md:py-28 text-center px-6">
+        <div className="w-full py-20 md:py-28 text-center">
           <Target className={`w-16 h-16 mx-auto mb-8 ${isNight ? 'text-white/80' : 'text-gray-700'}`} />
           <h2 className={`text-4xl md:text-6xl font-extralight ${textColor} mb-8`}>
             Готовы начать?
