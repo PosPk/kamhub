@@ -182,9 +182,9 @@ export default function HomePage() {
   ];
 
   return (
-    <main className="min-h-screen w-full overflow-hidden relative">
+    <main className="min-h-screen lg:h-screen w-full overflow-hidden lg:overflow-auto relative">
       {/* HERO SECTION */}
-      <section className={`relative min-h-screen w-full flex flex-col overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
+      <section className={`relative min-h-screen lg:h-[50vh] w-full flex flex-col overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
         
         {/* Weather Animations */}
         {(weather.condition === 'clear' && isNight) && (
@@ -414,45 +414,45 @@ export default function HomePage() {
       </section>
 
       {/* ROLES - Компактный стильный scroll */}
-      <section className="w-full bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 py-8 overflow-hidden">
-        <div className="text-center mb-6 px-4">
-          <h2 className="text-xl md:text-3xl font-extralight mb-1 text-gray-800">
+      <section className="w-full bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 py-4 lg:py-3 overflow-hidden">
+        <div className="text-center mb-3 lg:mb-2 px-4">
+          <h2 className="text-lg lg:text-xl font-extralight mb-0.5 text-gray-800">
             Выберите свою роль
           </h2>
-          <p className="text-xs font-light text-gray-600">
+          <p className="text-xs font-light text-gray-600 hidden lg:block">
             Каждая роль открывает уникальные возможности
           </p>
         </div>
 
-        <div className="flex gap-3 px-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+        <div className="flex lg:grid lg:grid-cols-6 gap-2 lg:gap-3 px-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 snap-x snap-mandatory lg:snap-none scrollbar-hide lg:max-w-7xl lg:mx-auto">
           {roles.map((role) => (
             <Link 
               key={role.id}
               href={role.href}
-              className="group flex-shrink-0 w-48 snap-center relative"
+              className="group flex-shrink-0 w-40 lg:w-full snap-center relative"
             >
               {/* Ripple effect background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/20 group-hover:to-transparent rounded-2xl transition-all duration-700"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/20 group-hover:to-transparent rounded-xl lg:rounded-2xl transition-all duration-700"></div>
               
-              <div className="relative bg-white/60 backdrop-blur-xl rounded-2xl p-4 border border-white/40 hover:bg-white/80 hover:scale-110 hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-2xl h-full overflow-hidden">
+              <div className="relative bg-white/60 backdrop-blur-xl rounded-xl lg:rounded-2xl p-3 lg:p-4 border border-white/40 hover:bg-white/80 hover:scale-105 lg:hover:scale-110 hover:-translate-y-1 lg:hover:-translate-y-2 transition-all duration-300 shadow-lg hover:shadow-2xl h-full overflow-hidden">
                 {/* Shine effect */}
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <div className="absolute top-0 -left-full w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:left-full transition-all duration-1000"></div>
                 </div>
                 
                 {/* Icon */}
-                <div className={`w-12 h-12 bg-gradient-to-br ${role.color} backdrop-blur-xl rounded-xl flex items-center justify-center mb-3 group-hover:scale-125 group-hover:rotate-6 transition-all duration-300 shadow-lg relative`}>
-                  <role.icon className="w-6 h-6 text-white" />
-                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/20 rounded-xl transition-all duration-300"></div>
+                <div className={`w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br ${role.color} backdrop-blur-xl rounded-lg lg:rounded-xl flex items-center justify-center mb-2 lg:mb-3 group-hover:scale-125 group-hover:rotate-6 transition-all duration-300 shadow-lg relative mx-auto lg:mx-0`}>
+                  <role.icon className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
+                  <div className="absolute inset-0 bg-white/0 group-hover:bg-white/20 rounded-lg lg:rounded-xl transition-all duration-300"></div>
                 </div>
                 
                 {/* Content */}
-                <h3 className="text-lg font-light mb-1 text-gray-800 group-hover:text-gray-900 transition-colors">{role.title}</h3>
-                <p className="text-gray-500 mb-2 font-light text-xs">{role.subtitle}</p>
+                <h3 className="text-sm lg:text-base font-light mb-0.5 lg:mb-1 text-gray-800 group-hover:text-gray-900 transition-colors text-center lg:text-left">{role.title}</h3>
+                <p className="text-gray-500 mb-1 lg:mb-2 font-light text-xs hidden lg:block">{role.subtitle}</p>
                 
                 {/* Arrow with pulse */}
-                <div className="flex items-center gap-1 text-blue-600 font-light group-hover:gap-2 transition-all text-xs">
-                  <span className="group-hover:font-medium transition-all">Открыть</span>
+                <div className="flex items-center justify-center lg:justify-start gap-0.5 lg:gap-1 text-blue-600 font-light group-hover:gap-1 lg:group-hover:gap-2 transition-all text-xs">
+                  <span className="group-hover:font-medium transition-all hidden lg:inline">Открыть</span>
                   <ArrowRight className="w-3 h-3 group-hover:translate-x-1 group-hover:scale-125 transition-all" />
                 </div>
                 
@@ -465,32 +465,32 @@ export default function HomePage() {
       </section>
 
       {/* FEATURES */}
-      <section className="w-full bg-gradient-to-br from-green-50/40 via-emerald-50/30 to-teal-50/40 py-12">
-        <div className="text-center mb-8 px-4">
-          <h2 className="text-2xl md:text-4xl font-extralight mb-2 text-gray-800">
+      <section className="w-full bg-gradient-to-br from-green-50/40 via-emerald-50/30 to-teal-50/40 py-4 lg:py-3">
+        <div className="text-center mb-3 lg:mb-2 px-4">
+          <h2 className="text-lg lg:text-xl font-extralight mb-0.5 text-gray-800">
             Уникальные возможности
           </h2>
-          <p className="text-sm font-light text-gray-600">
+          <p className="text-xs font-light text-gray-600 hidden lg:block">
             Технологии для современного туризма
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 max-w-7xl mx-auto">
-          <div className="bg-white/60 backdrop-blur-2xl p-6 rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
-            <ThermometerSun className="w-10 h-10 text-blue-500 mb-4" />
-            <h3 className="text-lg font-light text-gray-800 mb-2">Метеослужба</h3>
-            <p className="text-gray-600 font-light text-xs mb-4">
-              Прогноз погоды на 14 дней
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 px-4 max-w-7xl mx-auto">
+          <div className="bg-white/60 backdrop-blur-2xl p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
+            <ThermometerSun className="w-8 h-8 lg:w-10 lg:h-10 text-blue-500 mb-2 lg:mb-3 mx-auto lg:mx-0" />
+            <h3 className="text-sm lg:text-base font-light text-gray-800 mb-1 lg:mb-2 text-center lg:text-left">Метеослужба</h3>
+            <p className="text-gray-600 font-light text-xs mb-2 hidden lg:block">
+              Прогноз на 14 дней
             </p>
-            <Link href="/hub/tourist" className="inline-flex items-center gap-1.5 text-blue-600 text-xs font-light hover:gap-2 transition-all">
-              Подробнее
+            <Link href="/hub/tourist" className="inline-flex items-center justify-center lg:justify-start gap-1 text-blue-600 text-xs font-light hover:gap-1.5 transition-all w-full lg:w-auto">
+              <span className="hidden lg:inline">Подробнее</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
-          <div className="bg-white/60 backdrop-blur-2xl p-6 rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
-            <Shield className="w-10 h-10 text-red-500 mb-4" />
-            <h3 className="text-lg font-light text-gray-800 mb-2">Безопасность 24/7</h3>
+          <div className="bg-white/60 backdrop-blur-2xl p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
+            <Shield className="w-8 h-8 lg:w-10 lg:h-10 text-red-500 mb-2 lg:mb-3 mx-auto lg:mx-0" />
+            <h3 className="text-sm lg:text-base font-light text-gray-800 mb-1 lg:mb-2 text-center lg:text-left">Безопасность 24/7</h3>
             <p className="text-gray-600 font-light text-xs mb-4">
               SOS с геолокацией
             </p>
@@ -500,9 +500,9 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="bg-white/60 backdrop-blur-2xl p-6 rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
-            <Leaf className="w-10 h-10 text-green-500 mb-4" />
-            <h3 className="text-lg font-light text-gray-800 mb-2">Eco-Points</h3>
+          <div className="bg-white/60 backdrop-blur-2xl p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
+            <Leaf className="w-8 h-8 lg:w-10 lg:h-10 text-green-500 mb-2 lg:mb-3 mx-auto lg:mx-0" />
+            <h3 className="text-sm lg:text-base font-light text-gray-800 mb-1 lg:mb-2 text-center lg:text-left">Eco-Points</h3>
             <p className="text-gray-600 font-light text-xs mb-4">
               Зарабатывай баллы
             </p>
@@ -512,9 +512,9 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="bg-white/60 backdrop-blur-2xl p-6 rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
-            <BarChart3 className="w-10 h-10 text-purple-500 mb-4" />
-            <h3 className="text-lg font-light text-gray-800 mb-2">Аналитика</h3>
+          <div className="bg-white/60 backdrop-blur-2xl p-3 lg:p-4 rounded-xl lg:rounded-2xl border border-white/40 hover:bg-white/80 transition-all shadow-lg hover:shadow-xl">
+            <BarChart3 className="w-8 h-8 lg:w-10 lg:h-10 text-purple-500 mb-2 lg:mb-3 mx-auto lg:mx-0" />
+            <h3 className="text-sm lg:text-base font-light text-gray-800 mb-1 lg:mb-2 text-center lg:text-left">Аналитика</h3>
             <p className="text-gray-600 font-light text-xs mb-4">
               Детальная статистика
             </p>
@@ -526,24 +526,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section className={`w-full bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000 py-16`}>
+      {/* FINAL CTA - Hidden on desktop lg+ */}
+      <section className={`w-full lg:hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000 py-12`}>
         <div className="text-center px-4">
-          <Target className={`w-12 h-12 mx-auto mb-6 ${isNight ? 'text-white/80' : 'text-gray-700'}`} />
-          <h2 className={`text-2xl md:text-4xl font-extralight ${textColor} mb-6`}>
+          <Target className={`w-10 h-10 mx-auto mb-4 ${isNight ? 'text-white/80' : 'text-gray-700'}`} />
+          <h2 className={`text-xl font-extralight ${textColor} mb-4`}>
             Готовы начать?
           </h2>
-          <p className={`text-base font-light ${textSecondary} mb-10 max-w-2xl mx-auto`}>
+          <p className={`text-sm font-light ${textSecondary} mb-6 max-w-2xl mx-auto`}>
             Присоединяйтесь к экосистеме туризма Камчатки
           </p>
           
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/hub/tourist" className="flex items-center gap-2 px-6 py-2.5 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-sm hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
-              <Users className="w-4 h-4" />
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Link href="/hub/tourist" className="flex items-center gap-1.5 px-5 py-2 bg-white/50 backdrop-blur-xl text-gray-800 rounded-full font-light text-xs hover:bg-white/70 transition-all hover:scale-105 shadow-lg border border-white/50">
+              <Users className="w-3.5 h-3.5" />
               Искать туры
             </Link>
-            <Link href="/hub/operator" className="flex items-center gap-2 px-6 py-2.5 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-sm border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
-              <Briefcase className="w-4 h-4" />
+            <Link href="/hub/operator" className="flex items-center gap-1.5 px-5 py-2 bg-gray-800/50 backdrop-blur-xl text-white rounded-full font-light text-xs border border-gray-700/50 hover:bg-gray-800/70 transition-all hover:scale-105 shadow-lg">
+              <Briefcase className="w-3.5 h-3.5" />
               Открыть CRM
             </Link>
           </div>
