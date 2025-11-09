@@ -124,10 +124,10 @@ export default function HomePage() {
 
           {/* Time Display - ИЗЯЩНЫЙ */}
           <div className="mb-8">
-            <div className={`text-[12rem] md:text-[16rem] font-extralight ${textColor} tracking-tighter leading-none`}>
+            <div className={`text-7xl md:text-8xl lg:text-9xl font-extralight ${textColor} tracking-tighter leading-none`}>
               {hoursStr}<span className="text-gray-400">:</span>{minutes}
             </div>
-            <div className={`text-lg md:text-xl font-light ${textSecondary} mt-2`}>
+            <div className={`text-lg md:text-xl font-light ${textSecondary} mt-4`}>
               {currentTime.toLocaleDateString('ru-RU', { 
                 weekday: 'long', 
                 day: 'numeric',
