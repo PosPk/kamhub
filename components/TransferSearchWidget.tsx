@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Bus, ChevronDown, ChevronRight, Search, Clock, User, Star, Car } from 'lucide-react';
 import { TransferSearchRequest, TransferOption, TransferSearchResponse } from '@/types/transfer';
 
 interface TransferSearchWidgetProps {
@@ -104,9 +105,12 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
   return (
     <div className={`${className}`}>
       <div className="mb-6">
-        <h2 className="text-2xl font-medium text-gray-900 mb-2 drop-shadow-sm">
-          🚌 Поиск трансферов
-        </h2>
+        <div className="flex items-center gap-2 mb-2">
+          <Bus className="w-7 h-7 text-blue-700" />
+          <h2 className="text-2xl font-medium text-gray-900 drop-shadow-sm">
+            Поиск трансферов
+          </h2>
+        </div>
         <p className="text-gray-600">
           Найдите подходящий трансфер для вашей поездки
         </p>
@@ -177,9 +181,11 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center gap-2 text-blue-700 hover:text-blue-800 transition-colors drop-shadow-sm"
         >
-          <span className="text-lg">
-            {showFilters ? '🔽' : '▶️'}
-          </span>
+          {showFilters ? (
+            <ChevronDown className="w-5 h-5" />
+          ) : (
+            <ChevronRight className="w-5 h-5" />
+          )}
           <span className="font-medium">
             {showFilters ? 'Скрыть фильтры' : 'Расширенные фильтры'}
           </span>
@@ -297,7 +303,7 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             </>
           ) : (
             <>
-              <span>🔍</span>
+              <Search className="w-5 h-5" />
               <span>Найти трансферы</span>
             </>
           )}
@@ -355,21 +361,16 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
   };
 
   const getVehicleTypeIcon = (type: string) => {
-    const icons: Record<string, string> = {
-      economy: '🚗',
-      comfort: '🚙',
-      business: '🚘',
-      minibus: '🚐',
-      bus: '🚌'
-    };
-    return icons[type] || '🚗';
+    return <Car className="w-6 h-6 text-blue-600" />;
   };
 
   return (
     <div className="bg-gray-900/50 border border-blue-400/20 rounded-xl p-4 hover:border-blue-400/40 transition-colors">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{getVehicleTypeIcon(transfer.vehicle.vehicleType)}</span>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+            {getVehicleTypeIcon(transfer.vehicle.vehicleType)}
+          </div>
           <div>
             <h4 className="text-lg font-bold text-white">
               {getVehicleTypeLabel(transfer.vehicle.vehicleType)} • {transfer.vehicle.make} {transfer.vehicle.model}
@@ -391,17 +392,17 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="flex items-center gap-2 text-white/80">
-          <span>🕐</span>
+          <Clock className="w-4 h-4" />
           <span className="text-sm">
             {transfer.departureTime} - {transfer.arrivalTime}
           </span>
         </div>
         <div className="flex items-center gap-2 text-white/80">
-          <span>👨‍💼</span>
+          <User className="w-4 h-4" />
           <span className="text-sm">{transfer.driver.name}</span>
         </div>
         <div className="flex items-center gap-2 text-white/80">
-          <span>⭐</span>
+          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           <span className="text-sm">{transfer.driver.rating}/5</span>
         </div>
       </div>
