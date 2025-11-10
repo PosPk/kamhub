@@ -244,6 +244,18 @@ export default function HomePage() {
       {/* HERO SECTION */}
       <section className={`relative min-h-screen lg:h-[50vh] w-full flex flex-col overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
         
+        {/* Background Image - Kamchatka */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/uploads/fon-1762759253594.jpg"
+            alt="Kamchatka"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: 'center' }}
+          />
+          {/* Gradient overlay для читаемости */}
+          <div className={`absolute inset-0 ${getBackgroundGradient()} bg-gradient-to-br opacity-60 transition-opacity duration-1000`}></div>
+        </div>
+        
         {/* Weather Animations - ОПТИМИЗИРОВАНО: мемоизация в компоненте */}
         <WeatherAnimations condition={weather.condition} isNight={isNight} isDawn={isDawn} />
 
