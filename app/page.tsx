@@ -176,14 +176,24 @@ export default function HomePage() {
   const textColor = isNight ? 'text-white' : 'text-gray-800';
   const textSecondary = isNight ? 'text-white/70' : 'text-gray-600';
 
-  // ДАННЫЕ: Роли
+  // ДАННЫЕ: Роли - ОБНОВЛЕНО: 2 основные роли
   const roles: Role[] = [
-    { id: 'tourist', icon: Users, title: 'Турист', subtitle: 'Открой Камчатку', color: 'from-blue-400/80 to-cyan-400/80', href: '/hub/tourist' },
-    { id: 'operator', icon: Briefcase, title: 'Туроператор', subtitle: 'Управляй бизнесом', color: 'from-purple-400/80 to-pink-400/80', href: '/hub/operator' },
-    { id: 'guide', icon: Compass, title: 'Гид', subtitle: 'Веди за собой', color: 'from-green-400/80 to-emerald-400/80', href: '/hub/guide' },
-    { id: 'transfer', icon: Car, title: 'Трансфер', subtitle: 'Доставь комфортно', color: 'from-orange-400/80 to-red-400/80', href: '/hub/transfer' },
-    { id: 'stay', icon: Home, title: 'Размещение', subtitle: 'Принимай гостей', color: 'from-indigo-400/80 to-blue-400/80', href: '/hub/stay' },
-    { id: 'souvenirs', icon: ShoppingBag, title: 'Сувениры', subtitle: 'Продавай эксклюзив', color: 'from-pink-400/80 to-rose-400/80', href: '/hub/souvenirs' }
+    { 
+      id: 'tourist', 
+      icon: Users, 
+      title: 'Турист путешественник', 
+      subtitle: 'Открой Камчатку для себя', 
+      color: 'from-blue-400/80 to-cyan-400/80', 
+      href: '/hub/tourist' 
+    },
+    { 
+      id: 'business', 
+      icon: Briefcase, 
+      title: 'Турбизнес', 
+      subtitle: 'Все для вашего бизнеса', 
+      color: 'from-purple-400/80 to-pink-400/80', 
+      href: '/hub/business' 
+    }
   ];
 
   // ДАННЫЕ: Features
