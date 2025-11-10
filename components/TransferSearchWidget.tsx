@@ -102,12 +102,12 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
   };
 
   return (
-    <div className={`bg-gray-900/90 backdrop-blur-sm rounded-2xl p-6 border border-blue-400/20 ${className}`}>
+    <div className={`${className}`}>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-blue-400 mb-2">
+        <h2 className="text-2xl font-medium text-gray-900 mb-2 drop-shadow-sm">
           🚌 Поиск трансферов
         </h2>
-        <p className="text-white/70">
+        <p className="text-gray-600">
           Найдите подходящий трансфер для вашей поездки
         </p>
       </div>
@@ -115,7 +115,7 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
       {/* Основные поля поиска */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Откуда *
           </label>
           <input
@@ -123,12 +123,12 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             value={searchParams.from}
             onChange={(e) => updateSearchParam('from', e.target.value)}
             placeholder="Аэропорт, отель, адрес..."
-            className="w-full px-4 py-3 bg-gray-900/50 border border-blue-400/30 rounded-xl text-white placeholder-white/50 focus:border-blue-400 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Куда *
           </label>
           <input
@@ -136,12 +136,12 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             value={searchParams.to}
             onChange={(e) => updateSearchParam('to', e.target.value)}
             placeholder="Аэропорт, отель, адрес..."
-            className="w-full px-4 py-3 bg-gray-900/50 border border-blue-400/30 rounded-xl text-white placeholder-white/50 focus:border-blue-400 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Дата *
           </label>
           <input
@@ -149,21 +149,21 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             value={searchParams.date}
             onChange={(e) => updateSearchParam('date', e.target.value)}
             min={new Date().toISOString().split('T')[0]}
-            className="w-full px-4 py-3 bg-gray-900/50 border border-blue-400/30 rounded-xl text-white focus:border-blue-400 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Пассажиры *
           </label>
           <select
             value={searchParams.passengers}
             onChange={(e) => updateSearchParam('passengers', parseInt(e.target.value))}
-            className="w-full px-4 py-3 bg-gray-900/50 border border-blue-400/30 rounded-xl text-white focus:border-blue-400 focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           >
             {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
-              <option key={num} value={num} className="bg-gray-900 text-white">
+              <option key={num} value={num} className="bg-white text-gray-900">
                 {num} {num === 1 ? 'пассажир' : num < 5 ? 'пассажира' : 'пассажиров'}
               </option>
             ))}
@@ -175,7 +175,7 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
       <div className="mb-6">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 text-blue-400 hover:text-blue-400/80 transition-colors"
+          className="flex items-center gap-2 text-blue-700 hover:text-blue-800 transition-colors drop-shadow-sm"
         >
           <span className="text-lg">
             {showFilters ? '🔽' : '▶️'}
@@ -288,11 +288,11 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
         <button
           onClick={handleSearch}
           disabled={isLoading}
-          className="px-8 py-4 bg-gradient-to-r from-blue-400 to-cyan-400 hover:bg-gradient-to-r from-blue-400 to-cyan-400/90 text-gray-900 font-bold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
         >
           {isLoading ? (
             <>
-              <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span>Поиск...</span>
             </>
           ) : (

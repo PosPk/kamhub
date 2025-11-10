@@ -250,13 +250,13 @@ export default function TouristDashboard() {
         )}
 
         {selectedTab === 'transfers' && (
-          <div className="bg-white/60 backdrop-blur-2xl rounded-2xl p-6 border border-white/40">
+          <div className="bg-white/70 backdrop-blur-2xl rounded-2xl p-6 border-2 border-white/50 shadow-lg">
             <TransferSearchWidget onSearchResults={setTransferResults} />
           </div>
         )}
 
         {selectedTab === 'ai' && (
-          <div className="bg-white/60 backdrop-blur-2xl rounded-2xl p-6 border border-white/40">
+          <div className="bg-white/70 backdrop-blur-2xl rounded-2xl p-6 border-2 border-white/50 shadow-lg">
             <AIChatWidget />
           </div>
         )}
