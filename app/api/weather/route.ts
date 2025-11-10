@@ -1,19 +1,36 @@
 /**
  * WEATHER API ENDPOINT
  * Получение данных о погоде для Петропавловска-Камчатского
+ * Использует Open-Meteo API (БЕЗ регистрации и ключей!)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cache } from '@/lib/cache/redis';
 import { logger } from '@/lib/logger';
 
-const OPENWEATHER_API_KEY = process.env.OPENWEATHER_API_KEY || '';
-const DEFAULT_CITY = 'Petropavlovsk-Kamchatsky';
+// Координаты Петропавловска-Камчатского
+const COORDINATES = {
+  'Petropavlovsk-Kamchatsky': { lat: 53.0167, lon: 158.65 },
+};
+
+// Маппинг WMO Weather codes → наши conditions
+// https://open-meteo.com/en/docs
+function getConditionFromCode(code: number): { condition: string; description: string } {
+  if (code === 0) return { condition: 'clear', description: 'ясно' };
+  if (code <= 3) return { condition: 'clouds', description: 'облачно' };
+  if (code <= 49) return { condition: 'clouds', description: 'туман' };
+  if (code <= 59) return { condition: 'rain', description: 'морось' };
+  if (code <= 69) return { condition: 'rain', description: 'дождь' };
+  if (code <= 79) return { condition: 'snow', description: 'снег' };
+  if (code <= 84) return { condition: 'rain', description: 'ливень' };
+  if (code <= 86) return { condition: 'snow', description: 'снегопад' };
+  return { condition: 'clouds', description: 'переменная' };
+}
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const city = searchParams.get('city') || DEFAULT_CITY;
+    const city = searchParams.get('city') || 'Petropavlovsk-Kamchatsky';
 
     // Проверяем кэш (5 минут)
     const cacheKey = `weather:${city}`;
@@ -23,65 +40,55 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(cached);
     }
 
-    // Если нет API ключа - возвращаем моковые данные
-    if (!OPENWEATHER_API_KEY) {
-      const mockData = {
-        temp: -5,
-        feels_like: -8,
-        condition: 'snow',
-        description: 'снег',
-        humidity: 85,
-        wind_speed: 12,
-        pressure: 1013,
-        icon: '13d',
-      };
-      
-      await cache.set(cacheKey, mockData, { ttl: 300 });
-      return NextResponse.json(mockData);
-    }
+    // Получаем координаты города
+    const coords = COORDINATES[city as keyof typeof COORDINATES] || COORDINATES['Petropavlovsk-Kamchatsky'];
 
-    // Получаем данные от OpenWeather
+    // Запрос к Open-Meteo API (БЕЗ ключа!)
     const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=ru`,
+      `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code,surface_pressure&timezone=Asia/Kamchatka`,
       { next: { revalidate: 300 } } // 5 минут
     );
 
     if (!response.ok) {
-      throw new Error(`OpenWeather API error: ${response.status}`);
+      throw new Error(`Open-Meteo API error: ${response.status}`);
     }
 
     const data = await response.json();
+    const current = data.current;
+
+    // Определяем condition и description из weather_code
+    const { condition, description } = getConditionFromCode(current.weather_code);
 
     const weatherData = {
-      temp: data.main.temp,
-      feels_like: data.main.feels_like,
-      condition: data.weather[0].main.toLowerCase(),
-      description: data.weather[0].description,
-      humidity: data.main.humidity,
-      wind_speed: data.wind.speed,
-      pressure: data.main.pressure,
-      icon: data.weather[0].icon,
+      temp: Math.round(current.temperature_2m),
+      feels_like: Math.round(current.temperature_2m - 2), // Примерное ощущение с учетом ветра
+      condition,
+      description,
+      humidity: current.relative_humidity_2m,
+      wind_speed: Math.round(current.wind_speed_10m),
+      pressure: current.surface_pressure,
+      icon: condition === 'clear' ? '01d' : condition === 'rain' ? '10d' : condition === 'snow' ? '13d' : '04d',
     };
 
     // Кэшируем на 5 минут
     await cache.set(cacheKey, weatherData, { ttl: 300 });
 
-    logger.info('Weather data fetched', { city, temp: weatherData.temp });
+    logger.info('Weather data fetched from Open-Meteo', { city, temp: weatherData.temp, condition });
 
     return NextResponse.json(weatherData);
 
   } catch (error) {
     logger.error('Error fetching weather', error);
 
-    // Fallback данные
+    // Fallback данные (более реалистичные для Камчатки)
     const fallbackData = {
-      temp: -5,
-      feels_like: -8,
+      temp: 1,
+      feels_like: -2,
       condition: 'clouds',
       description: 'облачно',
-      humidity: 75,
-      wind_speed: 8,
-      pressure: 1010,
+      humidity: 60,
+      wind_speed: 5,
+      pressure: 1013,
       icon: '04d',
     };
 
