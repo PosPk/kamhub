@@ -105,7 +105,7 @@ export default function TouristDashboard() {
           <div className="bg-white/60 backdrop-blur-2xl rounded-3xl p-6 border border-white/40 shadow-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-2xl font-light mb-1" style={{ color: 'var(--ultramarine)' }}>
+                <h3 className="text-2xl font-light mb-1 text-blue-600">
                   Петропавловск-Камчатский
                 </h3>
                   <div className="flex items-center gap-4">
@@ -134,7 +134,7 @@ export default function TouristDashboard() {
         )}
 
         {/* Tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {[
             { id: 'tours', label: 'Туры', icon: Mountain },
             { id: 'transfers', label: 'Трансферы', icon: MapPin },
@@ -145,16 +145,11 @@ export default function TouristDashboard() {
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-light text-sm transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-light transition-all whitespace-nowrap ${
                   selectedTab === tab.id
-                    ? 'bg-white/80 backdrop-blur-xl shadow-lg'
-                    : 'bg-white/40 backdrop-blur-xl hover:bg-white/60'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                    : 'bg-white/60 text-gray-800 hover:bg-white/80 backdrop-blur-xl border border-white/40'
                 }`}
-                style={{
-                  color: selectedTab === tab.id ? 'var(--ultramarine)' : 'var(--text-secondary)',
-                  borderWidth: '1px',
-                  borderColor: 'rgba(255, 255, 255, 0.4)',
-                }}
               >
                 <Icon className="w-4 h-4" />
                 {tab.label}
@@ -169,8 +164,8 @@ export default function TouristDashboard() {
             {/* Filters */}
             <div className="bg-white/60 backdrop-blur-2xl rounded-2xl p-4 border border-white/40">
               <div className="flex items-center gap-2 mb-4">
-                <Filter className="w-5 h-5" style={{ color: 'var(--ultramarine)' }} />
-                <h3 className="text-lg font-light">Фильтры</h3>
+                <Filter className="w-5 h-5 text-blue-600" />
+                <h3 className="text-lg font-light text-gray-800">Фильтры</h3>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
                 <select
@@ -224,7 +219,7 @@ export default function TouristDashboard() {
                         <span className="text-sm font-medium">{tour.rating || '5.0'}</span>
                       </div>
                     </div>
-                    <h3 className="text-lg font-light mb-2" style={{ color: 'var(--ultramarine)' }}>
+                    <h3 className="text-lg font-light mb-2 text-gray-900">
                       {tour.title}
                     </h3>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">{tour.description}</p>
@@ -239,16 +234,12 @@ export default function TouristDashboard() {
                       </div>
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4" />
-                        <span className="text-lg font-medium" style={{ color: 'var(--ultramarine)' }}>
+                        <span className="text-lg font-medium text-blue-600">
                           от {tour.priceFrom.toLocaleString()} ₽
                         </span>
                       </div>
                     </div>
-                    <button className="mt-4 w-full py-2 rounded-xl font-light text-sm text-white transition-all hover:scale-105 shadow-lg"
-                      style={{
-                        background: 'linear-gradient(135deg, var(--ultramarine) 0%, var(--ultramarine-light) 100%)'
-                      }}
-                    >
+                    <button className="mt-4 w-full py-2 rounded-xl font-light text-sm text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all hover:scale-105 shadow-lg">
                       Забронировать
                     </button>
                   </div>
