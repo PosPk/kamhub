@@ -249,7 +249,7 @@ export default function HomePage() {
           <img 
             src="/uploads/fon-1762759253594.jpg"
             alt="Kamchatka"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain lg:object-cover"
             style={{ objectPosition: 'center' }}
           />
           {/* Gradient overlay для читаемости */}
