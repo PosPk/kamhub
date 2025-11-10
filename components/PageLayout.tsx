@@ -22,9 +22,39 @@ export function PageLayout({
 
   useEffect(() => {
     setMounted(true);
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    
+    // Обновляем только при смене минуты (оптимизация)
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(prev => {
+        if (now.getMinutes() !== prev.getMinutes()) {
+          return now;
+        }
+        return prev;
+      });
+    };
+    
+    const timer = setInterval(updateTime, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Динамическая тема для body
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
+    const hours = currentTime.getHours();
+    const themeClasses = ['dawn', 'morning', 'afternoon', 'evening', 'late-evening', 'night'];
+    document.body.classList.remove(...themeClasses);
+    
+    let themeClass = 'night';
+    if (hours >= 5 && hours < 7) themeClass = 'dawn';
+    else if (hours >= 7 && hours < 12) themeClass = 'morning';
+    else if (hours >= 12 && hours < 18) themeClass = 'afternoon';
+    else if (hours >= 18 && hours < 21) themeClass = 'evening';
+    else if (hours >= 21 && hours < 23) themeClass = 'late-evening';
+    
+    document.body.classList.add(themeClass);
+  }, [currentTime]);
 
   if (!mounted) {
     return (
@@ -34,74 +64,82 @@ export function PageLayout({
     );
   }
 
-  const hour = currentTime.getHours();
-  const isNight = hour >= 21 || hour < 6;
+  const hours = currentTime.getHours();
+  const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+  const hoursStr = hours.toString().padStart(2, '0');
+  const timeString = `${hoursStr}:${minutes}`;
   
+  // Градиенты точно как на главной странице
   const getBackgroundGradient = () => {
-    if (hour >= 6 && hour < 12) return 'from-sky-200 via-blue-100 to-cyan-50';
-    if (hour >= 12 && hour < 17) return 'from-blue-300 via-sky-200 to-cyan-100';
-    if (hour >= 17 && hour < 21) return 'from-indigo-400 via-purple-300 to-pink-200';
-    return 'from-slate-900 via-blue-900 to-indigo-950';
+    if (hours >= 5 && hours < 7) return 'from-rose-200 via-orange-100 to-amber-100'; // DAWN
+    if (hours >= 7 && hours < 12) return 'from-sky-100 via-blue-50 to-indigo-100'; // MORNING
+    if (hours >= 12 && hours < 18) return 'from-blue-100 via-sky-50 to-cyan-100'; // AFTERNOON
+    if (hours >= 18 && hours < 21) return 'from-orange-100 via-pink-100 to-purple-200'; // EVENING
+    if (hours >= 21 && hours < 23) return 'from-indigo-300 via-purple-200 to-pink-200'; // LATE EVENING
+    return 'from-slate-800 via-blue-900 to-indigo-900'; // NIGHT
   };
 
+  const isNight = hours >= 23 || hours < 5;
   const textColor = isNight ? 'text-white' : 'text-gray-800';
-  const textSecondary = isNight ? 'text-gray-300' : 'text-gray-600';
-
-  const timeString = currentTime.toLocaleTimeString('ru-RU', { 
-    hour: '2-digit', 
-    minute: '2-digit'
-  });
+  const textSecondary = isNight ? 'text-white/70' : 'text-gray-600';
+  const bgGlass = isNight ? 'bg-white/20' : 'bg-gray-800/20';
+  const borderColor = isNight ? 'border-white/30' : 'border-gray-800/30';
+  const hoverBg = isNight ? 'hover:bg-white/30' : 'hover:bg-gray-800/30';
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden relative">
       <section className={`relative min-h-screen w-full bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
         
-        {/* Top bar - минималистичный */}
-        <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3 bg-white/5 backdrop-blur-md border-b border-white/10">
+        {/* Top bar - точно как на главной */}
+        <div className="relative z-20 w-full flex items-center justify-between px-4 py-2">
           {/* Левая часть - Лого + Назад */}
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 hover:scale-105 transition-transform">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-lg flex items-center justify-center backdrop-blur-xl border border-white/20">
-                <span className="text-white text-sm font-bold">K</span>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-1.5 group">
+              <div className={`w-8 h-8 rounded-lg ${bgGlass} backdrop-blur-xl border ${borderColor} flex items-center justify-center ${textColor} font-bold text-sm group-hover:scale-110 transition-transform shadow-lg`}>
+                K
+              </div>
+              <div className={`${textColor} hidden sm:block`}>
+                <div className="font-light text-xs">Kamchatour Hub</div>
               </div>
             </Link>
             
             {backLink !== '/' && (
               <Link 
                 href={backLink}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-xl transition-all ${textColor} text-sm font-light border border-white/20`}
+                className={`flex items-center gap-1.5 px-3 py-1 ${bgGlass} backdrop-blur-xl border ${borderColor} rounded-full ${textColor} text-xs font-light ${hoverBg} transition-all shadow-lg`}
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Назад</span>
               </Link>
             )}
 
             {title && (
-              <h1 className={`hidden md:block text-lg font-light ${textColor}`}>{title}</h1>
+              <h1 className={`hidden lg:block text-base font-light ${textColor} ml-2`}>{title}</h1>
             )}
           </div>
 
           {/* Правая часть - Время + Личный кабинет */}
-          <div className="flex items-center gap-3">
-            <div className={`text-lg font-light ${textColor}`}>
-              {timeString}
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <div className={`text-lg font-extralight ${textColor} tracking-tight`}>
+                {timeString}
+              </div>
             </div>
             <Link 
               href="/auth/login"
-              className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 backdrop-blur-xl transition-all text-sm font-light border border-white/20"
-              style={{ color: 'var(--ultramarine-light)' }}
+              className={`px-3 py-1 ${bgGlass} backdrop-blur-xl border ${borderColor} rounded-full ${textColor} text-xs font-light ${hoverBg} transition-all shadow-lg`}
             >
-              Личный кабинет
+              Вход
             </Link>
           </div>
         </div>
 
         {/* Контент */}
-        <div className="relative pt-16 pb-8 px-4">
+        <div className="relative pt-4 pb-20 px-4">
           <div className="max-w-7xl mx-auto">
             {title && (
-              <div className="mb-8">
-                <h1 className={`text-3xl md:text-5xl font-extralight ${textColor} mb-2 md:hidden`}>
+              <div className="mb-6">
+                <h1 className={`text-2xl md:text-4xl font-extralight ${textColor} mb-2 lg:hidden`}>
                   {title}
                 </h1>
               </div>
@@ -111,16 +149,19 @@ export function PageLayout({
           </div>
         </div>
 
-        {/* Home button - floating */}
+        {/* Home button - floating (скрыт на мобильных, т.к. есть нижняя навигация) */}
         {showHomeButton && (
           <Link
             href="/"
-            className="fixed bottom-6 left-6 z-50 w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110"
+            className="hidden lg:flex fixed bottom-6 left-6 z-50 w-12 h-12 rounded-full shadow-2xl items-center justify-center transition-all hover:scale-110"
             style={{
-              background: 'linear-gradient(135deg, var(--ultramarine) 0%, var(--ultramarine-light) 50%, var(--ultramarine-lighter) 100%)'
+              background: isNight 
+                ? 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.3) 100%)'
+                : 'linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.3) 100%)',
+              backdropFilter: 'blur(20px)'
             }}
           >
-            <Home className="w-6 h-6 text-white" />
+            <Home className={`w-6 h-6 ${textColor}`} />
           </Link>
         )}
       </section>
