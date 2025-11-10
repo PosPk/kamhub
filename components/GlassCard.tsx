@@ -7,9 +7,10 @@ interface GlassCardProps {
   className?: string;
   hover?: boolean;
   isNight?: boolean;
+  onClick?: () => void;
 }
 
-export function GlassCard({ children, className = '', hover = true, isNight = false }: GlassCardProps) {
+export function GlassCard({ children, className = '', hover = true, isNight = false, onClick }: GlassCardProps) {
   const bgClass = isNight ? 'bg-white/10' : 'bg-white/60';
   const borderClass = isNight ? 'border-white/20' : 'border-white/40';
   const hoverClass = hover 
@@ -19,8 +20,9 @@ export function GlassCard({ children, className = '', hover = true, isNight = fa
     : '';
 
   return (
-    <div 
-      className={`${bgClass} backdrop-blur-xl rounded-2xl border ${borderClass} shadow-lg transition-all duration-300 ${hoverClass} ${className}`}
+    <div
+      onClick={onClick}
+      className={`${bgClass} backdrop-blur-xl rounded-2xl border ${borderClass} shadow-lg transition-all duration-300 ${hoverClass} ${className} ${onClick ? 'cursor-pointer' : ''}`}
     >
       {children}
     </div>
