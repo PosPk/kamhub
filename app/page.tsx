@@ -250,7 +250,7 @@ export default function HomePage() {
             src="/uploads/fon-1762759253594.jpg"
             alt="Kamchatka"
             className="w-full h-full object-contain lg:object-cover"
-            style={{ objectPosition: 'center' }}
+            style={{ objectPosition: 'center top' }}
           />
           {/* Gradient overlay для читаемости */}
           <div className={`absolute inset-0 ${getBackgroundGradient()} bg-gradient-to-br opacity-60 transition-opacity duration-1000`}></div>
