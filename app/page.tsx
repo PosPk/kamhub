@@ -259,9 +259,6 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* AI Smart Search - ОПТИМИЗИРОВАНО: компонент + топ-8 категорий */}
-          <AISmartSearch categories={searchCategories} onSearch={handleAISearch} isNight={isNight} />
-
           {/* Weather Card */}
           <div className={`inline-flex items-center gap-3 px-5 py-2 ${isNight ? 'bg-white/30 border-white/30' : 'bg-gray-800/30 border-gray-800/30'} backdrop-blur-3xl rounded-full border mb-3 shadow-xl`}>
             <div className="flex items-center gap-2">
@@ -282,32 +279,32 @@ export default function HomePage() {
           </div>
 
           {/* Location */}
-          <div className={`flex items-center gap-1 ${textSecondary} text-xs mb-6 font-light`}>
+          <div className={`flex items-center gap-1 ${textSecondary} text-xs mb-4 font-light`}>
             <MapPin className="w-3.5 h-3.5" />
             <span>Петропавловск-Камчатский</span>
           </div>
 
-          {/* Title */}
-          <h1 className={`text-3xl md:text-5xl font-extralight ${textColor} mb-2 tracking-tight`}>
-            Kamchatour Hub
-          </h1>
-          <p className={`text-sm md:text-base font-light ${textSecondary} mb-6`}>
+          {/* Description */}
+          <p className={`text-sm md:text-base font-light ${textSecondary} mb-4`}>
             Экосистема туризма Камчатки
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-2 justify-center">
+          <div className="flex flex-wrap gap-2 justify-center mb-6">
             <Link href="/hub/tourist" className={`group flex items-center gap-1.5 px-4 py-1.5 ${isNight ? 'bg-white/50 text-gray-800 border-white/50 hover:bg-white/70' : 'bg-gray-800/50 text-white border-gray-800/50 hover:bg-gray-800/70'} backdrop-blur-xl rounded-full font-light text-xs transition-all hover:scale-105 shadow-lg border`}>
               <Users className="w-3 h-3" />
               Я турист
               <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link href="/hub/operator" className={`group flex items-center gap-1.5 px-4 py-1.5 ${isNight ? 'bg-gray-800/50 text-white border-gray-700/50 hover:bg-gray-800/70' : 'bg-white/50 text-gray-800 border-white/50 hover:bg-white/70'} backdrop-blur-xl rounded-full font-light text-xs border transition-all hover:scale-105 shadow-lg`}>
+            <Link href="/hub/business" className={`group flex items-center gap-1.5 px-4 py-1.5 ${isNight ? 'bg-gray-800/50 text-white border-gray-700/50 hover:bg-gray-800/70' : 'bg-white/50 text-gray-800 border-white/50 hover:bg-white/70'} backdrop-blur-xl rounded-full font-light text-xs border transition-all hover:scale-105 shadow-lg`}>
               <Briefcase className="w-3 h-3" />
               Я бизнес
               <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
+
+          {/* AI Smart Search - ОПТИМИЗИРОВАНО: компонент + топ-8 категорий */}
+          <AISmartSearch categories={searchCategories} onSearch={handleAISearch} isNight={isNight} />
 
           {/* Scroll Indicator */}
           <div className="mt-12 animate-bounce">
