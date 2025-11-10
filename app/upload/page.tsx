@@ -117,7 +117,7 @@ export default function UploadPage() {
                 className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${
                   isNight
                     ? 'border-white/30 hover:border-white/50 bg-white/5 hover:bg-white/10'
-                    : 'border-gray-300 hover:border-gray-400 bg-gray-50/50 hover:bg-gray-100/50'
+                    : 'border-blue-200/40 hover:border-blue-300/60 bg-blue-50/30 hover:bg-blue-100/40'
                 }`}
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -158,9 +158,9 @@ export default function UploadPage() {
 
             {/* Error */}
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-red-500/20 border border-red-500/30">
-                <AlertCircle className="w-5 h-5 text-red-400" />
-                <p className="text-sm text-red-400">{error}</p>
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-100/40 border border-rose-200/50">
+                <AlertCircle className="w-5 h-5 text-rose-600" />
+                <p className="text-sm text-rose-700">{error}</p>
               </div>
             )}
 
@@ -169,7 +169,7 @@ export default function UploadPage() {
               <button
                 onClick={handleUpload}
                 disabled={uploading}
-                className={`w-full py-3 px-4 rounded-xl font-medium text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`w-full py-3 px-4 rounded-xl font-light text-white bg-gradient-to-r from-sky-400 to-blue-500 hover:from-sky-500 hover:to-blue-600 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed ${
                   uploading ? 'animate-pulse' : ''
                 }`}
               >
@@ -184,8 +184,10 @@ export default function UploadPage() {
           <GlassCard className="p-6" isNight={isNight}>
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Check className="w-6 h-6 text-emerald-400" />
-                <h3 className={`text-lg font-medium ${textColor}`}>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-emerald-400 to-teal-500 flex items-center justify-center">
+                  <Check className="w-6 h-6 text-white" />
+                </div>
+                <h3 className={`text-lg font-light ${textColor}`}>
                   Файл успешно загружен!
                 </h3>
               </div>
@@ -209,20 +211,20 @@ export default function UploadPage() {
                     type="text"
                     readOnly
                     value={`${typeof window !== 'undefined' ? window.location.origin : ''}${result.url}`}
-                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-mono ${
+                    className={`flex-1 px-3 py-2 rounded-xl text-sm font-mono ${
                       isNight
                         ? 'bg-white/10 text-white border border-white/20'
-                        : 'bg-gray-100 text-gray-800 border border-gray-300'
+                        : 'bg-sky-50/50 text-blue-900 border border-blue-200/40'
                     }`}
                   />
                   <button
                     onClick={handleCopyUrl}
-                    className={`px-4 py-2 rounded-lg transition-all ${
+                    className={`px-4 py-2 rounded-xl transition-all shadow-sm ${
                       copied
-                        ? 'bg-emerald-500 text-white'
+                        ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-white'
                         : isNight
                         ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300'
+                        : 'bg-blue-50/50 hover:bg-blue-100/60 text-blue-700 border border-blue-200/40'
                     }`}
                   >
                     {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
@@ -231,10 +233,10 @@ export default function UploadPage() {
                     href={result.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`px-4 py-2 rounded-lg transition-all ${
+                    className={`px-4 py-2 rounded-xl transition-all shadow-sm ${
                       isNight
                         ? 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
-                        : 'bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300'
+                        : 'bg-blue-50/50 hover:bg-blue-100/60 text-blue-700 border border-blue-200/40'
                     }`}
                   >
                     <ExternalLink className="w-5 h-5" />
@@ -255,10 +257,10 @@ export default function UploadPage() {
                   setPreview(null);
                   setResult(null);
                 }}
-                className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full py-2 px-4 rounded-xl text-sm font-light transition-all shadow-sm ${
                   isNight
                     ? 'bg-white/10 hover:bg-white/20 text-white'
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-800'
+                    : 'bg-blue-50/50 hover:bg-blue-100/60 text-blue-700 border border-blue-200/40'
                 }`}
               >
                 Загрузить другой файл
