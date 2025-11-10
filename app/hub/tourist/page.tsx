@@ -100,12 +100,12 @@ export default function TouristDashboard() {
   return (
     <PageLayout title="Туристам" backLink="/">
       <div className="space-y-6">
-        {/* Weather Widget */}
+        {/* Weather Widget - УСИЛЕН КОНТРАСТ */}
         {weather && (
-          <div className="bg-white/60 backdrop-blur-2xl rounded-3xl p-6 border border-white/40 shadow-lg">
+          <div className="bg-white/70 backdrop-blur-2xl rounded-3xl p-6 border-2 border-white/50 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-2xl font-light mb-1 text-blue-600">
+                <h3 className="text-2xl font-medium mb-1 text-blue-700 drop-shadow-sm">
                   Петропавловск-Камчатский
                 </h3>
                   <div className="flex items-center gap-4">
@@ -161,17 +161,17 @@ export default function TouristDashboard() {
         {/* Content */}
         {selectedTab === 'tours' && (
           <div className="space-y-6">
-            {/* Filters */}
-            <div className="bg-white/60 backdrop-blur-2xl rounded-2xl p-4 border border-white/40">
+            {/* Filters - УСИЛЕН КОНТРАСТ */}
+            <div className="bg-white/70 backdrop-blur-2xl rounded-2xl p-4 border-2 border-white/50 shadow-lg">
               <div className="flex items-center gap-2 mb-4">
-                <Filter className="w-5 h-5 text-blue-600" />
-                <h3 className="text-lg font-light text-gray-800">Фильтры</h3>
+                <Filter className="w-5 h-5 text-blue-700 drop-shadow-sm" />
+                <h3 className="text-lg font-medium text-gray-900">Фильтры</h3>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
                 <select
                   value={filters.activity}
                   onChange={(e) => setFilters({ ...filters, activity: e.target.value })}
-                  className="px-4 py-2 rounded-xl bg-white/60 border border-white/40 backdrop-blur-xl font-light"
+                  className="px-4 py-2 rounded-xl bg-white/70 border-2 border-white/50 backdrop-blur-xl font-medium text-gray-900 shadow-sm"
                 >
                   <option value="">Все активности</option>
                   <option value="hiking">Походы</option>
@@ -182,7 +182,7 @@ export default function TouristDashboard() {
                 <select
                   value={filters.difficulty}
                   onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}
-                  className="px-4 py-2 rounded-xl bg-white/60 border border-white/40 backdrop-blur-xl font-light"
+                  className="px-4 py-2 rounded-xl bg-white/70 border-2 border-white/50 backdrop-blur-xl font-medium text-gray-900 shadow-sm"
                 >
                   <option value="">Все уровни</option>
                   <option value="easy">Легкий</option>
@@ -193,7 +193,7 @@ export default function TouristDashboard() {
                   type="number"
                   placeholder="Макс. цена"
                   onChange={(e) => setFilters({ ...filters, priceRange: [0, parseInt(e.target.value) || 50000] })}
-                  className="px-4 py-2 rounded-xl bg-white/60 border border-white/40 backdrop-blur-xl font-light"
+                  className="px-4 py-2 rounded-xl bg-white/70 border-2 border-white/50 backdrop-blur-xl font-medium text-gray-900 shadow-sm placeholder:text-gray-500"
                 />
               </div>
             </div>
