@@ -77,6 +77,29 @@ export default function HomePage() {
     };
   }, []);
 
+  // ИСПРАВЛЕНИЕ: Динамическое применение темы к body
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    
+    const hours = currentTime.getHours();
+    
+    // Удаляем все предыдущие классы темы
+    const themeClasses = ['dawn', 'morning', 'afternoon', 'evening', 'late-evening', 'night'];
+    document.body.classList.remove(...themeClasses);
+    
+    // Применяем текущую тему
+    let themeClass = 'night';
+    if (hours >= 5 && hours < 7) themeClass = 'dawn';
+    else if (hours >= 7 && hours < 12) themeClass = 'morning';
+    else if (hours >= 12 && hours < 18) themeClass = 'afternoon';
+    else if (hours >= 18 && hours < 21) themeClass = 'evening';
+    else if (hours >= 21 && hours < 23) themeClass = 'late-evening';
+    
+    document.body.classList.add(themeClass);
+    
+    console.log(`🎨 Тема применена: ${themeClass} (${hours}:00)`);
+  }, [currentTime]);
+
   // AI Search handler - ГОТОВО: с полноценным UI
   const handleAISearch = useCallback(async (query: string) => {
     setIsSearching(true);
