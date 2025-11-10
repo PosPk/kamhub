@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { AIChatWidget } from '@/components/AIChatWidget';
 import { WeatherAnimations } from '@/components/home/WeatherAnimations';
+import { VideoBackground } from '@/components/home/VideoBackground';
 import { TopBar } from '@/components/home/TopBar';
 import { AISmartSearch } from '@/components/home/AISmartSearch';
 import { RolesSection, type Role } from '@/components/home/RolesSection';
@@ -244,17 +245,8 @@ export default function HomePage() {
       {/* HERO SECTION */}
       <section className={`relative min-h-screen lg:h-[50vh] w-full flex flex-col overflow-hidden bg-gradient-to-br ${getBackgroundGradient()} transition-colors duration-1000`}>
         
-        {/* Background Image - Kamchatka */}
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/uploads/fon-1762759253594.jpg"
-            alt="Kamchatka"
-            className="w-full h-full object-contain lg:object-cover"
-            style={{ objectPosition: 'center top' }}
-          />
-          {/* Gradient overlay для читаемости */}
-          <div className={`absolute inset-0 ${getBackgroundGradient()} bg-gradient-to-br opacity-60 transition-opacity duration-1000`}></div>
-        </div>
+        {/* Video/Image Background - Kamchatka */}
+        <VideoBackground currentHour={hours} getBackgroundGradient={getBackgroundGradient} />
         
         {/* Weather Animations - ОПТИМИЗИРОВАНО: мемоизация в компоненте */}
         <WeatherAnimations condition={weather.condition} isNight={isNight} isDawn={isDawn} />
