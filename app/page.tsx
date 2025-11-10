@@ -258,50 +258,50 @@ export default function HomePage() {
         <div className="relative z-10 w-full text-center flex-1 flex flex-col items-center justify-center px-4">
           {/* Greeting */}
           <div className="mb-4">
-            <p className={`text-xl md:text-2xl font-light ${isNight ? 'text-white/90' : 'text-gray-800'}`}>
+            <p className={`text-xl md:text-2xl font-light ${isNight ? 'text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]' : 'text-gray-900 drop-shadow-[0_2px_8px_rgba(255,255,255,0.8)]'}`}>
               {getGreeting()}, Камчатка
             </p>
           </div>
 
-          {/* Weather Card */}
-          <div className={`inline-flex items-center gap-3 px-5 py-2 ${isNight ? 'bg-white/30 border-white/30' : 'bg-gray-800/30 border-gray-800/30'} backdrop-blur-3xl rounded-full border mb-3 shadow-xl`}>
+          {/* Weather Card - УСИЛЕН КОНТРАСТ */}
+          <div className={`inline-flex items-center gap-3 px-5 py-2 ${isNight ? 'bg-white/40 border-white/50' : 'bg-gray-900/50 border-gray-900/60'} backdrop-blur-3xl rounded-full border mb-3 shadow-2xl`}>
             <div className="flex items-center gap-2">
-              <ThermometerSun className={`w-5 h-5 ${textColor}`} />
-              <div className={`text-2xl font-extralight ${textColor}`}>{weather.temp}°</div>
+              <ThermometerSun className={`w-5 h-5 ${isNight ? 'text-white drop-shadow-lg' : 'text-white drop-shadow-lg'}`} />
+              <div className={`text-2xl font-extralight ${isNight ? 'text-white' : 'text-white'}`}>{weather.temp}°</div>
             </div>
-            <div className={`w-px h-6 ${isNight ? 'bg-white/30' : 'bg-gray-800/30'}`}></div>
+            <div className={`w-px h-6 ${isNight ? 'bg-white/40' : 'bg-white/40'}`}></div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1">
-                <Wind className={`w-3.5 h-3.5 ${textSecondary}`} />
-                <span className={`text-xs font-light ${textSecondary}`}>{weather.wind} м/с</span>
+                <Wind className={`w-3.5 h-3.5 ${isNight ? 'text-white/90' : 'text-white/90'} drop-shadow-lg`} />
+                <span className={`text-xs font-light ${isNight ? 'text-white/90' : 'text-white/90'}`}>{weather.wind} м/с</span>
               </div>
               <div className="flex items-center gap-1">
-                <Droplets className={`w-3.5 h-3.5 ${textSecondary}`} />
-                <span className={`text-xs font-light ${textSecondary}`}>{weather.humidity}%</span>
+                <Droplets className={`w-3.5 h-3.5 ${isNight ? 'text-white/90' : 'text-white/90'} drop-shadow-lg`} />
+                <span className={`text-xs font-light ${isNight ? 'text-white/90' : 'text-white/90'}`}>{weather.humidity}%</span>
               </div>
             </div>
           </div>
 
           {/* Location */}
-          <div className={`flex items-center gap-1 ${textSecondary} text-xs mb-4 font-light`}>
-            <MapPin className="w-3.5 h-3.5" />
+          <div className={`flex items-center gap-1 text-xs mb-4 font-light ${isNight ? 'text-white/90 drop-shadow-lg' : 'text-gray-900 drop-shadow-[0_1px_4px_rgba(255,255,255,0.8)]'}`}>
+            <MapPin className="w-3.5 h-3.5 drop-shadow-lg" />
             <span>Петропавловск-Камчатский</span>
           </div>
 
           {/* Description */}
-          <p className={`text-sm md:text-base font-light ${textSecondary} mb-4`}>
+          <p className={`text-sm md:text-base font-light mb-4 ${isNight ? 'text-white/80 drop-shadow-lg' : 'text-gray-900 drop-shadow-[0_1px_4px_rgba(255,255,255,0.8)]'}`}>
             Экосистема туризма Камчатки
           </p>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - УСИЛЕН КОНТРАСТ */}
           <div className="flex flex-wrap gap-2 justify-center mb-6">
-            <Link href="/hub/tourist" className={`group flex items-center gap-1.5 px-4 py-1.5 ${isNight ? 'bg-white/50 text-gray-800 border-white/50 hover:bg-white/70' : 'bg-gray-800/50 text-white border-gray-800/50 hover:bg-gray-800/70'} backdrop-blur-xl rounded-full font-light text-xs transition-all hover:scale-105 shadow-lg border`}>
-              <Users className="w-3 h-3" />
+            <Link href="/hub/tourist" className={`group flex items-center gap-1.5 px-4 py-1.5 ${isNight ? 'bg-white/60 text-gray-900 border-white/70 hover:bg-white/80' : 'bg-gray-900/60 text-white border-gray-900/70 hover:bg-gray-900/80'} backdrop-blur-xl rounded-full font-medium text-xs transition-all hover:scale-105 shadow-2xl border-2`}>
+              <Users className="w-3 h-3 drop-shadow-md" />
               Я турист
               <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link href="/hub/business" className={`group flex items-center gap-1.5 px-4 py-1.5 ${isNight ? 'bg-gray-800/50 text-white border-gray-700/50 hover:bg-gray-800/70' : 'bg-white/50 text-gray-800 border-white/50 hover:bg-white/70'} backdrop-blur-xl rounded-full font-light text-xs border transition-all hover:scale-105 shadow-lg`}>
-              <Briefcase className="w-3 h-3" />
+            <Link href="/hub/business" className={`group flex items-center gap-1.5 px-4 py-1.5 ${isNight ? 'bg-gray-900/60 text-white border-gray-800/70 hover:bg-gray-900/80' : 'bg-white/60 text-gray-900 border-white/70 hover:bg-white/80'} backdrop-blur-xl rounded-full font-medium text-xs border-2 transition-all hover:scale-105 shadow-2xl`}>
+              <Briefcase className="w-3 h-3 drop-shadow-md" />
               Я бизнес
               <ArrowRight className="w-2.5 h-2.5 group-hover:translate-x-1 transition-transform" />
             </Link>

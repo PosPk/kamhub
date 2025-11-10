@@ -50,8 +50,8 @@ export function VideoBackground({ currentHour, getBackgroundGradient }: VideoBac
               setVideoError(true);
             }}
           />
-          {/* Gradient overlay для читаемости */}
-          <div className={`absolute inset-0 ${getBackgroundGradient()} bg-gradient-to-br opacity-40 transition-opacity duration-1000`}></div>
+          {/* Gradient overlay для читаемости - УСИЛЕН */}
+          <div className={`absolute inset-0 ${getBackgroundGradient()} bg-gradient-to-br opacity-70 transition-opacity duration-1000`}></div>
         </>
       ) : (
         <>
@@ -62,8 +62,8 @@ export function VideoBackground({ currentHour, getBackgroundGradient }: VideoBac
             className="w-full h-full object-contain lg:object-cover"
             style={{ objectPosition: 'center top' }}
           />
-          {/* Gradient overlay для читаемости */}
-          <div className={`absolute inset-0 ${getBackgroundGradient()} bg-gradient-to-br opacity-60 transition-opacity duration-1000`}></div>
+          {/* Gradient overlay для читаемости - УСИЛЕН */}
+          <div className={`absolute inset-0 ${getBackgroundGradient()} bg-gradient-to-br opacity-75 transition-opacity duration-1000`}></div>
         </>
       )}
     </div>
