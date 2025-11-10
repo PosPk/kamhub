@@ -71,12 +71,12 @@ export function PageLayout({
   
   // Градиенты точно как на главной странице
   const getBackgroundGradient = () => {
-    if (hours >= 5 && hours < 7) return 'from-pink-300 via-rose-200 to-orange-200'; // DAWN (Samsung)
-    if (hours >= 7 && hours < 12) return 'from-sky-200 via-blue-100 to-cyan-100'; // MORNING (Samsung)
-    if (hours >= 12 && hours < 18) return 'from-blue-300 via-sky-200 to-cyan-200'; // AFTERNOON (Samsung)
-    if (hours >= 18 && hours < 21) return 'from-orange-300 via-rose-300 to-purple-300'; // EVENING (Samsung)
-    if (hours >= 21 && hours < 23) return 'from-indigo-400 via-purple-400 to-blue-400'; // LATE EVENING (Samsung)
-    return 'from-indigo-900 via-blue-950 to-slate-900'; // NIGHT (Samsung)
+    if (hours >= 5 && hours < 7) return 'from-pink-300 via-rose-200 to-orange-200'; // DAWN
+    if (hours >= 7 && hours < 12) return 'from-sky-300 via-blue-200 to-cyan-200'; // MORNING (больше синего)
+    if (hours >= 12 && hours < 18) return 'from-blue-400 via-sky-300 to-cyan-300'; // AFTERNOON (ярче синий)
+    if (hours >= 18 && hours < 21) return 'from-orange-300 via-rose-300 to-purple-300'; // EVENING
+    if (hours >= 21 && hours < 23) return 'from-blue-500 via-indigo-500 to-purple-500'; // LATE EVENING (синий)
+    return 'from-blue-950 via-indigo-950 to-slate-950'; // NIGHT (темно-синий)
   };
 
   const isNight = hours >= 23 || hours < 5;

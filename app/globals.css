@@ -443,17 +443,17 @@ body.dawn {
 }
 
 body.morning {
-  /* ☀️ Утро (7:00-12:00): чистый светло-голубой */
+  /* ☀️ Утро (7:00-12:00): насыщенный голубой Samsung */
   --bg-gradient-start: #7DD3FC;
-  --bg-gradient-end: #BAE6FD;
-  --ultramarine: #0EA5E9;
+  --bg-gradient-end: #93C5FD;
+  --ultramarine: #0284C7;
 }
 
 body.afternoon {
-  /* 🌞 День (12:00-18:00): насыщенный яркий голубой */
+  /* 🌞 День (12:00-18:00): яркий чистый синий Samsung */
   --bg-gradient-start: #60A5FA;
   --bg-gradient-end: #7DD3FC;
-  --ultramarine: #0284C7;
+  --ultramarine: #0369A1;
 }
 
 body.evening {
@@ -464,17 +464,17 @@ body.evening {
 }
 
 body.late-evening {
-  /* 🌃 Поздний вечер (21:00-23:00): глубокий фиолетово-синий */
-  --bg-gradient-start: #818CF8;
-  --bg-gradient-end: #A78BFA;
-  --ultramarine: #6366F1;
+  /* 🌃 Поздний вечер (21:00-23:00): глубокий синий Samsung */
+  --bg-gradient-start: #3B82F6;
+  --bg-gradient-end: #6366F1;
+  --ultramarine: #1D4ED8;
 }
 
 body.night {
-  /* 🌙 Ночь (23:00-5:00): темное ночное небо */
-  --bg-gradient-start: #1e1b4b;
-  --bg-gradient-end: #0c4a6e;
-  --ultramarine: #3B82F6;
+  /* 🌙 Ночь (23:00-5:00): темно-синее ночное небо Samsung */
+  --bg-gradient-start: #172554;
+  --bg-gradient-end: #1e3a8a;
+  --ultramarine: #2563EB;
 }
 
 /* Blur overlay for depth */

@@ -180,18 +180,18 @@ export default function HomePage() {
   };
 
   const getBackgroundGradient = () => {
-    // 🌅 Рассвет (5:00-7:00): яркие персиково-розовые тона восхода (как Samsung)
+    // 🌅 Рассвет (5:00-7:00): яркие персиково-розовые тона восхода
     if (hours >= 5 && hours < 7) return 'from-pink-300 via-rose-200 to-orange-200';
-    // ☀️ Утро (7:00-12:00): чистый светло-голубой (как Samsung)
-    if (hours >= 7 && hours < 12) return 'from-sky-200 via-blue-100 to-cyan-100';
-    // 🌞 День (12:00-18:00): насыщенный яркий голубой (как Samsung)
-    if (hours >= 12 && hours < 18) return 'from-blue-300 via-sky-200 to-cyan-200';
-    // 🌆 Вечер (18:00-21:00): теплый оранжево-розовый закат (как Samsung)
+    // ☀️ Утро (7:00-12:00): насыщенный голубой Samsung Weather
+    if (hours >= 7 && hours < 12) return 'from-sky-300 via-blue-200 to-cyan-200';
+    // 🌞 День (12:00-18:00): яркий чистый синий Samsung Weather
+    if (hours >= 12 && hours < 18) return 'from-blue-400 via-sky-300 to-cyan-300';
+    // 🌆 Вечер (18:00-21:00): теплый оранжево-розовый закат
     if (hours >= 18 && hours < 21) return 'from-orange-300 via-rose-300 to-purple-300';
-    // 🌃 Поздний вечер (21:00-23:00): глубокий фиолетово-синий (как Samsung)
-    if (hours >= 21 && hours < 23) return 'from-indigo-400 via-purple-400 to-blue-400';
-    // 🌙 Ночь (23:00-5:00): темное ночное небо (как Samsung)
-    return 'from-indigo-900 via-blue-950 to-slate-900';
+    // 🌃 Поздний вечер (21:00-23:00): глубокий синий Samsung Weather
+    if (hours >= 21 && hours < 23) return 'from-blue-500 via-indigo-500 to-purple-500';
+    // 🌙 Ночь (23:00-5:00): темно-синее ночное небо Samsung Weather
+    return 'from-blue-950 via-indigo-950 to-slate-950';
   };
 
   const isNight = hours >= 23 || hours < 5;
