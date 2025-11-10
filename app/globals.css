@@ -432,49 +432,49 @@ body {
   padding: clamp(1rem, 5vw, 4rem);
 }
 
-/* Time-based background variations with Ultramarine */
+/* Time-based background variations - Samsung Weather Style */
 body.dawn {
-  /* 🌅 Рассвет (5:00-7:00): розово-оранжевые теплые тона */
-  --bg-gradient-start: #FFB6C1;
-  --bg-gradient-end: #FFD4A3;
+  /* 🌅 Рассвет (5:00-7:00): яркие персиково-розовые тона восхода */
+  --bg-gradient-start: #F9A8D4;
+  --bg-gradient-end: #FED7AA;
   --ultramarine: #FF6B9D;
   --text-primary: #4a3020;
   --text-secondary: #6a4030;
 }
 
 body.morning {
-  /* ☀️ Утро (7:00-12:00): светлый голубой */
-  --bg-gradient-start: #87CEEB;
-  --bg-gradient-end: #B0E0E6;
-  --ultramarine: #4169E1;
+  /* ☀️ Утро (7:00-12:00): чистый светло-голубой */
+  --bg-gradient-start: #7DD3FC;
+  --bg-gradient-end: #BAE6FD;
+  --ultramarine: #0EA5E9;
 }
 
 body.afternoon {
-  /* 🌞 День (12:00-18:00): яркий голубой */
-  --bg-gradient-start: #6495ED;
-  --bg-gradient-end: #87CEEB;
-  --ultramarine: #120A8F;
+  /* 🌞 День (12:00-18:00): насыщенный яркий голубой */
+  --bg-gradient-start: #60A5FA;
+  --bg-gradient-end: #7DD3FC;
+  --ultramarine: #0284C7;
 }
 
 body.evening {
-  /* 🌆 Вечер (18:00-21:00): оранжево-розовый закат */
-  --bg-gradient-start: #FFA07A;
-  --bg-gradient-end: #DDA0DD;
-  --ultramarine: #FF6B9D;
+  /* 🌆 Вечер (18:00-21:00): теплый оранжево-розовый закат */
+  --bg-gradient-start: #FCA5A5;
+  --bg-gradient-end: #D8B4FE;
+  --ultramarine: #FB923C;
 }
 
 body.late-evening {
-  /* 🌃 Поздний вечер (21:00-23:00): темнеющее небо */
-  --bg-gradient-start: #9370DB;
-  --bg-gradient-end: #DDA0DD;
-  --ultramarine: #BA55D3;
+  /* 🌃 Поздний вечер (21:00-23:00): глубокий фиолетово-синий */
+  --bg-gradient-start: #818CF8;
+  --bg-gradient-end: #A78BFA;
+  --ultramarine: #6366F1;
 }
 
 body.night {
-  /* 🌙 Ночь (23:00-5:00): темное небо */
-  --bg-gradient-start: #0f1f3f;
-  --bg-gradient-end: #1a2f4f;
-  --ultramarine: #4169E1;
+  /* 🌙 Ночь (23:00-5:00): темное ночное небо */
+  --bg-gradient-start: #1e1b4b;
+  --bg-gradient-end: #0c4a6e;
+  --ultramarine: #3B82F6;
 }
 
 /* Blur overlay for depth */

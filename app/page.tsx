@@ -180,18 +180,18 @@ export default function HomePage() {
   };
 
   const getBackgroundGradient = () => {
-    // 🌅 Рассвет (5:00-7:00): розово-оранжевые теплые тона
-    if (hours >= 5 && hours < 7) return 'from-rose-200 via-orange-100 to-amber-100';
-    // ☀️ Утро (7:00-12:00): светлый голубой
-    if (hours >= 7 && hours < 12) return 'from-sky-100 via-blue-50 to-indigo-100';
-    // 🌞 День (12:00-18:00): яркий голубой
-    if (hours >= 12 && hours < 18) return 'from-blue-100 via-sky-50 to-cyan-100';
-    // 🌆 Вечер (18:00-21:00): оранжево-розовый закат
-    if (hours >= 18 && hours < 21) return 'from-orange-100 via-pink-100 to-purple-200';
-    // 🌃 Поздний вечер (21:00-23:00): темнеющее небо
-    if (hours >= 21 && hours < 23) return 'from-indigo-300 via-purple-200 to-pink-200';
-    // 🌙 Ночь (23:00-5:00): темное небо
-    return 'from-slate-800 via-blue-900 to-indigo-900';
+    // 🌅 Рассвет (5:00-7:00): яркие персиково-розовые тона восхода (как Samsung)
+    if (hours >= 5 && hours < 7) return 'from-pink-300 via-rose-200 to-orange-200';
+    // ☀️ Утро (7:00-12:00): чистый светло-голубой (как Samsung)
+    if (hours >= 7 && hours < 12) return 'from-sky-200 via-blue-100 to-cyan-100';
+    // 🌞 День (12:00-18:00): насыщенный яркий голубой (как Samsung)
+    if (hours >= 12 && hours < 18) return 'from-blue-300 via-sky-200 to-cyan-200';
+    // 🌆 Вечер (18:00-21:00): теплый оранжево-розовый закат (как Samsung)
+    if (hours >= 18 && hours < 21) return 'from-orange-300 via-rose-300 to-purple-300';
+    // 🌃 Поздний вечер (21:00-23:00): глубокий фиолетово-синий (как Samsung)
+    if (hours >= 21 && hours < 23) return 'from-indigo-400 via-purple-400 to-blue-400';
+    // 🌙 Ночь (23:00-5:00): темное ночное небо (как Samsung)
+    return 'from-indigo-900 via-blue-950 to-slate-900';
   };
 
   const isNight = hours >= 23 || hours < 5;
