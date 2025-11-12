@@ -100,3 +100,4 @@ dist/
 *.log
 npm-debug.log*
 
+.env.timeweb.local

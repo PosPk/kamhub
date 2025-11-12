@@ -2,136 +2,485 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import UI improvements */
-@import './ui-improvements.css';
+/* Samsung Weather Style Design */
 
-/* Premium Black & Gold Theme */
+/* Dynamic backgrounds based on time */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes floatDelayed {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  33% { transform: translateY(-30px) translateX(10px); }
+  66% { transform: translateY(-10px) translateX(-10px); }
+}
+
+@keyframes scroll {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(10px); opacity: 0; }
+}
+
+@keyframes sunrise {
+  0% { 
+    transform: translateY(50px) scale(0.8); 
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(-10px) scale(1.1); 
+    opacity: 0.9;
+  }
+}
+
+@keyframes dawn-glow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255, 182, 193, 0.4),
+                0 0 40px rgba(255, 182, 193, 0.3),
+                0 0 60px rgba(255, 182, 193, 0.2);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(255, 182, 193, 0.6),
+                0 0 60px rgba(255, 182, 193, 0.4),
+                0 0 90px rgba(255, 182, 193, 0.3);
+  }
+}
+
+.animate-sunrise {
+  animation: sunrise 4s ease-in-out infinite;
+}
+
+.animate-dawn-glow {
+  animation: dawn-glow 3s ease-in-out infinite;
+}
+
+@keyframes snow {
+  0% { 
+    transform: translateY(0) translateX(0) rotate(0deg); 
+    opacity: 1;
+  }
+  100% { 
+    transform: translateY(100vh) translateX(100px) rotate(360deg); 
+    opacity: 0.3;
+  }
+}
+
+@keyframes wind {
+  0% { 
+    transform: translateX(0) translateY(0); 
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% { 
+    transform: translateX(120vw) translateY(50px); 
+    opacity: 0;
+  }
+}
+
+@keyframes wind-flow {
+  0% { 
+    transform: translateX(0) translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% { 
+    transform: translateX(120vw) translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes wind-particle {
+  0% { 
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(50vw) translateY(-30px) rotate(180deg) scale(1.2);
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% { 
+    transform: translateX(110vw) translateY(20px) rotate(360deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatDelayed 8s ease-in-out infinite;
+}
+
+.animate-scroll {
+  animation: scroll 2s ease-in-out infinite;
+}
+
+.animate-snow {
+  animation: snow linear infinite;
+}
+
+.animate-wind {
+  animation: wind linear infinite;
+}
+
+.animate-wind-flow {
+  animation: wind-flow linear infinite;
+}
+
+.animate-wind-particle {
+  animation: wind-particle linear infinite;
+}
+
 :root {
-  --premium-black: #0a0a0a;
-  --premium-gold: #d4af37;
-  --gold-gradient: linear-gradient(135deg, #d4af37 0%, #ffd700 50%, #b8860b 100%);
+  /* Light theme - Morning with Ultramarine */
+  --bg-gradient-start: #87CEEB;
+  --bg-gradient-end: #E0F6FF;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-tertiary: #8a8a8a;
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(255, 255, 255, 0.3);
+  --shadow: rgba(0, 0, 0, 0.1);
+  --accent: #2196F3;
+  --ultramarine: #120A8F;
+  --ultramarine-light: #4169E1;
+  --ultramarine-lighter: #6495ED;
 }
 
-.bg-premium-black {
-  background-color: var(--premium-black);
+.dark {
+  /* Dark theme - Night with Ultramarine */
+  --bg-gradient-start: #0f2027;
+  --bg-gradient-end: #2c5364;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-tertiary: #a0a0a0;
+  --card-bg: rgba(255, 255, 255, 0.1);
+  --card-border: rgba(255, 255, 255, 0.2);
+  --shadow: rgba(0, 0, 0, 0.5);
+  --accent: #64B5F6;
+  --ultramarine: #6495ED;
+  --ultramarine-light: #87CEEB;
+  --ultramarine-lighter: #B0E0E6;
 }
 
-.text-premium-gold {
-  color: var(--premium-gold);
+/* Base styles */
+body {
+  background: linear-gradient(-45deg, var(--bg-gradient-start), var(--bg-gradient-end), var(--bg-gradient-start), var(--bg-gradient-end));
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  min-height: 100vh;
 }
 
-.bg-premium-gold {
-  background-color: var(--premium-gold);
+/* Samsung Weather Typography */
+.weather-title {
+  font-size: clamp(3rem, 10vw, 8rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: var(--text-primary);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 }
 
-.text-premium-black {
-  color: var(--premium-black);
+.weather-subtitle {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-secondary);
 }
 
-.bg-gold-gradient {
-  background: var(--gold-gradient);
+.weather-text {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-tertiary);
 }
 
-.gradient-gold-aurora {
-  background: linear-gradient(45deg, 
-    rgba(212, 175, 55, 0.1) 0%, 
-    rgba(255, 215, 0, 0.2) 25%, 
-    rgba(184, 134, 11, 0.1) 50%, 
-    rgba(212, 175, 55, 0.2) 75%, 
-    rgba(255, 215, 0, 0.1) 100%);
-}
-
-.animate-aurora {
-  animation: aurora 8s ease-in-out infinite;
-}
-
-@keyframes aurora {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.05); }
-}
-
-.text-gold {
-  color: var(--premium-gold);
-}
-
-.gold-glow {
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
-}
-
-.button-gold {
-  @apply bg-premium-gold text-premium-black px-4 py-2 rounded-lg font-bold hover:bg-yellow-400 transition-colors;
-}
-
-.map-button-glow {
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+/* Glass Cards */
+.weather-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--card-border);
+  border-radius: 32px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px var(--shadow);
   transition: all 0.3s ease;
 }
 
-.map-button-glow:hover {
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+.weather-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 48px var(--shadow);
+}
+
+/* Large Weather Widget Style */
+.weather-hero {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated floating elements */
+.float-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Search bar Samsung style */
+.weather-search {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 1.5rem 2rem;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.weather-search:focus {
+  outline: none;
+  box-shadow: 0 8px 32px var(--shadow);
   transform: scale(1.02);
 }
 
-.kamchatka-button {
-  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.3));
+.weather-search::placeholder {
+  color: var(--text-tertiary);
 }
 
-/* Floating UI Styles */
-
-:root {
-  --gold: #E6C149;
-  --black: #000000;
+/* Button Samsung style */
+.weather-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 24px;
+  padding: 1.5rem 3rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
 }
 
-html, body {
-  background: var(--black);
-  color: #ffffff;
+.weather-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
 }
 
-.button-gold {
-  @apply bg-[color:var(--gold)] text-black font-bold rounded-lg px-4 py-2 shadow-gold;
+/* Icon containers */
+.weather-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.3);
+  transition: all 0.3s ease;
 }
 
-.card-dark {
-  @apply bg-neutral-900 border border-neutral-800 rounded-xl;
+.weather-icon-wrapper:hover {
+  transform: scale(1.1) rotate(5deg);
 }
 
-/* Custom classes for the full site */
-.gradient-gold-aurora {
-  background: radial-gradient(1200px 600px at 20% 80%, rgba(230,193,73,0.18), transparent 60%), 
-              radial-gradient(1000px 500px at 80% 20%, rgba(162,210,255,0.12), transparent 60%);
+/* Header Samsung style */
+.weather-header {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--card-border);
+  transition: all 0.3s ease;
 }
 
-.animate-aurora {
-  animation: aurora 20s ease-in-out infinite;
+/* Theme toggle Samsung style */
+.theme-toggle {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-@keyframes aurora {
-  0%, 100% { opacity: 0.8; }
-  50% { opacity: 1; }
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(180deg);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
-.text-gold {
-  color: var(--gold);
+/* Temperature display style */
+.temperature {
+  font-size: clamp(6rem, 15vw, 12rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.gold-glow {
-  text-shadow: 0 0 20px rgba(230,193,73,0.5);
+/* Fade in animation */
+.fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
 }
 
-.map-button-glow {
-  box-shadow: 0 0 40px rgba(230,193,73,0.25);
-  transition: box-shadow 0.3s ease;
+.fade-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.fade-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.fade-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
+.fade-in-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
 }
 
-.map-button-glow:hover {
-  box-shadow: 0 0 60px rgba(230,193,73,0.35);
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-.kamchatka-button {
-  transition: transform 0.3s ease;
+::-webkit-scrollbar-thumb {
+  background: var(--card-bg);
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
-.kamchatka-button:hover {
-  transform: scale(1.05);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+  background-clip: padding-box;
+}
+
+/* Remove transitions for specific elements during load */
+* {
+  transition-property: transform, opacity, box-shadow, background-color;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+/* Grid layout for cards */
+.weather-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Large clickable areas */
+.weather-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.weather-link:hover {
+  transform: scale(1.02);
+}
+
+/* Responsive padding */
+.weather-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(1rem, 5vw, 4rem);
+}
+
+/* Time-based background variations - Samsung Weather Style */
+body.dawn {
+  /* 🌅 Рассвет (5:00-7:00): яркие персиково-розовые тона восхода */
+  --bg-gradient-start: #F9A8D4;
+  --bg-gradient-end: #FED7AA;
+  --ultramarine: #FF6B9D;
+  --text-primary: #4a3020;
+  --text-secondary: #6a4030;
+}
+
+body.morning {
+  /* ☀️ Утро (7:00-12:00): насыщенный голубой Samsung */
+  --bg-gradient-start: #7DD3FC;
+  --bg-gradient-end: #93C5FD;
+  --ultramarine: #0284C7;
+}
+
+body.afternoon {
+  /* 🌞 День (12:00-18:00): яркий чистый синий Samsung */
+  --bg-gradient-start: #60A5FA;
+  --bg-gradient-end: #7DD3FC;
+  --ultramarine: #0369A1;
+}
+
+body.evening {
+  /* 🌆 Вечер (18:00-21:00): теплый оранжево-розовый закат */
+  --bg-gradient-start: #FCA5A5;
+  --bg-gradient-end: #D8B4FE;
+  --ultramarine: #FB923C;
+}
+
+body.late-evening {
+  /* 🌃 Поздний вечер (21:00-23:00): глубокий синий Samsung */
+  --bg-gradient-start: #3B82F6;
+  --bg-gradient-end: #6366F1;
+  --ultramarine: #1D4ED8;
+}
+
+body.night {
+  /* 🌙 Ночь (23:00-5:00): темно-синее ночное небо Samsung */
+  --bg-gradient-start: #172554;
+  --bg-gradient-end: #1e3a8a;
+  --ultramarine: #2563EB;
+}
+
+/* Blur overlay for depth */
+.blur-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+  pointer-events: none;
 }

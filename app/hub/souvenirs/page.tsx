@@ -1,23 +1,24 @@
 'use client';
 
 import React from 'react';
-import { Protected } from '@/components/Protected';
+import { PageLayout } from '@/components/PageLayout';
+import { GlassCard } from '@/components/GlassCard';
+import { ShoppingBag, Sparkles } from 'lucide-react';
 
 export default function SouvenirsHub() {
   return (
-    <Protected roles={['traveler', 'admin']}>
-      <main className="min-h-screen bg-premium-black text-white">
-        <div className="bg-white/5 border-b border-white/10 p-6">
-          <h1 className="text-3xl font-black text-premium-gold">Сувениры</h1>
-          <p className="text-white/70">Камчатские сувениры и подарки</p>
+    <PageLayout title="Сувениры" backLink="/">
+      <GlassCard className="p-8 text-center">
+        <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center shadow-lg">
+          <ShoppingBag className="w-10 h-10 text-white" />
         </div>
-        <div className="p-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
-            <div className="text-4xl mb-4">🎁</div>
-            <p className="text-white/70">Каталог сувениров в разработке</p>
-          </div>
+        <h2 className="text-2xl font-light text-gray-800 mb-2">Камчатские сувениры</h2>
+        <p className="text-gray-600 mb-4 font-light">Уникальные подарки и памятные изделия</p>
+        <div className="flex items-center justify-center gap-2 text-blue-600">
+          <Sparkles className="w-5 h-5" />
+          <span className="font-light">Каталог в разработке</span>
         </div>
-      </main>
-    </Protected>
+      </GlassCard>
+    </PageLayout>
   );
 }

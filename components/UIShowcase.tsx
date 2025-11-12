@@ -13,7 +13,7 @@ export function UIShowcase() {
   const [progress, setProgress] = useState(60);
 
   return (
-    <div className="min-h-screen bg-premium-black text-white p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-8">
       <div className="max-w-7xl mx-auto space-y-12">
         
         {/* Header */}
@@ -29,7 +29,7 @@ export function UIShowcase() {
 
         {/* 1. Кнопки */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">1. Улучшенные кнопки</h2>
+          <h2 className="text-2xl font-bold text-blue-400">1. Улучшенные кнопки</h2>
           <div className="flex flex-wrap gap-4">
             <button className="button-primary">
               🚀 Основная кнопка
@@ -48,7 +48,7 @@ export function UIShowcase() {
 
         {/* 2. Карточки */}
         <section className="space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">2. Карточки с hover эффектом</h2>
+          <h2 className="text-2xl font-bold text-blue-400">2. Карточки с hover эффектом</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="card-premium hover-lift">
               <div className="icon-circle mb-4">🏔️</div>
@@ -70,7 +70,7 @@ export function UIShowcase() {
 
         {/* 3. Input поля */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">3. Улучшенные Input'ы</h2>
+          <h2 className="text-2xl font-bold text-blue-400">3. Улучшенные Input&apos;ы</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm mb-2">Обычный input</label>
@@ -94,7 +94,7 @@ export function UIShowcase() {
 
         {/* 4. Badges */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">4. Badges и метки</h2>
+          <h2 className="text-2xl font-bold text-blue-400">4. Badges и метки</h2>
           <div className="flex flex-wrap gap-2">
             <span className="badge badge-success">✓ Success</span>
             <span className="badge badge-warning">⚠ Warning</span>
@@ -106,7 +106,7 @@ export function UIShowcase() {
 
         {/* 5. Progress bars */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">5. Индикаторы прогресса</h2>
+          <h2 className="text-2xl font-bold text-blue-400">5. Индикаторы прогресса</h2>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm mb-2">
@@ -139,7 +139,7 @@ export function UIShowcase() {
 
         {/* 6. Loading states */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">6. Loading состояния</h2>
+          <h2 className="text-2xl font-bold text-blue-400">6. Loading состояния</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="flex flex-col items-center gap-4">
               <p>Spinner</p>
@@ -166,7 +166,7 @@ export function UIShowcase() {
 
         {/* 7. Tooltips */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">7. Tooltips</h2>
+          <h2 className="text-2xl font-bold text-blue-400">7. Tooltips</h2>
           <div className="flex gap-4">
             <span className="tooltip" data-tooltip="Это подсказка!">
               <button className="button-secondary">Наведи на меня</button>
@@ -179,7 +179,7 @@ export function UIShowcase() {
 
         {/* 8. Toast */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">8. Toast уведомления</h2>
+          <h2 className="text-2xl font-bold text-blue-400">8. Toast уведомления</h2>
           <button
             onClick={() => {
               setShowToast(true);
@@ -204,7 +204,7 @@ export function UIShowcase() {
 
         {/* 9. Modal */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">9. Модальные окна</h2>
+          <h2 className="text-2xl font-bold text-blue-400">9. Модальные окна</h2>
           <button
             onClick={() => setShowModal(true)}
             className="button-primary"
@@ -246,7 +246,7 @@ export function UIShowcase() {
 
         {/* 11. Gradient Text */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">11. Градиентный текст</h2>
+          <h2 className="text-2xl font-bold text-blue-400">11. Градиентный текст</h2>
           <h3 className="text-4xl font-bold text-gradient-gold">
             Золотой градиент
           </h3>
@@ -257,7 +257,7 @@ export function UIShowcase() {
 
         {/* 12. Icon Circles */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">12. Иконки в кружочках</h2>
+          <h2 className="text-2xl font-bold text-blue-400">12. Иконки в кружочках</h2>
           <div className="flex flex-wrap gap-4">
             {['🏔️', '🚌', '🏨', '🎿', '🌋', '🐻'].map((emoji, i) => (
               <div key={i} className="icon-circle hover-scale">
@@ -269,7 +269,7 @@ export function UIShowcase() {
 
         {/* Код примеры */}
         <section className="card-premium space-y-4">
-          <h2 className="text-2xl font-bold text-premium-gold">Как использовать</h2>
+          <h2 className="text-2xl font-bold text-blue-400">Как использовать</h2>
           <div className="space-y-4 text-sm">
             <div>
               <p className="text-white/70 mb-2">1. Импортируйте стили в ваш компонент:</p>

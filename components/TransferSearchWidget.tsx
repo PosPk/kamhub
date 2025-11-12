@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { Bus, ChevronDown, ChevronRight, Search, Clock, User, Star, Car } from 'lucide-react';
 import { TransferSearchRequest, TransferOption, TransferSearchResponse } from '@/types/transfer';
 
 interface TransferSearchWidgetProps {
@@ -102,12 +103,15 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
   };
 
   return (
-    <div className={`bg-premium-black/90 backdrop-blur-sm rounded-2xl p-6 border border-premium-gold/20 ${className}`}>
+    <div className={`${className}`}>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-premium-gold mb-2">
-          🚌 Поиск трансферов
-        </h2>
-        <p className="text-white/70">
+        <div className="flex items-center gap-2 mb-2">
+          <Bus className="w-7 h-7 text-blue-700" />
+          <h2 className="text-2xl font-medium text-gray-900 drop-shadow-sm">
+            Поиск трансферов
+          </h2>
+        </div>
+        <p className="text-gray-600">
           Найдите подходящий трансфер для вашей поездки
         </p>
       </div>
@@ -115,7 +119,7 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
       {/* Основные поля поиска */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Откуда *
           </label>
           <input
@@ -123,12 +127,12 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             value={searchParams.from}
             onChange={(e) => updateSearchParam('from', e.target.value)}
             placeholder="Аэропорт, отель, адрес..."
-            className="w-full px-4 py-3 bg-premium-black/50 border border-premium-gold/30 rounded-xl text-white placeholder-white/50 focus:border-premium-gold focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Куда *
           </label>
           <input
@@ -136,12 +140,12 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             value={searchParams.to}
             onChange={(e) => updateSearchParam('to', e.target.value)}
             placeholder="Аэропорт, отель, адрес..."
-            className="w-full px-4 py-3 bg-premium-black/50 border border-premium-gold/30 rounded-xl text-white placeholder-white/50 focus:border-premium-gold focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Дата *
           </label>
           <input
@@ -149,21 +153,21 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             value={searchParams.date}
             onChange={(e) => updateSearchParam('date', e.target.value)}
             min={new Date().toISOString().split('T')[0]}
-            className="w-full px-4 py-3 bg-premium-black/50 border border-premium-gold/30 rounded-xl text-white focus:border-premium-gold focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Пассажиры *
           </label>
           <select
             value={searchParams.passengers}
             onChange={(e) => updateSearchParam('passengers', parseInt(e.target.value))}
-            className="w-full px-4 py-3 bg-premium-black/50 border border-premium-gold/30 rounded-xl text-white focus:border-premium-gold focus:outline-none transition-colors"
+            className="w-full px-4 py-3 bg-white/70 border-2 border-white/50 rounded-xl text-gray-900 focus:border-blue-500 focus:outline-none transition-colors shadow-sm"
           >
             {Array.from({ length: 20 }, (_, i) => i + 1).map(num => (
-              <option key={num} value={num} className="bg-premium-black text-white">
+              <option key={num} value={num} className="bg-white text-gray-900">
                 {num} {num === 1 ? 'пассажир' : num < 5 ? 'пассажира' : 'пассажиров'}
               </option>
             ))}
@@ -175,11 +179,13 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
       <div className="mb-6">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 text-premium-gold hover:text-premium-gold/80 transition-colors"
+          className="flex items-center gap-2 text-blue-700 hover:text-blue-800 transition-colors drop-shadow-sm"
         >
-          <span className="text-lg">
-            {showFilters ? '🔽' : '▶️'}
-          </span>
+          {showFilters ? (
+            <ChevronDown className="w-5 h-5" />
+          ) : (
+            <ChevronRight className="w-5 h-5" />
+          )}
           <span className="font-medium">
             {showFilters ? 'Скрыть фильтры' : 'Расширенные фильтры'}
           </span>
@@ -188,7 +194,7 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
 
       {/* Расширенные фильтры */}
       {showFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 p-4 bg-premium-black/30 rounded-xl border border-premium-gold/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 p-4 bg-gray-900/30 rounded-xl border border-blue-400/10">
           {/* Тип транспорта */}
           <div>
             <label className="block text-sm font-medium text-white mb-3">
@@ -197,14 +203,14 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
             <select
               value={searchParams.vehicleType || ''}
               onChange={(e) => updateSearchParam('vehicleType', e.target.value || undefined)}
-              className="w-full px-4 py-3 bg-premium-black/50 border border-premium-gold/30 rounded-xl text-white focus:border-premium-gold focus:outline-none transition-colors"
+              className="w-full px-4 py-3 bg-gray-900/50 border border-blue-400/30 rounded-xl text-white focus:border-blue-400 focus:outline-none transition-colors"
             >
-              <option value="" className="bg-premium-black text-white">Любой</option>
-              <option value="economy" className="bg-premium-black text-white">Эконом</option>
-              <option value="comfort" className="bg-premium-black text-white">Комфорт</option>
-              <option value="business" className="bg-premium-black text-white">Бизнес</option>
-              <option value="minibus" className="bg-premium-black text-white">Микроавтобус</option>
-              <option value="bus" className="bg-premium-black text-white">Автобус</option>
+              <option value="" className="bg-gray-900 text-white">Любой</option>
+              <option value="economy" className="bg-gray-900 text-white">Эконом</option>
+              <option value="comfort" className="bg-gray-900 text-white">Комфорт</option>
+              <option value="business" className="bg-gray-900 text-white">Бизнес</option>
+              <option value="minibus" className="bg-gray-900 text-white">Микроавтобус</option>
+              <option value="bus" className="bg-gray-900 text-white">Автобус</option>
             </select>
           </div>
 
@@ -219,14 +225,14 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
                 placeholder="От"
                 value={searchParams.budgetMin || ''}
                 onChange={(e) => updateSearchParam('budgetMin', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="px-3 py-2 bg-premium-black/50 border border-premium-gold/30 rounded-lg text-white placeholder-white/50 focus:border-premium-gold focus:outline-none transition-colors"
+                className="px-3 py-2 bg-gray-900/50 border border-blue-400/30 rounded-lg text-white placeholder-white/50 focus:border-blue-400 focus:outline-none transition-colors"
               />
               <input
                 type="number"
                 placeholder="До"
                 value={searchParams.budgetMax || ''}
                 onChange={(e) => updateSearchParam('budgetMax', e.target.value ? parseFloat(e.target.value) : undefined)}
-                className="px-3 py-2 bg-premium-black/50 border border-premium-gold/30 rounded-lg text-white placeholder-white/50 focus:border-premium-gold focus:outline-none transition-colors"
+                className="px-3 py-2 bg-gray-900/50 border border-blue-400/30 rounded-lg text-white placeholder-white/50 focus:border-blue-400 focus:outline-none transition-colors"
               />
             </div>
           </div>
@@ -248,7 +254,7 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
                     type="checkbox"
                     checked={searchParams.features?.includes(feature.key) || false}
                     onChange={() => toggleFeature(feature.key)}
-                    className="w-4 h-4 text-premium-gold bg-premium-black/50 border-premium-gold/30 rounded focus:ring-premium-gold focus:ring-2"
+                    className="w-4 h-4 text-blue-400 bg-gray-900/50 border-blue-400/30 rounded focus:ring-blue-400 focus:ring-2"
                   />
                   <span className="text-sm">{feature.label}</span>
                 </label>
@@ -273,7 +279,7 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
                     type="checkbox"
                     checked={searchParams.languages?.includes(language.key) || false}
                     onChange={() => toggleLanguage(language.key)}
-                    className="w-4 h-4 text-premium-gold bg-premium-black/50 border-premium-gold/30 rounded focus:ring-premium-gold focus:ring-2"
+                    className="w-4 h-4 text-blue-400 bg-gray-900/50 border-blue-400/30 rounded focus:ring-blue-400 focus:ring-2"
                   />
                   <span className="text-sm">{language.label}</span>
                 </label>
@@ -288,16 +294,16 @@ export function TransferSearchWidget({ className, onSearchResults }: TransferSea
         <button
           onClick={handleSearch}
           disabled={isLoading}
-          className="px-8 py-4 bg-premium-gold hover:bg-premium-gold/90 text-premium-black font-bold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg"
         >
           {isLoading ? (
             <>
-              <div className="w-5 h-5 border-2 border-premium-black border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span>Поиск...</span>
             </>
           ) : (
             <>
-              <span>🔍</span>
+              <Search className="w-5 h-5" />
               <span>Найти трансферы</span>
             </>
           )}
@@ -355,21 +361,16 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
   };
 
   const getVehicleTypeIcon = (type: string) => {
-    const icons: Record<string, string> = {
-      economy: '🚗',
-      comfort: '🚙',
-      business: '🚘',
-      minibus: '🚐',
-      bus: '🚌'
-    };
-    return icons[type] || '🚗';
+    return <Car className="w-6 h-6 text-blue-600" />;
   };
 
   return (
-    <div className="bg-premium-black/50 border border-premium-gold/20 rounded-xl p-4 hover:border-premium-gold/40 transition-colors">
+    <div className="bg-gray-900/50 border border-blue-400/20 rounded-xl p-4 hover:border-blue-400/40 transition-colors">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{getVehicleTypeIcon(transfer.vehicle.vehicleType)}</span>
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
+            {getVehicleTypeIcon(transfer.vehicle.vehicleType)}
+          </div>
           <div>
             <h4 className="text-lg font-bold text-white">
               {getVehicleTypeLabel(transfer.vehicle.vehicleType)} • {transfer.vehicle.make} {transfer.vehicle.model}
@@ -380,7 +381,7 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-bold text-premium-gold">
+          <div className="text-2xl font-bold text-blue-400">
             {transfer.pricePerPerson.toLocaleString()} ₽
           </div>
           <div className="text-white/70 text-sm">
@@ -391,17 +392,17 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="flex items-center gap-2 text-white/80">
-          <span>🕐</span>
+          <Clock className="w-4 h-4" />
           <span className="text-sm">
             {transfer.departureTime} - {transfer.arrivalTime}
           </span>
         </div>
         <div className="flex items-center gap-2 text-white/80">
-          <span>👨‍💼</span>
+          <User className="w-4 h-4" />
           <span className="text-sm">{transfer.driver.name}</span>
         </div>
         <div className="flex items-center gap-2 text-white/80">
-          <span>⭐</span>
+          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           <span className="text-sm">{transfer.driver.rating}/5</span>
         </div>
       </div>
@@ -411,7 +412,7 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
           {transfer.features.map(feature => (
             <span
               key={feature}
-              className="px-2 py-1 bg-premium-gold/20 text-premium-gold text-xs rounded-full"
+              className="px-2 py-1 bg-gradient-to-r from-blue-400 to-cyan-400/20 text-blue-400 text-xs rounded-full"
             >
               {feature}
             </span>
@@ -420,7 +421,7 @@ function TransferCard({ transfer }: { transfer: TransferOption }) {
         <button
           onClick={handleBooking}
           disabled={isBooking}
-          className="px-6 py-2 bg-premium-gold hover:bg-premium-gold/90 text-premium-black font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-6 py-2 bg-gradient-to-r from-blue-400 to-cyan-400 hover:bg-gradient-to-r from-blue-400 to-cyan-400/90 text-gray-900 font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isBooking ? 'Бронирование...' : 'Забронировать'}
         </button>

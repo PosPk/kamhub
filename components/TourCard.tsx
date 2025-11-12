@@ -56,13 +56,13 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
   return (
     <div
       className={cn(
-        'bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300 cursor-pointer',
+        'weather-card overflow-hidden cursor-pointer h-full flex flex-col',
         className
       )}
       onClick={onClick}
     >
       {/* Изображение тура */}
-      <div className="relative h-48 bg-gradient-to-br from-slate-800 to-slate-900">
+      <div className="relative h-48 bg-gradient-to-br from-slate-800 to-slate-900 flex-shrink-0">
         {tour.images && tour.images.length > 0 ? (
           <img
             src={tour.images[0]}
@@ -73,62 +73,58 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-green-100">
             <div className="text-center">
               <div className="text-4xl mb-2">🏔️</div>
-              <div className="text-gray-600 text-sm">{tour.title}</div>
+              <div className="text-gray-600 text-sm font-semibold">{tour.title}</div>
             </div>
           </div>
         )}
         
         {/* Сложность */}
         <div className="absolute top-3 left-3">
-          <span
-            className={cn(
-              'px-3 py-1 rounded-full text-xs font-bold bg-premium-gold text-premium-black'
-            )}
-          >
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-blue-400 to-cyan-400 text-white">
             {getDifficultyText(tour.difficulty)}
           </span>
         </div>
         
         {/* Рейтинг */}
         {tour.rating > 0 && (
-          <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full flex items-center space-x-1">
-            <span className="text-premium-gold">⭐</span>
-            <span className="text-sm font-bold text-white">{tour.rating}</span>
-            <span className="text-xs text-white/70">({tour.reviewsCount})</span>
+          <div className="absolute top-3 right-3 weather-card px-3 py-1 rounded-full flex items-center space-x-1">
+            <span className="text-yellow-400">⭐</span>
+            <span className="text-sm font-bold">{tour.rating}</span>
+            <span className="text-xs opacity-70">({tour.reviewsCount})</span>
           </div>
         )}
       </div>
 
       {/* Контент карточки */}
-      <div className="p-6">
+      <div className="p-6 flex-1 flex flex-col">
         {/* Название и цена */}
         <div className="flex justify-between items-start mb-3">
-          <h3 className="text-lg font-bold text-white line-clamp-2">
+          <h3 className="text-lg font-bold line-clamp-2 flex-1">
             {tour.title}
           </h3>
           <div className="text-right ml-2">
-            <div className="text-xl font-black text-premium-gold">
+            <div className="text-xl font-black bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
               {formatCurrency(tour.priceFrom, 'RUB')}
             </div>
-            <div className="text-sm text-white/70">за человека</div>
+            <div className="text-sm opacity-70">за человека</div>
           </div>
         </div>
 
         {/* Описание */}
-        <p className="text-white/70 text-sm mb-4 line-clamp-2">
+        <p className="opacity-70 text-sm mb-4 line-clamp-2">
           {tour.description}
         </p>
 
         {/* Детали тура */}
-        <div className="space-y-2 mb-4">
+        <div className="space-y-2 mb-4 flex-1">
           {/* Продолжительность */}
-          <div className="flex items-center text-sm text-white/70">
+          <div className="flex items-center text-sm opacity-70">
             <span className="mr-2">⏱️</span>
             <span>{tour.duration}</span>
           </div>
 
           {/* Размер группы */}
-          <div className="flex items-center text-sm text-white/70">
+          <div className="flex items-center text-sm opacity-70">
             <span className="mr-2">👥</span>
             <span>
               {tour.minParticipants === tour.maxParticipants
@@ -139,7 +135,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
 
           {/* Сезон */}
           {tour.activity && (
-            <div className="flex items-center text-sm text-white/70">
+            <div className="flex items-center text-sm opacity-70">
               <span className="mr-2">🌿</span>
               <span>Круглый год</span>
             </div>
@@ -148,11 +144,11 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
 
         {/* Оператор */}
         {tour.operator && (
-          <div className="flex items-center text-sm text-white/70 mb-4">
+          <div className="flex items-center text-sm opacity-70 mb-4">
             <span className="mr-2">🏢</span>
             <span>{tour.operator.name}</span>
             {tour.operator.rating > 0 && (
-              <span className="ml-2 text-premium-gold">
+              <span className="ml-2 text-yellow-400">
                 ⭐ {formatRating(tour.operator.rating)}
               </span>
             )}
@@ -161,7 +157,7 @@ export function TourCard({ tour, className, onClick }: TourCardProps) {
 
         {/* Кнопка бронирования */}
         <button
-          className="w-full bg-premium-gold hover:bg-premium-gold/90 text-premium-black font-bold py-3 px-4 rounded-xl transition-all duration-200"
+          className="w-full bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200"
           onClick={(e) => {
             e.stopPropagation();
             // Здесь будет логика бронирования

@@ -62,14 +62,40 @@ export function EcoPointsWidget({ userId, className }: EcoPointsWidgetProps) {
 
   const getCurrentPosition = (): Promise<GeolocationPosition> => {
     return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported'));
+      if (typeof window === 'undefined' || !navigator.geolocation) {
+        // Возвращаем координаты Петропавловска-Камчатского по умолчанию
+        resolve({
+          coords: {
+            latitude: 53.0195,
+            longitude: 158.6505,
+            accuracy: 100,
+            altitude: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+          },
+          timestamp: Date.now(),
+        } as GeolocationPosition);
         return;
       }
 
       navigator.geolocation.getCurrentPosition(
         resolve,
-        reject,
+        () => {
+          // При ошибке тоже возвращаем дефолтные координаты
+          resolve({
+            coords: {
+              latitude: 53.0195,
+              longitude: 158.6505,
+              accuracy: 100,
+              altitude: null,
+              altitudeAccuracy: null,
+              heading: null,
+              speed: null,
+            },
+            timestamp: Date.now(),
+          } as GeolocationPosition);
+        },
         {
           enableHighAccuracy: true,
           timeout: 10000,

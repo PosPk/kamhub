@@ -274,7 +274,7 @@ export function TransferMap({
     return (
       <div className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`} style={{ height }}>
         <div className="text-center text-gray-600">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-premium-gold mx-auto mb-2"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-2"></div>
           <p>Загрузка карты...</p>
         </div>
       </div>
@@ -364,7 +364,7 @@ export function MapControls({ onCenterChange, onZoomChange, onLocationRequest }:
     <div className="flex space-x-2">
       <button
         onClick={requestUserLocation}
-        className="px-3 py-2 bg-premium-gold text-premium-black rounded-lg hover:bg-premium-gold/90 transition-colors"
+        className="px-3 py-2 bg-gradient-to-r from-blue-400 to-cyan-400 text-gray-900 rounded-lg hover:bg-gradient-to-r from-blue-400 to-cyan-400/90 transition-colors"
       >
         📍 Мое местоположение
       </button>
