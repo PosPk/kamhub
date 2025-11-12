@@ -13,7 +13,6 @@ import { WeatherAnimations } from '@/components/home/WeatherAnimations';
 import { VideoBackground } from '@/components/home/VideoBackground';
 import { TopBar } from '@/components/home/TopBar';
 import { AISmartSearch } from '@/components/home/AISmartSearch';
-import { RolesSection, type Role } from '@/components/home/RolesSection';
 import { FeaturesSection, type Feature } from '@/components/home/FeaturesSection';
 import { AISearchResults } from '@/components/home/AISearchResults';
 
@@ -200,26 +199,6 @@ export default function HomePage() {
   const textColor = isNight ? 'text-white' : 'text-gray-800';
   const textSecondary = isNight ? 'text-white/70' : 'text-gray-600';
 
-  // ДАННЫЕ: Роли - ОБНОВЛЕНО: 2 основные роли
-  const roles: Role[] = [
-    { 
-      id: 'tourist', 
-      icon: Users, 
-      title: 'Турист путешественник', 
-      subtitle: 'Открой Камчатку для себя', 
-      color: 'from-blue-400/80 to-cyan-400/80', 
-      href: '/hub/tourist' 
-    },
-    { 
-      id: 'business', 
-      icon: Briefcase, 
-      title: 'Турбизнес', 
-      subtitle: 'Все для вашего бизнеса', 
-      color: 'from-purple-400/80 to-pink-400/80', 
-      href: '/hub/business' 
-    }
-  ];
-
   // ДАННЫЕ: Features
   const features: Feature[] = [
     { icon: ThermometerSun, title: 'Метеослужба', description: 'Прогноз на 14 дней', link: '/hub/tourist', color: 'blue' },
@@ -318,9 +297,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* ROLES - Компонент */}
-      <RolesSection roles={roles} />
 
       {/* FEATURES - Компонент */}
       <FeaturesSection features={features} />
