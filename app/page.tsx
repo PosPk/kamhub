@@ -139,7 +139,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Main Content */}
+      {/* Main Content - Hero Title */}
       <section className="px-6 py-6 grid gap-4">
         <div className="grid gap-1 text-center">
           <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-gold gold-glow">
@@ -148,33 +148,6 @@ export default function Home() {
           <div className="font-display text-3xl sm:text-5xl font-black leading-tight text-gold gold-glow">
             экосистема путешествий.
           </div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-extrabold">Кому это нужно</h2>
-          <div className="text-white/70 text-sm">Выберите роль, чтобы продолжить</div>
-        </div>
-        
-        <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
-          {[
-            ['Турист', '/hub/tourist'],
-            ['Туроператор', '/hub/operator'],
-            ['Гид', '/hub/guide'],
-            ['Трансфер', '/hub/transfer'],
-            ['Размещение', '/hub/stay'],
-            ['Сувениры', '/hub/souvenirs'],
-            ['Прокат снаряжения', '/hub/gear'],
-            ['Прокат авто', '/hub/cars'],
-          ].map(([title, href]) => (
-            <a 
-              key={title} 
-              href={href} 
-              className="rounded-2xl bg-white/5 border border-white/10 p-5 hover:bg-white/10 transition"
-            >
-              <div className="text-lg font-extrabold">{title}</div>
-              <div className="text-sm text-white/70">Персональные инструменты и витрины</div>
-            </a>
-          ))}
         </div>
       </section>
 
