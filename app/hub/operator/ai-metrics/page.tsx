@@ -412,9 +412,10 @@ export default function AIMetricsPage() {
           <p>Обновлено: {new Date().toLocaleString('ru-RU')}</p>
           <button 
             onClick={fetchMetrics}
-            className="mt-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+            className="mt-2 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors flex items-center gap-2 mx-auto"
           >
-            🔄 Обновить
+            <RefreshCw className="w-4 h-4" />
+            Обновить
           </button>
         </div>
       </div>
