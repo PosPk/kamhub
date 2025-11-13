@@ -31,14 +31,17 @@ https://kamhub-pospks-projects.vercel.app
 - Нажать "Deploy" если нужно
 
 ### 3. **НАСТРОИТЬ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ:**
+
+⚠️ **ВАЖНО:** Без `YANDEX_WEATHER_API_KEY` погода работать не будет!
+
 ```bash
 # AI API Keys
 GROQ_API_KEY=your_groq_key_here
 DEEPSEEK_API_KEY=your_deepseek_key_here
 
-# Yandex API Keys
+# Yandex API Keys (ОБЯЗАТЕЛЬНО!)
 YANDEX_MAPS_API_KEY=your_yandex_maps_key
-YANDEX_WEATHER_API_KEY=your_yandex_weather_key
+YANDEX_WEATHER_API_KEY=your_yandex_weather_key  # ← КРИТИЧНО! Основной провайдер погоды
 
 # Database
 DATABASE_URL=your_postgresql_url
@@ -61,6 +64,14 @@ CLOUDPAYMENTS_PUBLIC_ID=your_public_id
 CLOUDPAYMENTS_API_SECRET=your_api_secret
 ```
 
+**Получить API ключ Yandex Weather:**
+1. Перейти на https://yandex.ru/dev/weather
+2. Зарегистрироваться / Войти
+3. Создать приложение
+4. Выбрать тариф (Тестовый - бесплатно 30 дней, Базовый - ~1000₽/мес)
+5. Скопировать API ключ
+6. Добавить в переменные окружения Vercel
+
 ## 🎯 **ФУНКЦИИ КОТОРЫЕ РАБОТАЮТ:**
 
 ### ✅ **СИСТЕМА ТРАНСФЕРОВ:**
@@ -78,7 +89,10 @@ CLOUDPAYMENTS_API_SECRET=your_api_secret
 
 ### ✅ **ИНТЕГРАЦИИ:**
 - Yandex Maps (карты и маршруты)
-- Yandex Weather (прогноз погоды)
+- **Yandex Weather (основной провайдер погоды для Камчатки)** 🌦️
+  - Точность: 9/10 для Камчатского края
+  - Fallback: Open-Meteo (бесплатный)
+  - Обновления каждые 15-30 минут
 - CloudPayments (платежи)
 - SMS.ru (SMS уведомления)
 - Telegram Bot (уведомления)

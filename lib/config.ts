@@ -108,7 +108,7 @@ export const config = {
       timeout: 10000,
     },
     cacheTimeout: 30 * 60 * 1000, // 30 минут
-    defaultProvider: 'openMeteo', // 'openMeteo' | 'openWeatherMap' | 'weatherApi' | 'yandex'
+    defaultProvider: 'yandex', // 'openMeteo' | 'openWeatherMap' | 'weatherApi' | 'yandex' - Используем Yandex для максимальной точности на Камчатке
   },
 
   // Настройки платежей
