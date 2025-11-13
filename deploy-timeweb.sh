@@ -170,9 +170,9 @@ GROQ_API_KEY=
 DEEPSEEK_API_KEY=
 OPENROUTER_API_KEY=
 
-# Maps & Weather
+# Maps & Weather (КРИТИЧНО для работы!)
 YANDEX_MAPS_API_KEY=
-YANDEX_WEATHER_API_KEY=
+YANDEX_WEATHER_API_KEY=      # ВАЖНО! Основной провайдер погоды для Камчатки (точность 9/10)
 
 # Payments
 CLOUDPAYMENTS_PUBLIC_ID=

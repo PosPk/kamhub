@@ -88,8 +88,9 @@ npm ci
 
 # ВАЖНО: Создайте .env.production
 nano .env.production
-# Вставьте содержимое из .env.production.kamchatour (из репо)
+# Вставьте содержимое из .env.production.example (из репо)
 # Обновите пароли БД и S3 из email!
+# ⚠️ КРИТИЧНО: Добавьте YANDEX_WEATHER_API_KEY для точной погоды!
 
 # Примените миграции БД (когда БД будет ready)
 npx prisma migrate deploy
