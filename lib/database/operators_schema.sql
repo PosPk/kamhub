@@ -6,25 +6,49 @@
 -- ВАЖНО: Эта таблица необходима для работы модуля трансферов!
 -- В transfer_schema.sql используются ссылки на operators(id), но таблица не была создана.
 
--- Создаём таблицу операторов
+-- ============================================
+-- ТАБЛИЦА: operators - Туроператоры и владельцы трансферов
+-- ============================================
+-- Хранит информацию о всех операторах платформы
+-- Поддерживает туроператоров и владельцев трансферов
+-- Включает систему верификации и рейтингов
+-- ============================================
 CREATE TABLE IF NOT EXISTS operators (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  phone VARCHAR(20) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  category VARCHAR(50) NOT NULL CHECK (category IN ('tour', 'transfer', 'both')),
-  description TEXT,
-  address TEXT,
-  rating DECIMAL(3,2) DEFAULT 0.0 CHECK (rating >= 0 AND rating <= 5),
-  review_count INTEGER DEFAULT 0,
-  is_verified BOOLEAN DEFAULT FALSE,
-  is_active BOOLEAN DEFAULT TRUE,
-  license_number VARCHAR(100),
-  tax_id VARCHAR(50),
-  bank_details JSONB DEFAULT '{}',
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),                 -- Уникальный идентификатор оператора
+  name VARCHAR(255) NOT NULL,                                     -- Название компании
+  phone VARCHAR(20) NOT NULL,                                     -- Контактный телефон
+  email VARCHAR(255) NOT NULL,                                    -- Email для связи
+  category VARCHAR(50) NOT NULL CHECK (category IN ('tour', 'transfer', 'both')), -- Категория услуг
+  description TEXT,                                               -- Описание компании и услуг
+  address TEXT,                                                   -- Юридический/фактический адрес
+  rating DECIMAL(3,2) DEFAULT 0.0 CHECK (rating >= 0 AND rating <= 5), -- Средний рейтинг оператора
+  review_count INTEGER DEFAULT 0,                                 -- Количество отзывов
+  is_verified BOOLEAN DEFAULT FALSE,                              -- Верифицирован ли администрацией
+  is_active BOOLEAN DEFAULT TRUE,                                 -- Активность на платформе
+  license_number VARCHAR(100),                                    -- Номер лицензии (если требуется)
+  tax_id VARCHAR(50),                                            -- ИНН или налоговый номер
+  bank_details JSONB DEFAULT '{}',                               -- Банковские реквизиты для выплат
+  created_at TIMESTAMPTZ DEFAULT NOW(),                          -- Дата регистрации в системе
+  updated_at TIMESTAMPTZ DEFAULT NOW()                           -- Дата последнего обновления
 );
+
+COMMENT ON TABLE operators IS 'Туроператоры и владельцы трансферов на платформе Kamchatour Hub';
+COMMENT ON COLUMN operators.id IS 'Уникальный идентификатор оператора (UUID)';
+COMMENT ON COLUMN operators.name IS 'Название компании или ИП';
+COMMENT ON COLUMN operators.phone IS 'Контактный телефон для связи';
+COMMENT ON COLUMN operators.email IS 'Email адрес для деловой переписки';
+COMMENT ON COLUMN operators.category IS 'Категория: tour (туроператор), transfer (владелец трансферов), both (оба направления)';
+COMMENT ON COLUMN operators.description IS 'Подробное описание компании и предоставляемых услуг';
+COMMENT ON COLUMN operators.address IS 'Юридический или фактический адрес компании';
+COMMENT ON COLUMN operators.rating IS 'Средний рейтинг оператора на основе отзывов (0.00-5.00)';
+COMMENT ON COLUMN operators.review_count IS 'Общее количество отзывов о компании';
+COMMENT ON COLUMN operators.is_verified IS 'Верифицирована ли компания администрацией платформы';
+COMMENT ON COLUMN operators.is_active IS 'Активность оператора (принимает ли заказы)';
+COMMENT ON COLUMN operators.license_number IS 'Номер туристической лицензии или разрешения';
+COMMENT ON COLUMN operators.tax_id IS 'ИНН или другой налоговый идентификатор';
+COMMENT ON COLUMN operators.bank_details IS 'JSON с банковскими реквизитами для перечисления средств';
+COMMENT ON COLUMN operators.created_at IS 'Дата регистрации оператора на платформе';
+COMMENT ON COLUMN operators.updated_at IS 'Дата последнего обновления информации об операторе';
 
 -- Индексы для operators
 CREATE INDEX IF NOT EXISTS idx_operators_category ON operators(category);
@@ -119,12 +143,12 @@ LEFT JOIN transfer_drivers d ON o.id = d.operator_id AND d.is_active = true
 LEFT JOIN transfer_bookings b ON o.id = b.operator_id
 GROUP BY o.id;
 
--- Комментарии
-COMMENT ON TABLE operators IS 'Операторы (туроператоры и владельцы трансферов)';
-COMMENT ON COLUMN operators.category IS 'Категория: tour (только туры), transfer (только трансферы), both (туры + трансферы)';
-COMMENT ON COLUMN operators.rating IS 'Общий рейтинг оператора (0-5)';
-COMMENT ON COLUMN operators.is_verified IS 'Верифицирован ли оператор администрацией';
-COMMENT ON COLUMN operators.is_active IS 'Активен ли оператор на платформе';
+-- ============================================
+-- ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ
+-- ============================================
+-- Таблица operators является центральной для модуля трансферов
+-- Все транспортные средства и водители связаны с операторами
+-- Рейтинг рассчитывается автоматически на основе отзывов
 
 -- Вывод информации
 SELECT 

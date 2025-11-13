@@ -7,45 +7,80 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";
 
--- =============================================
--- ТАБЛИЦА: transfer_routes - Маршруты
--- =============================================
+-- ============================================
+-- ТАБЛИЦА: transfer_routes - Маршруты трансферов
+-- ============================================
+-- Хранит все доступные маршруты для трансферов
+-- Использует PostGIS для работы с географическими координатами
+-- Рассчитывает расстояния и время в пути
+-- ============================================
 CREATE TABLE transfer_routes (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name VARCHAR(255) NOT NULL,
-  from_location VARCHAR(255) NOT NULL,
-  to_location VARCHAR(255) NOT NULL,
-  from_coordinates POINT NOT NULL,
-  to_coordinates POINT NOT NULL,
-  distance_km DECIMAL(8,2),
-  estimated_duration_minutes INTEGER,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),                 -- Уникальный идентификатор маршрута
+  name VARCHAR(255) NOT NULL,                                     -- Название маршрута
+  from_location VARCHAR(255) NOT NULL,                            -- Точка отправления (название)
+  to_location VARCHAR(255) NOT NULL,                              -- Точка прибытия (название)
+  from_coordinates POINT NOT NULL,                                -- Координаты точки отправления (PostGIS)
+  to_coordinates POINT NOT NULL,                                  -- Координаты точки прибытия (PostGIS)
+  distance_km DECIMAL(8,2),                                       -- Расстояние маршрута в километрах
+  estimated_duration_minutes INTEGER,                             -- Ориентировочное время в пути (минуты)
+  is_active BOOLEAN DEFAULT true,                                 -- Активность маршрута (доступен ли для бронирования)
+  created_at TIMESTAMP DEFAULT NOW(),                             -- Дата создания маршрута
+  updated_at TIMESTAMP DEFAULT NOW()                              -- Дата последнего обновления
 );
+
+COMMENT ON TABLE transfer_routes IS 'Маршруты трансферов с географическими координатами и расчетными параметрами';
+COMMENT ON COLUMN transfer_routes.id IS 'Уникальный идентификатор маршрута (UUID)';
+COMMENT ON COLUMN transfer_routes.name IS 'Название маршрута (например: "Аэропорт → Петропавловск-Камчатский")';
+COMMENT ON COLUMN transfer_routes.from_location IS 'Название точки отправления';
+COMMENT ON COLUMN transfer_routes.to_location IS 'Название точки прибытия';
+COMMENT ON COLUMN transfer_routes.from_coordinates IS 'Географические координаты точки отправления (PostGIS POINT)';
+COMMENT ON COLUMN transfer_routes.to_coordinates IS 'Географические координаты точки прибытия (PostGIS POINT)';
+COMMENT ON COLUMN transfer_routes.distance_km IS 'Расстояние маршрута в километрах';
+COMMENT ON COLUMN transfer_routes.estimated_duration_minutes IS 'Ориентировочная продолжительность поездки в минутах';
+COMMENT ON COLUMN transfer_routes.is_active IS 'Доступность маршрута для бронирования';
+COMMENT ON COLUMN transfer_routes.created_at IS 'Дата и время создания маршрута';
+COMMENT ON COLUMN transfer_routes.updated_at IS 'Дата и время последнего обновления маршрута';
 
 -- Индексы для transfer_routes
 CREATE INDEX idx_transfer_routes_from_coords ON transfer_routes USING GIST (from_coordinates);
 CREATE INDEX idx_transfer_routes_to_coords ON transfer_routes USING GIST (to_coordinates);
 CREATE INDEX idx_transfer_routes_active ON transfer_routes (is_active);
 
--- =============================================
--- ТАБЛИЦА: transfer_vehicles - Транспорт
--- =============================================
+-- ============================================
+-- ТАБЛИЦА: transfer_vehicles - Транспортные средства
+-- ============================================
+-- Хранит информацию о всех транспортных средствах
+-- Поддерживает категории от эконом до автобусов
+-- Отслеживает характеристики и особенности транспорта
+-- ============================================
 CREATE TABLE transfer_vehicles (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  operator_id UUID REFERENCES operators(id),
-  vehicle_type VARCHAR(50) NOT NULL CHECK (vehicle_type IN ('economy', 'comfort', 'business', 'minibus', 'bus')),
-  make VARCHAR(100) NOT NULL,
-  model VARCHAR(100) NOT NULL,
-  year INTEGER,
-  capacity INTEGER NOT NULL CHECK (capacity > 0),
-  features TEXT[], -- ['wifi', 'air_conditioning', 'child_seat', 'wheelchair_accessible']
-  license_plate VARCHAR(20) UNIQUE,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),                 -- Уникальный идентификатор транспортного средства
+  operator_id UUID REFERENCES operators(id),                      -- ID оператора-владельца
+  vehicle_type VARCHAR(50) NOT NULL CHECK (vehicle_type IN ('economy', 'comfort', 'business', 'minibus', 'bus')), -- Класс транспорта
+  make VARCHAR(100) NOT NULL,                                     -- Марка автомобиля
+  model VARCHAR(100) NOT NULL,                                    -- Модель автомобиля
+  year INTEGER,                                                   -- Год выпуска
+  capacity INTEGER NOT NULL CHECK (capacity > 0),                 -- Вместимость (количество пассажиров)
+  features TEXT[],                                                -- Особенности: ['wifi', 'air_conditioning', 'child_seat', 'wheelchair_accessible']
+  license_plate VARCHAR(20) UNIQUE,                               -- Государственный номер (уникальный)
+  is_active BOOLEAN DEFAULT true,                                 -- Доступность для работы
+  created_at TIMESTAMP DEFAULT NOW(),                             -- Дата добавления в систему
+  updated_at TIMESTAMP DEFAULT NOW()                              -- Дата последнего обновления
 );
+
+COMMENT ON TABLE transfer_vehicles IS 'Транспортные средства для трансферов с техническими характеристиками';
+COMMENT ON COLUMN transfer_vehicles.id IS 'Уникальный идентификатор транспортного средства (UUID)';
+COMMENT ON COLUMN transfer_vehicles.operator_id IS 'ID оператора из таблицы operators';
+COMMENT ON COLUMN transfer_vehicles.vehicle_type IS 'Класс: economy (эконом), comfort (комфорт), business (бизнес), minibus (микроавтобус), bus (автобус)';
+COMMENT ON COLUMN transfer_vehicles.make IS 'Марка автомобиля (Toyota, Mercedes, Hyundai и т.д.)';
+COMMENT ON COLUMN transfer_vehicles.model IS 'Модель автомобиля (Camry, Sprinter, Solaris и т.д.)';
+COMMENT ON COLUMN transfer_vehicles.year IS 'Год выпуска транспортного средства';
+COMMENT ON COLUMN transfer_vehicles.capacity IS 'Максимальная вместимость (количество пассажиров)';
+COMMENT ON COLUMN transfer_vehicles.features IS 'Массив особенностей: wifi, air_conditioning, child_seat, wheelchair_accessible, leather_seats';
+COMMENT ON COLUMN transfer_vehicles.license_plate IS 'Государственный регистрационный номер (уникальный)';
+COMMENT ON COLUMN transfer_vehicles.is_active IS 'Активность транспорта (доступен ли для рейсов)';
+COMMENT ON COLUMN transfer_vehicles.created_at IS 'Дата добавления транспорта в систему';
+COMMENT ON COLUMN transfer_vehicles.updated_at IS 'Дата последнего обновления информации';
 
 -- Индексы для transfer_vehicles
 CREATE INDEX idx_transfer_vehicles_operator ON transfer_vehicles (operator_id);
@@ -53,23 +88,41 @@ CREATE INDEX idx_transfer_vehicles_type ON transfer_vehicles (vehicle_type);
 CREATE INDEX idx_transfer_vehicles_capacity ON transfer_vehicles (capacity);
 CREATE INDEX idx_transfer_vehicles_active ON transfer_vehicles (is_active);
 
--- =============================================
--- ТАБЛИЦА: transfer_drivers - Водители
--- =============================================
+-- ============================================
+-- ТАБЛИЦА: transfer_drivers - Водители трансферов
+-- ============================================
+-- Хранит данные о водителях
+-- Отслеживает рейтинги и количество поездок
+-- Поддерживает мультиязычность
+-- ============================================
 CREATE TABLE transfer_drivers (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  operator_id UUID REFERENCES operators(id),
-  name VARCHAR(255) NOT NULL,
-  phone VARCHAR(20) NOT NULL,
-  email VARCHAR(255),
-  license_number VARCHAR(50) UNIQUE,
-  languages TEXT[], -- ['ru', 'en', 'zh', 'ja']
-  rating DECIMAL(3,2) DEFAULT 0 CHECK (rating >= 0 AND rating <= 5),
-  total_trips INTEGER DEFAULT 0,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),                 -- Уникальный идентификатор водителя
+  operator_id UUID REFERENCES operators(id),                      -- ID оператора-работодателя
+  name VARCHAR(255) NOT NULL,                                     -- ФИО водителя
+  phone VARCHAR(20) NOT NULL,                                     -- Контактный телефон
+  email VARCHAR(255),                                             -- Email для связи
+  license_number VARCHAR(50) UNIQUE,                              -- Номер водительского удостоверения (уникальный)
+  languages TEXT[],                                               -- Языки общения: ['ru', 'en', 'zh', 'ja']
+  rating DECIMAL(3,2) DEFAULT 0 CHECK (rating >= 0 AND rating <= 5), -- Средний рейтинг водителя (0-5)
+  total_trips INTEGER DEFAULT 0,                                  -- Общее количество выполненных поездок
+  is_active BOOLEAN DEFAULT true,                                 -- Активность (работает ли сейчас)
+  created_at TIMESTAMP DEFAULT NOW(),                             -- Дата добавления в систему
+  updated_at TIMESTAMP DEFAULT NOW()                              -- Дата последнего обновления
 );
+
+COMMENT ON TABLE transfer_drivers IS 'Водители трансферов с рейтингами и статистикой';
+COMMENT ON COLUMN transfer_drivers.id IS 'Уникальный идентификатор водителя (UUID)';
+COMMENT ON COLUMN transfer_drivers.operator_id IS 'ID оператора-работодателя из таблицы operators';
+COMMENT ON COLUMN transfer_drivers.name IS 'Полное имя водителя (ФИО)';
+COMMENT ON COLUMN transfer_drivers.phone IS 'Контактный телефон водителя';
+COMMENT ON COLUMN transfer_drivers.email IS 'Email адрес для связи';
+COMMENT ON COLUMN transfer_drivers.license_number IS 'Номер водительского удостоверения (уникальный)';
+COMMENT ON COLUMN transfer_drivers.languages IS 'Массив языков, которыми владеет водитель: ru, en, zh, ja, ko';
+COMMENT ON COLUMN transfer_drivers.rating IS 'Средний рейтинг водителя по отзывам (от 0.00 до 5.00)';
+COMMENT ON COLUMN transfer_drivers.total_trips IS 'Общее количество завершенных поездок';
+COMMENT ON COLUMN transfer_drivers.is_active IS 'Активность водителя (работает ли в данный момент)';
+COMMENT ON COLUMN transfer_drivers.created_at IS 'Дата добавления водителя в систему';
+COMMENT ON COLUMN transfer_drivers.updated_at IS 'Дата последнего обновления информации о водителе';
 
 -- Индексы для transfer_drivers
 CREATE INDEX idx_transfer_drivers_operator ON transfer_drivers (operator_id);
@@ -340,18 +393,15 @@ LEFT JOIN transfer_schedules s ON v.id = s.vehicle_id AND s.is_active = true
 LEFT JOIN transfer_bookings b ON s.id = b.schedule_id
 GROUP BY o.id, o.name;
 
--- =============================================
--- КОММЕНТАРИИ К ТАБЛИЦАМ
--- =============================================
+-- ============================================
+-- ДОПОЛНИТЕЛЬНЫЕ КОММЕНТАРИИ К ТАБЛИЦАМ
+-- ============================================
 
-COMMENT ON TABLE transfer_routes IS 'Маршруты трансферов с координатами и расстояниями';
-COMMENT ON TABLE transfer_vehicles IS 'Транспортные средства перевозчиков';
-COMMENT ON TABLE transfer_drivers IS 'Водители с рейтингами и языками';
-COMMENT ON TABLE transfer_schedules IS 'Расписание рейсов с ценами и доступностью';
-COMMENT ON TABLE transfer_bookings IS 'Бронирования трансферов клиентами';
-COMMENT ON TABLE transfer_stops IS 'Остановки на маршрутах';
-COMMENT ON TABLE transfer_reviews IS 'Отзывы о трансферах';
-COMMENT ON TABLE transfer_notifications IS 'Уведомления о бронированиях';
+COMMENT ON TABLE transfer_schedules IS 'Расписание рейсов трансферов с ценами и доступностью мест';
+COMMENT ON TABLE transfer_bookings IS 'Бронирования трансферов клиентами с отслеживанием статусов';
+COMMENT ON TABLE transfer_stops IS 'Промежуточные остановки на маршрутах трансферов';
+COMMENT ON TABLE transfer_reviews IS 'Отзывы клиентов о трансферах и водителях';
+COMMENT ON TABLE transfer_notifications IS 'Система уведомлений о бронированиях для клиентов и операторов';
 
 -- =============================================
 -- ЗАВЕРШЕНИЕ
