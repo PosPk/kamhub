@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { PageLayout } from '@/components/PageLayout';
 import { GlassCard } from '@/components/GlassCard';
-import { Shield, AlertTriangle, Phone, CloudSnow } from 'lucide-react';
+import { Shield, AlertTriangle, Phone, CloudSnow, MapPin } from 'lucide-react';
 
 export default function SafetyHub() {
   const [activeTab, setActiveTab] = useState('sos');
@@ -62,7 +62,9 @@ export default function SafetyHub() {
               </div>
               <div className="text-center">
                 <h3 className="text-sm font-medium text-gray-700 mb-2">Ваша локация</h3>
-                <div className="text-4xl">📍</div>
+                <div className="flex justify-center">
+                  <MapPin className="w-12 h-12 text-blue-500" />
+                </div>
                 <p className="text-xs text-gray-600 mt-1">Координаты загружаются...</p>
               </div>
             </div>

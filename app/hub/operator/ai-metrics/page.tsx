@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw, CheckCircle, Smile, Wrench, Zap, MessageCircle, AlertTriangle } from 'lucide-react';
+import * as LucideIcons from 'lucide-react';
 
 interface MetricsSummary {
   summary: {
@@ -98,7 +101,12 @@ export default function AIMetricsPage() {
             </div>
             <p className="text-white/50 text-xs mt-1">{subtitle}</p>
           </div>
-          <div className="text-4xl opacity-20">{icon}</div>
+          <div className="opacity-20">
+            {(() => {
+              const IconComponent = (LucideIcons as any)[icon] || LucideIcons.HelpCircle;
+              return <IconComponent className="w-10 h-10 text-white" />;
+            })()}
+          </div>
         </div>
       </div>
     );
@@ -164,7 +172,7 @@ export default function AIMetricsPage() {
             title="Выполнение задач"
             value={`${metrics.summary.completionRate}%`}
             subtitle={`${metrics.summary.completedTasks} из ${metrics.summary.totalTasks} задач`}
-            icon="✅"
+            icon="CheckCircle"
             color="green"
           />
           
@@ -172,7 +180,7 @@ export default function AIMetricsPage() {
             title="Удовлетворенность"
             value={`${metrics.summary.satisfactionRate}%`}
             subtitle={`${metrics.summary.satisfiedUsers} довольных`}
-            icon="😊"
+            icon="Smile"
             color="blue"
           />
           
@@ -180,7 +188,7 @@ export default function AIMetricsPage() {
             title="Успех инструментов"
             value={`${metrics.summary.toolSuccessRate}%`}
             subtitle={`${metrics.summary.toolErrors} ошибок`}
-            icon="🔧"
+            icon="Wrench"
             color={metrics.summary.toolSuccessRate >= 95 ? 'green' : 'yellow'}
           />
           
@@ -188,7 +196,7 @@ export default function AIMetricsPage() {
             title="Эффективность"
             value={`${metrics.summary.avgEfficiency}%`}
             subtitle={`Среднее время: ${metrics.summary.avgLatency}ms`}
-            icon="⚡"
+            icon="Zap"
             color="purple"
           />
         </div>
@@ -198,7 +206,7 @@ export default function AIMetricsPage() {
           {/* Sessions Stats */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <span>💬</span>
+              <MessageCircle className="w-6 h-6" />
               Статистика сессий
             </h2>
             <div className="space-y-4">
@@ -236,7 +244,7 @@ export default function AIMetricsPage() {
           {/* Tool Errors */}
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
             <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <span>⚠️</span>
+              <AlertTriangle className="w-6 h-6 text-yellow-500" />
               Топ ошибок инструментов
             </h2>
             

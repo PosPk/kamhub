@@ -32,7 +32,7 @@ export function UIShowcase() {
           <h2 className="text-2xl font-bold text-blue-400">1. Улучшенные кнопки</h2>
           <div className="flex flex-wrap gap-4">
             <button className="button-primary">
-              🚀 Основная кнопка
+              Основная кнопка
             </button>
             <button className="button-secondary">
               Вторичная кнопка
