@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw, CheckCircle, Smile, Wrench, Zap, MessageCircle, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, RefreshCw, CheckCircle, Smile, Wrench, Zap, MessageCircle, AlertTriangle, BarChart3 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 
 interface MetricsSummary {
@@ -144,8 +144,9 @@ export default function AIMetricsPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">
-                📊 AI Chat Метрики
+              <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+                <BarChart3 className="w-8 h-8" />
+                AI Chat Метрики
               </h1>
               <p className="text-white/70">
                 Отслеживание производительности и качества AI-ассистента
@@ -278,7 +279,9 @@ export default function AIMetricsPage() {
               </div>
             ) : (
               <div className="text-center py-8 text-white/50">
-                <div className="text-4xl mb-2">🎉</div>
+                <div className="mb-2 flex justify-center">
+                  <CheckCircle className="w-16 h-16 text-green-400" />
+                </div>
                 <p>Ошибок не обнаружено!</p>
               </div>
             )}
@@ -288,7 +291,7 @@ export default function AIMetricsPage() {
         {/* Trend */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <span>📈</span>
+            <TrendingUp className="w-6 h-6 text-blue-400" />
             Тренд за {metrics.period}
           </h2>
           
@@ -366,7 +369,7 @@ export default function AIMetricsPage() {
         {/* Performance Details */}
         <div className="mt-8 bg-white/5 border border-white/10 rounded-2xl p-6">
           <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            <span>⚡</span>
+            <Zap className="w-6 h-6 text-yellow-400" />
             Производительность
           </h2>
           
