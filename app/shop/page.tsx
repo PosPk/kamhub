@@ -43,8 +43,8 @@ export default function ShopPage() {
   };
 
   const categories = [
-    { id: 'all', name: 'Все товары', icon: '🎁' },
-    { id: 'traditional_art', name: 'Традиционное искусство', icon: '🎨' },
+    { id: 'all', name: 'Все товары', icon: ' ' },
+    { id: 'traditional_art', name: 'Традиционное искусство', icon: ' ' },
     { id: 'jewelry', name: 'Украшения', icon: '💎' },
     { id: 'textiles', name: 'Текстиль', icon: '🧵' },
     { id: 'woodwork', name: 'Изделия из дерева', icon: '🪵' },
@@ -57,7 +57,7 @@ export default function ShopPage() {
       <div className="bg-white/5 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <h1 className="text-4xl font-black text-premium-gold mb-2">
-            🎁 Магазин Сувениров Камчатки
+              Магазин Сувениров Камчатки
           </h1>
           <p className="text-white/70">
             Авторские изделия от потомственных мастеров
@@ -90,7 +90,7 @@ export default function ShopPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         {loading ? (
           <div className="text-center py-20">
-            <div className="text-4xl mb-4">⏳</div>
+            <div className="text-4xl mb-4"> </div>
             <p className="text-white/70">Загрузка товаров...</p>
           </div>
         ) : souvenirs.length === 0 ? (
@@ -114,7 +114,7 @@ export default function ShopPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="text-6xl">🎁</div>
+                    <div className="text-6xl"> </div>
                   )}
                 </div>
                 
@@ -133,17 +133,17 @@ export default function ShopPage() {
                     </div>
                     
                     <div className="flex items-center gap-1 text-sm text-white/60">
-                      ⭐ {souvenir.rating.toFixed(1)}
+                      ★ {souvenir.rating.toFixed(1)}
                     </div>
                   </div>
                   
                   {souvenir.stockQuantity > 0 ? (
                     <div className="mt-3 text-green-400 text-sm">
-                      ✅ В наличии
+                      [✓] В наличии
                     </div>
                   ) : (
                     <div className="mt-3 text-red-400 text-sm">
-                      ❌ Нет в наличии
+                      [✗] Нет в наличии
                     </div>
                   )}
                 </div>
@@ -157,10 +157,10 @@ export default function ShopPage() {
       <div className="bg-white/5 border-t border-white/10 mt-12">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-center gap-4">
-            <div className="text-4xl">🤝</div>
+            <div className="text-4xl"> </div>
             <div>
               <h3 className="font-bold text-white mb-1">
-                Официальный партнёр: "Дар Севера"
+                Официальный партнёр: &ldquo;Дар Севера&rdquo;
               </h3>
               <p className="text-white/70 text-sm">
                 Авторские этнические изделия от потомственных мастеров Камчатки
