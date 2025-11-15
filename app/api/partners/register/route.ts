@@ -1,153 +1,118 @@
-/**
- * API endpoint для регистрации нового партнера
- * POST /api/partners/register
- */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { query } from '@/lib/database';
-import { z } from 'zod';
-
-// Валидация входных данных
-const registerSchema = z.object({
-  name: z.string().min(2, 'Название должно быть минимум 2 символа'),
-  email: z.string().email('Неверный формат email'),
-  phone: z.string().min(10, 'Неверный формат телефона'),
-  password: z.string().min(8, 'Пароль должен быть минимум 8 символов'),
-  description: z.string().optional(),
-  address: z.string().optional(),
-  website: z.string().url().optional().or(z.literal('')),
-  roles: z.array(z.enum(['operator', 'transfer', 'stay', 'gear'])).min(1, 'Выберите хотя бы одну роль'),
-  logoUrl: z.string().url().optional().or(z.literal('')),
-});
+import bcrypt from 'bcryptjs';
 
 export const dynamic = 'force-dynamic';
 
+interface PartnerRegistrationData {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  description?: string;
+  address?: string;
+  website?: string;
+  logoUrl?: string;
+  roles: string[];
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    
+    const data: PartnerRegistrationData = await request.json();
+
     // Валидация
-    const validationResult = registerSchema.safeParse(body);
-    if (!validationResult.success) {
+    if (!data.name || !data.email || !data.phone || !data.password) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Ошибка валидации',
-          details: validationResult.error.issues 
-        },
+        { success: false, error: 'Заполните все обязательные поля' },
         { status: 400 }
       );
     }
 
-    const { name, email, phone, password, description, address, website, roles, logoUrl } = validationResult.data;
+    if (data.password.length < 8) {
+      return NextResponse.json(
+        { success: false, error: 'Пароль должен быть не менее 8 символов' },
+        { status: 400 }
+      );
+    }
 
-    // TODO: В production хешировать пароль с bcrypt
-    // const passwordHash = await bcrypt.hash(password, 10);
-    // Для демо сохраняем как есть (НЕ ДЕЛАЙТЕ ТАК В PRODUCTION!)
-    const passwordHash = password;
+    if (!data.roles || data.roles.length === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Выберите хотя бы одно направление деятельности' },
+        { status: 400 }
+      );
+    }
 
-    // Проверяем, не существует ли уже партнер с таким email
-    const existingPartner = await query(
-      'SELECT id FROM partners WHERE contact->>\'email\' = $1',
-      [email]
+    // Проверка на существующий email
+    const existingUser = await query(
+      'SELECT id FROM users WHERE email = $1',
+      [data.email]
     );
 
-    if (existingPartner.rows.length > 0) {
+    if (existingUser.rows.length > 0) {
       return NextResponse.json(
-        { success: false, error: 'Партнер с таким email уже зарегистрирован' },
-        { status: 400 }
+        { success: false, error: 'Пользователь с таким email уже существует' },
+        { status: 409 }
       );
     }
 
-    // Создаем контактную информацию
-    const contact = {
-      email,
-      phone,
-      address: address || '',
-      website: website || '',
-    };
+    // Хеширование пароля
+    const hashedPassword = await bcrypt.hash(data.password, 12);
 
-    // Создаем партнера для каждой роли
-    // (в текущей структуре БД партнер может иметь только одну категорию)
-    const partnerIds: string[] = [];
-    
-    for (const role of roles) {
-      const result = await query(
-        `INSERT INTO partners (name, category, description, contact, is_verified, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-         RETURNING id`,
-        [
-          `${name}${roles.length > 1 ? ` (${getRoleName(role)})` : ''}`,
-          role,
-          description || `${name} - ${getRoleName(role)}`,
-          JSON.stringify(contact),
-          false, // Требуется верификация
-        ]
-      );
+    // Создание пользователя
+    const userResult = await query(
+      `INSERT INTO users (email, password, name, role) 
+       VALUES ($1, $2, $3, $4) 
+       RETURNING id`,
+      [data.email, hashedPassword, data.name, 'partner']
+    );
 
-      const partnerId = result.rows[0].id;
-      partnerIds.push(partnerId);
+    const userId = userResult.rows[0].id;
 
-      // Если есть логотип, сохраняем его как asset
-      if (logoUrl) {
-        const assetResult = await query(
-          `INSERT INTO assets (url, mime_type, sha256, size, alt, created_at)
-           VALUES ($1, $2, $3, $4, $5, NOW())
-           RETURNING id`,
-          [
-            logoUrl,
-            'image/png',
-            `logo-${partnerId}-${Date.now()}`,
-            0,
-            `Логотип ${name}`,
-          ]
-        );
-
-        const assetId = assetResult.rows[0].id;
-
-        // Связываем логотип с партнером
-        await query(
-          `INSERT INTO partner_assets (partner_id, asset_id)
-           VALUES ($1, $2)`,
-          [partnerId, assetId]
-        );
-
-        // Обновляем logo_asset_id
-        await query(
-          `UPDATE partners SET logo_asset_id = $1 WHERE id = $2`,
-          [assetId, partnerId]
-        );
-      }
-    }
+    // Создание заявки партнера
+    const partnerResult = await query(
+      `INSERT INTO partner_applications (
+        user_id, 
+        name, 
+        email, 
+        phone, 
+        description, 
+        address, 
+        website, 
+        logo_url, 
+        roles, 
+        status
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+      RETURNING id`,
+      [
+        userId,
+        data.name,
+        data.email,
+        data.phone,
+        data.description || null,
+        data.address || null,
+        data.website || null,
+        data.logoUrl || null,
+        JSON.stringify(data.roles),
+        'pending' // Статус "на модерации"
+      ]
+    );
 
     return NextResponse.json({
       success: true,
-      message: 'Партнер успешно зарегистрирован! Ожидайте подтверждения администратора.',
-      data: {
-        partnerIds,
-        roles,
-      },
+      applicationId: partnerResult.rows[0].id,
+      userId: userId,
+      message: 'Заявка успешно отправлена на модерацию'
     });
 
-  } catch (error) {
-    console.error('Error registering partner:', error);
+  } catch (error: any) {
+    console.error('Partner registration error:', error);
+    
     return NextResponse.json(
       { 
         success: false, 
-        error: 'Ошибка при регистрации партнера',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        error: error.message || 'Ошибка при регистрации партнера' 
       },
       { status: 500 }
     );
   }
-}
-
-function getRoleName(role: string): string {
-  const roleNames: Record<string, string> = {
-    operator: 'Туроператор',
-    transfer: 'Трансфер',
-    stay: 'Размещение',
-    gear: 'Аренда снаряжения',
-  };
-  return roleNames[role] || role;
 }
