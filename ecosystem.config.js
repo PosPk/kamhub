@@ -66,7 +66,7 @@ module.exports = {
   deploy: {
     production: {
       user: 'root',
-      host: '5.129.248.224',
+      host: '147.45.158.166',
       ref: 'origin/main',
       repo: 'https://github.com/PosPk/kamhub.git',
       path: '/var/www/kamhub',
