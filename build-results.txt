@@ -1,0 +1,37 @@
+
+> kamhub@1.0.0 build
+> next build
+
+  ▲ Next.js 14.2.15
+
+   Creating an optimized production build ...
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+Failed to compile.
+
+./app/api/accommodations/[id]/availability/route.ts
+Module not found: Can't resolve '@/pillars/core-infrastructure-infrastructure/lib/database'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/api/accommodations/[id]/blocked-dates/route.ts
+Module not found: Can't resolve '@/pillars/core-infrastructure-infrastructure/lib/database'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/api/accommodations/[id]/book/route.ts
+Module not found: Can't resolve '@/pillars/core-infrastructure-infrastructure/lib/database'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/api/accommodations/[id]/prices/route.ts
+Module not found: Can't resolve '@/pillars/core-infrastructure-infrastructure/lib/database'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./app/api/accommodations/[id]/route.ts
+Module not found: Can't resolve '@/pillars/core-infrastructure-infrastructure/lib/database'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors

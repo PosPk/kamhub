@@ -1,0 +1,3 @@
+./app/api/bookings/[id]/route.ts
+./app/api/bookings/availability/calendar/route.ts
+./app/api/bookings/availability/route.ts

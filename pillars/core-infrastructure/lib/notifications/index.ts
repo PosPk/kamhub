@@ -24,7 +24,7 @@
  *   sendNotification,
  *   sendBatchNotifications,
  *   NotificationTemplate,
- * } from '@/pillars/core-infrastructure-infrastructure/lib/notifications';
+ * } from '@/pillars/core-infrastructure/lib/notifications';
  *
  * // Initialize with configurations
  * await notifications.initialize({

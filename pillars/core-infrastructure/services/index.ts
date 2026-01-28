@@ -1,14 +1,14 @@
 // Export database service
-export { DatabaseService } from './database/database.service';
+export { DatabaseService } from './database.service';
 
 // Export cache service  
-export { CacheService } from './cache/cache.service';
+export { CacheService } from './cache.service';
 
 // Export event bus service
-export { EventBusService } from './events/event-bus.service';
+export { EventBusService } from './event-bus.service';
 
 // Export monitoring service
-export { MonitoringService } from './monitoring/monitoring.service';
+export { MonitoringService } from './monitoring.service';
 
-// Export common services
-export * from './index';
+// Export auth service
+export * from './auth';

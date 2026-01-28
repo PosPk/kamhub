@@ -6,23 +6,23 @@
 import {
   databaseService,
   DatabaseService,
-} from '@/pillars/core-infrastructure-infrastructure/lib/database';
+} from '@/pillars/core-infrastructure/lib/database';
 import {
   cacheService,
   CacheService,
-} from '@/pillars/core-infrastructure-infrastructure/lib/cache';
+} from '@/pillars/core-infrastructure/lib/cache';
 import {
   monitoringService,
   MonitoringService,
-} from '@/pillars/core-infrastructure-infrastructure/lib/monitoring';
+} from '@/pillars/core-infrastructure/lib/monitoring';
 import {
   eventBusService,
   EventBusService,
-} from '@/pillars/core-infrastructure-infrastructure/lib/eventbus';
+} from '@/pillars/core-infrastructure/lib/eventbus';
 import {
   notificationsService,
   NotificationsService,
-} from '@/pillars/core-infrastructure-infrastructure/lib/notifications';
+} from '@/pillars/core-infrastructure/lib/notifications';
 
 import {
   Review,
