@@ -55,7 +55,7 @@ jobs:
           REDIS_URL: redis://localhost:6380
 
       - name: Upload Coverage Reports
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./coverage/lcov.info
           flags: unittests
@@ -116,7 +116,7 @@ jobs:
 
       - name: Upload Test Results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: integration-test-results
           path: test-results/
@@ -152,7 +152,7 @@ jobs:
 
       - name: Upload Dependency Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
           path: dependency-check-report.json
@@ -177,7 +177,7 @@ jobs:
         run: npm run test:performance
 
       - name: Upload Performance Results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-results
           path: test-results/performance/
@@ -214,7 +214,7 @@ jobs:
 
       - name: Upload E2E Report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-report
           path: playwright-report/
@@ -253,7 +253,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: all-test-results/
 
@@ -263,7 +263,7 @@ jobs:
           node scripts/generate-test-report.js
 
       - name: Upload Final Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: final-test-report
           path: final-test-report.html

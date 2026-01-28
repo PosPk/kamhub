@@ -45,7 +45,7 @@ jobs:
           tsx scripts/timeweb-setup.ts
           
       - name: 💾 Upload infrastructure info
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: timeweb-resources
           path: |
