@@ -9,8 +9,13 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
-export function middleware(request: NextRequest) {
+const secret = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'test-secret-key-for-development'
+);
+
+export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
   
   // Добавляем security headers
@@ -27,6 +32,36 @@ export function middleware(request: NextRequest) {
     );
   }
   
+  // Попытаемся извлечь и декодировать JWT токен для передачи userId
+  try {
+    const authHeader = request.headers.get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      
+      try {
+        const verified = await jwtVerify(token, secret);
+        const userId = verified.payload.sub || verified.payload.userId;
+        
+        if (userId) {
+          // Добавляем userId в headers для API routes
+          const requestHeaders = new Headers(request.headers);
+          requestHeaders.set('x-user-id', String(userId));
+          
+          return NextResponse.next({
+            request: {
+              headers: requestHeaders,
+            },
+          });
+        }
+      } catch (jwtError) {
+        console.log('JWT validation failed:', jwtError instanceof Error ? jwtError.message : 'Unknown error');
+        // Продолжаем без добавления userId
+      }
+    }
+  } catch (error) {
+    console.log('Middleware error:', error instanceof Error ? error.message : 'Unknown error');
+  }
+  
   return response;
 }
 
@@ -34,3 +69,4 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: '/api/:path*',
 };
+
